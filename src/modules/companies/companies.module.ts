@@ -1,6 +1,8 @@
 import { Module, forwardRef } from '@nestjs/common';
 
 import { CreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company.use-case';
+import { ProfilesModule } from '~modules/profiles/profiles.module';
+import { UpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company.use-case';
 import { RunCompanyPermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-permission-seeds';
 import { RunCompanyRolePermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-permission-seeds';
 import { RunCompanyRoleSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-seeds';
@@ -13,6 +15,8 @@ import { CompanyRoleMapper } from '~modules/companies/domain/mappers/company-rol
 import { CompanyMapper } from '~modules/companies/domain/mappers/company/company.mapper';
 import { UserCompanyMapper } from '~modules/companies/domain/mappers/user-company/user-company.mapper';
 import { RecruiterProfileCreatedEventHandler } from '~modules/companies/infrastructure/event-handlers/recruiter-profile-created.event-handler';
+import { CompaniesController } from '~modules/companies/infrastructure/controllers/companies/companies.controller';
+import { CompanyPermissionService } from '~modules/companies/infrastructure/services/company-permission/company-permission.service';
 import { DrizzleCompanyPermissionRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-permission.repository';
 import { DrizzleCompanyRolePermissionRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-role-permission.repository';
 import { DrizzleCompanyRoleRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-role.repository';
@@ -22,7 +26,7 @@ import { DrizzleUserCompanyRepository } from '~modules/companies/infrastructure/
 import { SharedModule } from '~shared/shared.module';
 
 @Module({
-  imports: [forwardRef(() => SharedModule)],
+  imports: [forwardRef(() => SharedModule), ProfilesModule],
   providers: [
     {
       provide: CompaniesDiToken.RUN_COMPANY_SEEDS_USE_CASE,
@@ -48,6 +52,15 @@ import { SharedModule } from '~shared/shared.module';
       provide: CompaniesDiToken.CREATE_USER_COMPANY_USE_CASE,
       useClass: CreateUserCompanyUseCase,
     },
+    {
+      provide: CompaniesDiToken.UPDATE_COMPANY_USE_CASE,
+      useClass: UpdateCompanyUseCase,
+    },
+    {
+      provide: CompaniesDiToken.COMPANY_PERMISSION_SERVICE,
+      useClass: CompanyPermissionService,
+    },
+
     CompanyMapper,
     CompanyPermissionMapper,
     CompanyRoleMapper,
@@ -75,13 +88,16 @@ import { SharedModule } from '~shared/shared.module';
     },
     RecruiterProfileCreatedEventHandler,
   ],
+  controllers: [CompaniesController],
   exports: [
     CompaniesDiToken.RUN_COMPANY_SEEDS_USE_CASE,
     CompaniesDiToken.RUN_COMPANY_PERMISSION_SEEDS_USE_CASE,
     CompaniesDiToken.RUN_COMPANY_ROLE_SEEDS_USE_CASE,
     CompaniesDiToken.RUN_COMPANY_ROLE_PERMISSION_SEEDS_USE_CASE,
     CompaniesDiToken.CREATE_COMPANY_USE_CASE,
+    CompaniesDiToken.UPDATE_COMPANY_USE_CASE,
     CompaniesDiToken.CREATE_USER_COMPANY_USE_CASE,
+    CompaniesDiToken.COMPANY_PERMISSION_SERVICE,
   ],
 })
 export class CompaniesModule {}

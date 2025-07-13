@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 
 import { ChangeEmailUseCase } from '~modules/auth/application/use-cases/change-email/change-email.use-case';
@@ -26,6 +26,7 @@ import { SupabaseGoogleOAuth2Strategy } from '~modules/auth/infrastructure/supab
 import { SupabaseJwtAccessAuthStrategy } from '~modules/auth/infrastructure/supabase/strategies/jwt-access/supabase-jwt-access-auth.strategy';
 import { SupabaseJwtRefreshAuthStrategy } from '~modules/auth/infrastructure/supabase/strategies/jwt-refresh/supabase-jwt-refresh-auth.strategy';
 
+@Global()
 @Module({
   providers: [
     SupabaseEmailPasswordLoginAuthStrategy,

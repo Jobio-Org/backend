@@ -17,7 +17,6 @@ export class HandlerRegister<T, TypeT extends Type<T> = Type<T>> {
       return false;
     }
 
-    // Всегда добавляем в scoped handlers, чтобы создавать через DI
     try {
       this.moduleRef.introspect(handler);
       if (Array.isArray(target)) {

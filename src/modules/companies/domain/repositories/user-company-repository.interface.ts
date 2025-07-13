@@ -6,4 +6,4 @@ export interface IUserCompanyRepository extends IBaseRepository<UserCompany, str
   findByRecruiterProfileId(recruiterProfileId: string): Promise<UserCompany[]>;
   findByCompanyId(companyId: string): Promise<UserCompany[]>;
   findByRecruiterProfileIdAndCompanyId(recruiterProfileId: string, companyId: string): Promise<UserCompany | null>;
-} 
+}

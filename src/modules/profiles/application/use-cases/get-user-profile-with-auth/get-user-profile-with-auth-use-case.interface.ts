@@ -3,7 +3,6 @@ import { RecruiterProfile } from '~modules/profiles/domain/entities/recruiter-pr
 
 import { Query } from '~shared/application/CQS/query.abstract';
 
-// Type for combined user data from auth and user details
 export interface IUserWithDetails {
   id: string;
   email?: string;

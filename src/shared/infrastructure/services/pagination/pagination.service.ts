@@ -46,11 +46,10 @@ export class PaginationService implements IPaginationService {
   }
 
   buildPaginationUrl(baseUrl: string, page: number, limit: number): string {
-    const url = new URL(baseUrl, 'http://localhost'); // Base URL for parsing
+    const url = new URL(baseUrl, 'http://localhost');
     url.searchParams.set('page', page.toString());
     url.searchParams.set('limit', limit.toString());
     
-    // Return only the path and query string
     return url.pathname + url.search;
   }
 } 

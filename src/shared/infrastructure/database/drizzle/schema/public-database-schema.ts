@@ -155,7 +155,7 @@ export const companyRole = pgTable(
     name: varchar('name', { length: 100 }).notNull(),
     description: text('description'),
     isDefault: boolean('is_default').notNull().default(false),
-    isSystem: boolean('is_system').notNull().default(false), // For system roles like Owner, Admin
+    isSystem: boolean('is_system').notNull().default(false),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow(),
   },
@@ -231,7 +231,7 @@ export const companyInvitation = pgTable(
     lastName: varchar('last_name', { length: 255 }),
     message: text('message'),
     token: varchar('token', { length: 255 }).notNull(),
-    status: varchar('status', { length: 50 }).notNull().default('pending'), // pending, accepted, declined, expired
+    status: varchar('status', { length: 50 }).notNull().default('pending'),
     expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
     acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'date' }),
     acceptedByRecruiterProfileId: uuid('accepted_by_recruiter_profile_id')

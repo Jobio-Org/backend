@@ -34,14 +34,13 @@ export class RunCompanyRoleSeedsUseCase implements IRunCompanyRoleSeedsUseCase {
       let createdCount = 0;
 
       if (!dryRun) {
-        // Create roles
         this.logger.log('Creating roles...');
         const roles = await this.createRoles();
         createdCount = roles.length;
 
         this.logger.log(`Successfully created ${createdCount} roles`);
       } else {
-        createdCount = 2; // admin + member roles
+        createdCount = 2;
         this.logger.log(`Dry run: Would create ${createdCount} roles`);
       }
 

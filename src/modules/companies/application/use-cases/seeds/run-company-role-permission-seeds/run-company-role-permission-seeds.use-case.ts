@@ -41,8 +41,8 @@ export class RunCompanyRolePermissionSeedsUseCase implements IRunCompanyRolePerm
       let createdCount = 0;
 
       if (!dryRun) {
-        // Get existing permissions and roles
         this.logger.log('Fetching existing permissions and roles...');
+
         const permissions = await this.companyPermissionRepository.findAll();
         const roles = await this.companyRoleRepository.findAll();
 
@@ -54,14 +54,14 @@ export class RunCompanyRolePermissionSeedsUseCase implements IRunCompanyRolePerm
           throw new Error('No roles found. Please run role seeds first.');
         }
 
-        // Assign permissions to roles
         this.logger.log('Assigning permissions to roles...');
+
         const assignedCount = await this.assignPermissionsToRoles(permissions, roles);
         createdCount = assignedCount;
 
         this.logger.log(`Successfully assigned ${createdCount} role permissions`);
       } else {
-        createdCount = 21; // 15 permissions for admin + 6 for member
+        createdCount = 21; 
         this.logger.log(`Dry run: Would assign ${createdCount} role permissions`);
       }
 
@@ -92,13 +92,11 @@ export class RunCompanyRolePermissionSeedsUseCase implements IRunCompanyRolePerm
 
     let assignedCount = 0;
 
-    // Admin gets all permissions
     for (const permission of permissions) {
       await this.companyRolePermissionRepository.assignPermissionToRole(adminRole.id, permission.id);
       assignedCount++;
     }
 
-    // Member gets basic permissions
     const memberPermissions = [
       CompanyPermissionList.CREATE_JOBS,
       CompanyPermissionList.EDIT_JOBS,

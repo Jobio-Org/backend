@@ -33,33 +33,38 @@ export class RunCompanySeedsUseCase implements IRunCompanySeedsUseCase {
       let totalCreatedCount = 0;
 
       if (!dryRun) {
-        // Run permission seeds first
         this.logger.log('Running permission seeds...');
+
         const permissionResult = await this.runCompanyPermissionSeedsUseCase.execute({ clearExisting, dryRun });
+
         if (!permissionResult.success) {
           throw new Error(`Permission seeds failed: ${permissionResult.error}`);
         }
         totalCreatedCount += permissionResult.count;
 
-        // Run role seeds
         this.logger.log('Running role seeds...');
+
         const roleResult = await this.runCompanyRoleSeedsUseCase.execute({ clearExisting: false, dryRun });
+
         if (!roleResult.success) {
           throw new Error(`Role seeds failed: ${roleResult.error}`);
         }
+
         totalCreatedCount += roleResult.count;
 
-        // Run role permission seeds
         this.logger.log('Running role permission seeds...');
+
         const rolePermissionResult = await this.runCompanyRolePermissionSeedsUseCase.execute({ clearExisting: false, dryRun });
+
         if (!rolePermissionResult.success) {
           throw new Error(`Role permission seeds failed: ${rolePermissionResult.error}`);
         }
+
         totalCreatedCount += rolePermissionResult.count;
 
         this.logger.log(`Successfully created ${totalCreatedCount} items total`);
       } else {
-        totalCreatedCount = 38; // 15 permissions + 2 roles + 21 role permissions
+        totalCreatedCount = 38; 
         this.logger.log(`Dry run: Would create ${totalCreatedCount} items total`);
       }
 

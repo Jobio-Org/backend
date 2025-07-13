@@ -4,7 +4,7 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
 
-import { IRecruiterProfileRepository } from '~modules/profiles/domain//repositories/recruiter-profile-repository.interface';
+import { IRecruiterProfileRepository } from '~modules/profiles/domain/repositories/recruiter-profile-repository.interface';
 import { RecruiterProfile } from '~modules/profiles/domain/entities/recruiter-profile.entity';
 import {
   IRecruiterProfileDataAccess,

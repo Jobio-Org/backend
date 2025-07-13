@@ -4,4 +4,5 @@ import { IBaseRepository } from '~shared/domain/repositories/base-repository.int
 
 export interface ICompanyPermissionRepository extends IBaseRepository<CompanyPermission, string> {
   findAll(): Promise<CompanyPermission[]>;
+  findByName(name: string): Promise<CompanyPermission | null>;
 } 

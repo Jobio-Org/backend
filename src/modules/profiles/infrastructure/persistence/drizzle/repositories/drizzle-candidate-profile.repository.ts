@@ -49,7 +49,6 @@ export class DrizzleCandidateProfileRepository
   }
 
   async findBySkills(skills: string[]): Promise<CandidateProfile[]> {
-    // Простая реализация поиска по навыкам
     const results = await this.db.select().from(candidateProfile).where(eq(candidateProfile.skills, skills));
 
     return results.map((result) => this.mapper.toDomain(result as ICandidateProfileDataAccess));
