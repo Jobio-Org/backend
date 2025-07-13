@@ -33,7 +33,7 @@ export class RecruiterProfileCreatedEventHandler {
     const adminRole = await this.companyRoleRepository.findByName(CompanyRoleType.ADMIN);
 
     if (!adminRole) {
-      throw new InvalidRoleException(`${CompanyRoleType.ADMIN} role not found in database`);
+      throw new InvalidRoleException(CompanyRoleType.ADMIN);
     }
 
     await this.createUserCompanyUseCase.execute({

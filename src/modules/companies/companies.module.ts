@@ -16,7 +16,7 @@ import { CompanyMapper } from '~modules/companies/domain/mappers/company/company
 import { UserCompanyMapper } from '~modules/companies/domain/mappers/user-company/user-company.mapper';
 import { RecruiterProfileCreatedEventHandler } from '~modules/companies/infrastructure/event-handlers/recruiter-profile-created.event-handler';
 import { CompaniesController } from '~modules/companies/infrastructure/controllers/companies/companies.controller';
-import { CompanyPermissionService } from '~modules/companies/infrastructure/services/company-permission/company-permission.service';
+import { CompanyPermissionQueryService } from '~modules/companies/infrastructure/services/company-permission-query.service';
 import { DrizzleCompanyPermissionRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-permission.repository';
 import { DrizzleCompanyRolePermissionRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-role-permission.repository';
 import { DrizzleCompanyRoleRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-role.repository';
@@ -57,8 +57,8 @@ import { SharedModule } from '~shared/shared.module';
       useClass: UpdateCompanyUseCase,
     },
     {
-      provide: CompaniesDiToken.COMPANY_PERMISSION_SERVICE,
-      useClass: CompanyPermissionService,
+      provide: CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE,
+      useClass: CompanyPermissionQueryService,
     },
 
     CompanyMapper,
@@ -97,7 +97,7 @@ import { SharedModule } from '~shared/shared.module';
     CompaniesDiToken.CREATE_COMPANY_USE_CASE,
     CompaniesDiToken.UPDATE_COMPANY_USE_CASE,
     CompaniesDiToken.CREATE_USER_COMPANY_USE_CASE,
-    CompaniesDiToken.COMPANY_PERMISSION_SERVICE,
+    CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE,
   ],
 })
 export class CompaniesModule {}

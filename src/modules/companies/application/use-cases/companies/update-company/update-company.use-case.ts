@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
 
+import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
 import {
   IUpdateCompanyUseCase,
   UpdateCompanyInput,
