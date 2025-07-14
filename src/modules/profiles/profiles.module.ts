@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 
 import { AuthModule } from '~modules/auth/auth.module';
+import { CompaniesModule } from '~modules/companies/companies.module';
 import { CreateUserProfileUseCase } from '~modules/profiles/application/use-cases/create-user-profile/create-user-profile.use-case';
 import { GetUserProfileWithAuthUseCase } from '~modules/profiles/application/use-cases/get-user-profile-with-auth/get-user-profile-with-auth.use-case';
 import { UpdateCandidateProfileUseCase } from '~modules/profiles/application/use-cases/update-candidate-profile/update-candidate-profile.use-case';
@@ -20,7 +21,7 @@ import { DrizzleUserDetailsRepository } from '~modules/profiles/infrastructure/p
 import { SharedModule } from '~shared/shared.module';
 
 @Module({
-  imports: [AuthModule, forwardRef(() => SharedModule)],
+  imports: [AuthModule, forwardRef(() => SharedModule), forwardRef(() => CompaniesModule)],
   providers: [
     UserDetailsMapper,
     CandidateProfileMapper,

@@ -5,7 +5,7 @@ import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
 import { UpdateCompanyDto } from '~modules/companies/application/dto/update-company.dto';
 import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/insufficient-permissions.exception';
-import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permission-service.interface';
+import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permission-query-service.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { Company } from '~modules/companies/domain/entities/company.entity';
@@ -19,7 +19,7 @@ export class CompaniesController {
   constructor(
     @Inject(CompaniesDiToken.UPDATE_COMPANY_USE_CASE)
     private readonly updateCompanyUseCase: IUpdateCompanyUseCase,
-    @Inject(CompaniesDiToken.COMPANY_PERMISSION_SERVICE)
+    @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
     private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
   ) {}
 

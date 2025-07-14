@@ -9,6 +9,7 @@ export class RecruiterProfile {
   public readonly website?: string | null;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
+  public readonly activeCompanyId?: string | null; 
 
   public get hasContactInfo(): boolean {
     return !!(this.telegram || this.phone || this.linkedin);
@@ -31,6 +32,7 @@ export class RecruiterProfile {
       userDetailsId,
       createdAt: new Date(),
       updatedAt: new Date(),
+      activeCompanyId: undefined,
     });
   }
 }

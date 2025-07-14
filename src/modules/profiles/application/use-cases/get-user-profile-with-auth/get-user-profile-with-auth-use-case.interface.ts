@@ -10,12 +10,11 @@ export interface IUserWithDetails {
   emailConfirmedAt?: Date;
   phoneConfirmedAt?: Date;
   lastSignInAt?: Date;
-  createdAt?: Date;
   signUpCompleted: boolean;
   fullName?: string | null;
   role: string;
-  userDetailsCreatedAt: Date;
-  userDetailsUpdatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IGetUserProfileWithAuthUseCase

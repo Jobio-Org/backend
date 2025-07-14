@@ -14,7 +14,7 @@ export interface IRecruiterProfileDataAccess {
 }
 
 export class RecruiterProfileMapper implements IDataAccessMapper<RecruiterProfile, IRecruiterProfileDataAccess> {
-  toDomain(persistence: IRecruiterProfileDataAccess): RecruiterProfile {
+  toDomain(persistence: IRecruiterProfileDataAccess, activeCompanyId?: string | null): RecruiterProfile {
     return RecruiterProfile.builder(persistence.userDetailsId)
       .id(persistence.id)
       .telegram(persistence.telegram)
@@ -23,6 +23,7 @@ export class RecruiterProfileMapper implements IDataAccessMapper<RecruiterProfil
       .website(persistence.website)
       .createdAt(persistence.createdAt)
       .updatedAt(persistence.updatedAt)
+      .activeCompanyId(activeCompanyId)
       .build();
   }
 
