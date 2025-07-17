@@ -23,10 +23,10 @@ export class RecruiterProfileCreatedEventHandler {
   ) {}
 
   async handle(event: RecruiterProfileCreatedEvent): Promise<void> {
-    const { userId, recruiterProfileId } = event.payload;
+    const { recruiterProfileId } = event.payload;
 
     const defaultCompany = await this.createCompanyUseCase.execute({
-      name: `Company of ${userId}`,
+      name: `Company of ${recruiterProfileId}`,
       description: 'Default company created during registration',
     });
 

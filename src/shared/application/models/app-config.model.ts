@@ -31,4 +31,20 @@ export class AppConfigModel {
 
   @IsString()
   JWT_SECRET: string;
+
+  @IsString()
+  SMTP_USER: string;
+
+  @IsString()
+  SMTP_HOST: string;
+
+  @IsInt()
+  @IsPositive()
+  SMTP_PORT: number;
+
+  @IsString()
+  SMTP_PASS: string;
+
+  @IsString()
+  CLIENT_INVITE_REDIRECT_URL: string;
 }

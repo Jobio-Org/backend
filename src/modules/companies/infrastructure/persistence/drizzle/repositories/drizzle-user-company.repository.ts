@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
@@ -24,7 +24,7 @@ export class DrizzleUserCompanyRepository
   constructor(
     @Inject(POSTGRES_DB) db: NodePgDatabase<MergedDbSchema>,
     @Inject(UserCompanyMapper) mapper: IDataAccessMapper<UserCompany, IUserCompanyDataAccess>,
-  ) {
+   ) {
     super(TableDefinition.create(userCompany, 'id'), db, mapper);
   }
 
@@ -59,5 +59,17 @@ export class DrizzleUserCompanyRepository
     if (!result) return null;
 
     return this.mapper.toDomain(result);
+  }
+
+  async existsByRecruiterProfileIdAndCompanyId(recruiterProfileId: string, companyId: string): Promise<boolean> {
+    const [result] = await this.db
+      .select()
+      .from(userCompany)
+      .where(and(
+        eq(userCompany.recruiterProfileId, recruiterProfileId),
+        eq(userCompany.companyId, companyId)
+      ))
+      .limit(1);
+    return !!result;
   }
 } 

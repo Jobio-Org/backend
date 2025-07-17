@@ -1,3 +1,6 @@
+import { RecruiterProfile } from '~modules/profiles/domain/entities/recruiter-profile.entity';
+
 export interface IProfilesQueryService {
-  getRecruiterProfileIdByUserId(userId: string): Promise<string | null>;
-} 
+  getRecruiterProfileByUserId(userId: string): Promise<RecruiterProfile | null>;
+  getRecruiterProfileByEmail(email: string): Promise<RecruiterProfile | null>;
+}

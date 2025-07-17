@@ -6,4 +6,5 @@ import { IBaseRepository } from '~shared/domain/repositories/base-repository.int
 export interface IUserDetailsRepository extends IBaseRepository<UserDetails, string> {
   findByUserId(userId: string): Promise<UserDetails | null>;
   findByRole(role: UserRole): Promise<UserDetails[]>;
+  findByEmail(email: string): Promise<UserDetails | null>;
 }
