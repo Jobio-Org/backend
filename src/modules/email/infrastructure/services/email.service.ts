@@ -45,7 +45,12 @@ export class EmailService implements IEmailService {
     template: TemplateType;
     context: Record<string, any>;
   }): Promise<void> {
-    const templatePath = path.join(__dirname, '../templates', `${options.template}.hbs`);
+    const templateDir =
+      process.env.NODE_ENV === 'production'
+        ? path.join(process.cwd(), 'dist', 'modules', 'email', 'infrastructure', 'templates')
+        : path.join(process.cwd(), 'src', 'modules', 'email', 'infrastructure', 'templates');
+
+    const templatePath = path.join(templateDir, `${options.template}.hbs`);
     const templateSource = fs.readFileSync(templatePath, 'utf8');
 
     const compiledTemplate = handlebars.compile(templateSource);

@@ -1,6 +1,6 @@
 import { CandidateProfile } from '~modules/profiles/domain/entities/candidate-profile.entity';
 
-import { IDataAccessMapper } from '~shared/domain/mappers/data-access-mapper.interface';
+import { type IDataAccessMapper } from '~shared/domain/mappers/data-access-mapper.interface';
 
 export interface ICandidateProfileDataAccess {
   id: string;

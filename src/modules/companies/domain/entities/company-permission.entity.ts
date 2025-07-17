@@ -14,4 +14,4 @@ export class CompanyPermission {
       updatedAt: new Date(),
     });
   }
-} 
+}

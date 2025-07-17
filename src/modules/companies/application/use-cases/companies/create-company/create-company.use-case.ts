@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CreateCompanyDto } from '../../../dto/companies/create-company.dto';
-import { ICreateCompanyUseCase } from './create-company-use-case.interface';
+import { CreateCompanyDto } from '~modules/companies/application/dto/companies/create-company.dto';
+import { ICreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { Company } from '~modules/companies/domain/entities/company.entity';
 import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
@@ -31,4 +31,4 @@ export class CreateCompanyUseCase extends Command<CreateCompanyDto, Company> imp
 
     return await this.companyRepository.create(company);
   }
-} 
+}

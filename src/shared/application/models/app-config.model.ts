@@ -47,4 +47,8 @@ export class AppConfigModel {
 
   @IsString()
   CLIENT_INVITE_REDIRECT_URL: string;
+
+  @IsInt()
+  @IsPositive()
+  COMPANY_INVITATION_EXPIRE_TIME: number;
 }

@@ -1,5 +1,6 @@
 import {
   bigint,
+  boolean,
   index,
   integer,
   pgTable,
@@ -9,7 +10,6 @@ import {
   uniqueIndex,
   uuid,
   varchar,
-  boolean,
 } from 'drizzle-orm/pg-core';
 
 export const userDetails = pgTable(
@@ -182,7 +182,10 @@ export const companyRolePermission = pgTable(
   (table) => ({
     companyRoleIdIdx: index('company_role_permission_role_id_idx').on(table.companyRoleId),
     companyPermissionIdIdx: index('company_role_permission_permission_id_idx').on(table.companyPermissionId),
-    rolePermissionUnique: uniqueIndex('company_role_permission_unique').on(table.companyRoleId, table.companyPermissionId),
+    rolePermissionUnique: uniqueIndex('company_role_permission_unique').on(
+      table.companyRoleId,
+      table.companyPermissionId,
+    ),
   }),
 );
 
@@ -209,7 +212,10 @@ export const userCompany = pgTable(
     companyIdIdx: index('user_company_company_id_idx').on(table.companyId),
     companyRoleIdIdx: index('user_company_role_id_idx').on(table.companyRoleId),
     isActiveIdx: index('user_company_is_active_idx').on(table.isActive),
-    recruiterCompanyUnique: uniqueIndex('user_company_recruiter_company_unique').on(table.recruiterProfileId, table.companyId),
+    recruiterCompanyUnique: uniqueIndex('user_company_recruiter_company_unique').on(
+      table.recruiterProfileId,
+      table.companyId,
+    ),
   }),
 );
 
@@ -234,21 +240,29 @@ export const companyInvitation = pgTable(
     status: varchar('status', { length: 50 }).notNull().default('pending'),
     expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
     acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'date' }),
-    acceptedByRecruiterProfileId: uuid('accepted_by_recruiter_profile_id')
-      .references(() => recruiterProfile.id, { onDelete: 'set null' }),
+    acceptedByRecruiterProfileId: uuid('accepted_by_recruiter_profile_id').references(() => recruiterProfile.id, {
+      onDelete: 'set null',
+    }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow(),
   },
   (table) => ({
     companyIdIdx: index('company_invitation_company_id_idx').on(table.companyId),
-    invitedByRecruiterProfileIdIdx: index('company_invitation_invited_by_recruiter_profile_id_idx').on(table.invitedByRecruiterProfileId),
+    invitedByRecruiterProfileIdIdx: index('company_invitation_invited_by_recruiter_profile_id_idx').on(
+      table.invitedByRecruiterProfileId,
+    ),
     emailIdx: index('company_invitation_email_idx').on(table.email),
     tokenIdx: index('company_invitation_token_idx').on(table.token),
     statusIdx: index('company_invitation_status_idx').on(table.status),
     expiresAtIdx: index('company_invitation_expires_at_idx').on(table.expiresAt),
-    acceptedByRecruiterProfileIdIdx: index('company_invitation_accepted_by_recruiter_profile_id_idx').on(table.acceptedByRecruiterProfileId),
+    acceptedByRecruiterProfileIdIdx: index('company_invitation_accepted_by_recruiter_profile_id_idx').on(
+      table.acceptedByRecruiterProfileId,
+    ),
     tokenUnique: uniqueIndex('company_invitation_token_unique').on(table.token),
     // Constraint: Only one pending invitation per email per company
-    pendingEmailCompanyUnique: uniqueIndex('company_invitation_pending_email_company_unique').on(table.email, table.companyId),
+    pendingEmailCompanyUnique: uniqueIndex('company_invitation_pending_email_company_unique').on(
+      table.email,
+      table.companyId,
+    ),
   }),
 );

@@ -1,4 +1,4 @@
-import { Builder, IBuilder } from 'builder-pattern';
+import { Builder, type IBuilder } from 'builder-pattern';
 
 export class CompanyInvitation {
   public readonly id: string;
@@ -17,7 +17,14 @@ export class CompanyInvitation {
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
-  public static builder(companyId: string, invitedByRecruiterProfileId: string, companyRoleId: string, email: string, token: string): IBuilder<CompanyInvitation> {
+  public static builder(
+    companyId: string,
+    invitedByRecruiterProfileId: string,
+    companyRoleId: string,
+    email: string,
+    token: string,
+    expiresAt: Date,
+  ): IBuilder<CompanyInvitation> {
     return Builder(CompanyInvitation, {
       companyId,
       invitedByRecruiterProfileId,
@@ -25,7 +32,7 @@ export class CompanyInvitation {
       email,
       token,
       status: 'pending',
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3), // 3 days
+      expiresAt,
     });
   }
-} 
+}

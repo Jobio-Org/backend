@@ -1,6 +1,6 @@
-import { Session, SupabaseClient, User } from '@supabase/supabase-js';
+import { type Session, type SupabaseClient, type User } from '@supabase/supabase-js';
 
-import { SupabaseAccessTokenJwtPayload } from '~modules/auth/infrastructure/supabase/mappers/access-token-jwt-payload/supabase-access-token-jwt-payload.mapper';
+import { type SupabaseAccessTokenJwtPayload } from '~modules/auth/infrastructure/supabase/mappers/access-token-jwt-payload/supabase-access-token-jwt-payload.mapper';
 
 export interface IAuthResult {
   accessTokenPayload?: SupabaseAccessTokenJwtPayload;

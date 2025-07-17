@@ -4,11 +4,13 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
 import { UpdateCompanyDto } from '~modules/companies/application/dto/companies/update-company.dto';
-import { InviteRecruiterDto } from '~modules/companies/application/dto/invite-recruiter.dto';
-import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/insufficient-permissions.exception';
+import { AcceptInvitationDto } from '~modules/companies/application/dto/company-invitations/accept-invitation.dto';
+import { InviteRecruiterDto } from '~modules/companies/application/dto/company-invitations/invite-recruiter.dto';
+import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
-import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/send-invitation/send-invitation-use-case.interface';
+import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
+import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { Company } from '~modules/companies/domain/entities/company.entity';
 import { CompanyPermissionList } from '~modules/companies/domain/enums/company-management.enum';
@@ -25,6 +27,8 @@ export class CompaniesController {
     private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
     @Inject(CompaniesDiToken.SEND_INVITATION_USE_CASE)
     private readonly sendInvitationUseCase: ISendInvitationUseCase,
+    @Inject(CompaniesDiToken.ACCEPT_INVITATION_USE_CASE)
+    private readonly acceptInvitationUseCase: IAcceptInvitationUseCase,
   ) {}
 
   @ApiOperation({
@@ -56,5 +60,14 @@ export class CompaniesController {
   @Post('invitations')
   async inviteRecruiter(@Body() dto: InviteRecruiterDto, @UserId() userId: string): Promise<void> {
     await this.sendInvitationUseCase.execute({ dto, inviterUserId: userId });
+  }
+
+  @ApiOperation({
+    summary: 'Accept company invitation',
+    description: 'Accept invitation to join company using invitation token.',
+  })
+  @Post('invitations/accept')
+  async acceptInvitation(@Body() dto: AcceptInvitationDto, @UserId() userId: string): Promise<void> {
+    await this.acceptInvitationUseCase.execute({ dto, userId });
   }
 }

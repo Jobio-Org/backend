@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class InviteRecruiterDto {
   @IsEmail()
@@ -9,11 +9,6 @@ export class InviteRecruiterDto {
 
   @IsString()
   roleId: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  permissions?: string[];
 
   @IsString()
   @IsOptional()

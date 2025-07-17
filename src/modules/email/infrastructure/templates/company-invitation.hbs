@@ -1,3 +1,477 @@
-<h2>Вас запросили до компанії {{companyName}}</h2>
-<p>{{message}}</p>
-<p><a href="{{link}}">Прийняти запрошення</a></p> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Company Invitation</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #334155;
+            background-color: #F8FAFC;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        
+        td {
+            border-collapse: collapse;
+        }
+        
+        /* Main container */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #F8FAFC;
+            padding: 40px 20px;
+        }
+        
+        /* Email wrapper */
+        .email-wrapper {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .tagline {
+            color: #E2E8F0;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        /* Content */
+        .email-content {
+            padding: 40px 30px;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .company-name {
+            color: #8B5CF6;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #64748B;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        /* Invitation info */
+        .invitation-info {
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border: 1px solid #06B6D4;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .invitation-info::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(135deg, #06B6D4, #22D3EE);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .invitation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0891B2;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .users-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            fill: #06B6D4;
+        }
+        
+        .invitation-message {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.6;
+            background-color: #FFFFFF;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #06B6D4;
+            font-style: italic;
+        }
+        
+        .invitation-message:empty {
+            display: none;
+        }
+        
+        /* Company badge */
+        .company-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .company-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            fill: #FFFFFF;
+        }
+        
+        /* Features list */
+        .features-list {
+            background-color: #F8FAFC;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .features-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #64748B;
+        }
+        
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .check-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            fill: #10B981;
+        }
+        
+        /* Button */
+        .btn-container {
+            text-align: center;
+            margin: 32px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: #FFFFFF !important;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Alternative link */
+        .alt-link {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #F1F5F9;
+            border-radius: 8px;
+            border-left: 4px solid #06B6D4;
+        }
+        
+        .alt-link-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+        
+        .alt-link-url {
+            font-size: 13px;
+            color: #06B6D4;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Footer */
+        .email-footer {
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #E2E8F0;
+            background-color: #F8FAFC;
+        }
+        
+        .footer-text {
+            font-size: 14px;
+            color: #64748B;
+            margin-bottom: 16px;
+        }
+        
+        .footer-invitation {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+        
+        .footer-links {
+            font-size: 12px;
+            color: #94A3B8;
+        }
+        
+        .footer-links a {
+            color: #06B6D4;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                padding: 20px 10px;
+            }
+            
+            .email-header {
+                padding: 30px 20px;
+            }
+            
+            .email-content {
+                padding: 30px 20px;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+            
+            .btn {
+                padding: 14px 28px;
+                font-size: 15px;
+            }
+            
+            .email-footer {
+                padding: 20px;
+            }
+            
+            .invitation-info {
+                padding: 20px;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .email-wrapper {
+                background-color: #1E293B;
+            }
+            
+            .email-content {
+                background-color: #1E293B;
+            }
+            
+            .title {
+                color: #F1F5F9;
+            }
+            
+            .subtitle {
+                color: #94A3B8;
+            }
+            
+            .email-footer {
+                background-color: #0F172A;
+                border-top-color: #334155;
+            }
+            
+            .invitation-info {
+                background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+                border-color: #0891B2;
+            }
+            
+            .invitation-title {
+                color: #22D3EE;
+            }
+            
+            .invitation-message {
+                background-color: #334155;
+                color: #E2E8F0;
+            }
+            
+            .features-list {
+                background-color: #0F172A;
+            }
+            
+            .features-title {
+                color: #E2E8F0;
+            }
+            
+            .feature-item {
+                color: #94A3B8;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <div class="email-wrapper">
+                        <!-- Header -->
+                        <div class="email-header">
+                            <div class="logo">Jobio</div>
+                            <div class="tagline">Where Talent Meets Opportunity</div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="email-content">
+                            <div class="company-badge">
+                                <svg class="company-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Company Invitation
+                            </div>
+                            
+                            <h1 class="title">You are invited to join <span class="company-name">{{companyName}}</span></h1>
+                            <p class="subtitle">
+                                You've been invited to collaborate and work together on exciting projects. Join the team and start building something amazing!
+                            </p>
+                            
+                            <div class="invitation-info">
+                                <div class="invitation-title">
+                                    <svg class="users-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                    </svg>
+                                    Personal Message
+                                </div>
+                                <div class="invitation-message">{{message}}</div>
+                            </div>
+                            
+                            <div class="features-list">
+                                <div class="features-title">What you'll get access to:</div>
+                                <div class="feature-item">
+                                    <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Team collaboration tools and shared workspace
+                                </div>
+                                <div class="feature-item">
+                                    <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Access to company projects and databases
+                                </div>
+                                <div class="feature-item">
+                                    <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Real-time collaboration and communication
+                                </div>
+                                <div class="feature-item">
+                                    <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Shared resources and development environment
+                                </div>
+                            </div>
+                            
+                            <div class="btn-container">
+                                <a href="{{link}}" class="btn">Accept Invitation</a>
+                            </div>
+                            
+                            <div class="alt-link">
+                                <div class="alt-link-title">If the button doesn't work, copy and paste this link into your browser:</div>
+                                <div class="alt-link-url">{{link}}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div class="email-footer">
+                            <p class="footer-text">
+                                This is an automated message. Please do not reply to this email.
+                            </p>
+                            <p class="footer-invitation">
+                                This invitation was sent by a member of {{companyName}}. If you weren't expecting this invitation, you can safely ignore this email.
+                            </p>
+                            <div class="footer-links">
+                                <a href="#">Privacy Policy</a>
+                                <a href="#">Terms of Service</a>
+                                <a href="#">Support</a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

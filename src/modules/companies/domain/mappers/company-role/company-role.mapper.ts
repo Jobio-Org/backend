@@ -1,6 +1,6 @@
 import { CompanyRole } from '~modules/companies/domain/entities/company-role.entity';
 
-import { IDataAccessMapper } from '~shared/domain/mappers';
+import { type IDataAccessMapper } from '~shared/domain/mappers';
 
 export interface ICompanyRoleDataAccess {
   id: string;
@@ -35,4 +35,4 @@ export class CompanyRoleMapper implements IDataAccessMapper<CompanyRole, ICompan
       updatedAt: entity.updatedAt,
     };
   }
-} 
+}

@@ -4,9 +4,9 @@ import { IGetAllCategoriesUseCase } from '~modules/categories/application/use-ca
 import { CategoriesDiToken } from '~modules/categories/constants';
 import { Category } from '~modules/categories/domain/entities/category.entity';
 import { ICategoryRepository } from '~modules/categories/domain/repositories/category-repository.interface';
-import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 
 import { PaginatedQuery } from '~shared/application/CQS/paginated-query.abstract';
+import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 
 @Injectable()
 export class GetAllCategoriesUseCase
@@ -31,4 +31,4 @@ export class GetAllCategoriesUseCase
   protected getBaseUrl(_input: PaginationQueryDto): string {
     return '/categories';
   }
-} 
+}

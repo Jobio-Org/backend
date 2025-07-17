@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { type Request } from 'express';
 import { OAuth2 } from 'oauth';
 import { Strategy } from 'passport-strategy';
 import { URL } from 'url';

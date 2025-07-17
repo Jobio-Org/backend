@@ -1,7 +1,7 @@
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 import { Strategy } from 'passport-strategy';
 
-import { ISupabaseClientOptions } from '~lib/passport-supabase/core';
+import { type ISupabaseClientOptions } from '~lib/passport-supabase/core';
 
 export type ISupabaseBaseAuthStrategyOptions = ISupabaseClientOptions;
 

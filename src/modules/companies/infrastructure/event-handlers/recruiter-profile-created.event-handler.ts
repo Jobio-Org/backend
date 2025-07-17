@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { EventsHandler } from '~lib/nest-event-driven';
 
-import { InvalidRoleException } from '~modules/companies/application/exceptions/invalid-role.exception';
+import { InvalidRoleException } from '~modules/companies/application/exceptions/company-roles/invalid-role.exception';
 import { ICreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company-use-case.interface';
 import { ICreateUserCompanyUseCase } from '~modules/companies/application/use-cases/user-companies/create-user-company/create-user-company-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';

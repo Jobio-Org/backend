@@ -1,7 +1,7 @@
-import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { type ClassConstructor, plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
-import { AppConfigModel } from '~shared/application/models/app-config.model';
+import { type AppConfigModel } from '~shared/application/models/app-config.model';
 
 export function validateConfig(config: Record<string, unknown>, model: ClassConstructor<AppConfigModel>) {
   const validatedConfig = plainToInstance(model, config, {

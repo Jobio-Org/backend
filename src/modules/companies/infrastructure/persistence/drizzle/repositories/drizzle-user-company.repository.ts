@@ -1,11 +1,14 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { eq, and } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
 
 import { UserCompany } from '~modules/companies/domain/entities/user-company.entity';
-import { UserCompanyMapper, IUserCompanyDataAccess } from '~modules/companies/domain/mappers/user-company/user-company.mapper';
+import {
+  IUserCompanyDataAccess,
+  UserCompanyMapper,
+} from '~modules/companies/domain/mappers/user-company/user-company.mapper';
 import { IUserCompanyRepository } from '~modules/companies/domain/repositories/user-company-repository.interface';
 
 import { IDataAccessMapper } from '~shared/domain/mappers';
@@ -24,7 +27,7 @@ export class DrizzleUserCompanyRepository
   constructor(
     @Inject(POSTGRES_DB) db: NodePgDatabase<MergedDbSchema>,
     @Inject(UserCompanyMapper) mapper: IDataAccessMapper<UserCompany, IUserCompanyDataAccess>,
-   ) {
+  ) {
     super(TableDefinition.create(userCompany, 'id'), db, mapper);
   }
 
@@ -38,22 +41,19 @@ export class DrizzleUserCompanyRepository
   }
 
   async findByCompanyId(companyId: string): Promise<UserCompany[]> {
-    const result = await this.db
-      .select()
-      .from(userCompany)
-      .where(eq(userCompany.companyId, companyId));
+    const result = await this.db.select().from(userCompany).where(eq(userCompany.companyId, companyId));
 
     return result.map((item) => this.mapper.toDomain(item));
   }
 
-  async findByRecruiterProfileIdAndCompanyId(recruiterProfileId: string, companyId: string): Promise<UserCompany | null> {
+  async findByRecruiterProfileIdAndCompanyId(
+    recruiterProfileId: string,
+    companyId: string,
+  ): Promise<UserCompany | null> {
     const [result] = await this.db
       .select()
       .from(userCompany)
-      .where(and(
-        eq(userCompany.recruiterProfileId, recruiterProfileId),
-        eq(userCompany.companyId, companyId)
-      ))
+      .where(and(eq(userCompany.recruiterProfileId, recruiterProfileId), eq(userCompany.companyId, companyId)))
       .limit(1);
 
     if (!result) return null;
@@ -65,11 +65,8 @@ export class DrizzleUserCompanyRepository
     const [result] = await this.db
       .select()
       .from(userCompany)
-      .where(and(
-        eq(userCompany.recruiterProfileId, recruiterProfileId),
-        eq(userCompany.companyId, companyId)
-      ))
+      .where(and(eq(userCompany.recruiterProfileId, recruiterProfileId), eq(userCompany.companyId, companyId)))
       .limit(1);
     return !!result;
   }
-} 
+}

@@ -19,24 +19,25 @@ export interface ICompanyInvitationDataAccess {
 }
 
 export class CompanyInvitationMapper {
-  toDomain(raw: ICompanyInvitationDataAccess): CompanyInvitation {
+  toDomain(persistence: ICompanyInvitationDataAccess): CompanyInvitation {
     return CompanyInvitation.builder(
-      raw.companyId,
-      raw.invitedByRecruiterProfileId,
-      raw.companyRoleId,
-      raw.email,
-      raw.token,
+      persistence.companyId,
+      persistence.invitedByRecruiterProfileId,
+      persistence.companyRoleId,
+      persistence.email,
+      persistence.token,
+      persistence.expiresAt,
     )
-      .firstName(raw.firstName ?? undefined)
-      .lastName(raw.lastName ?? undefined)
-      .message(raw.message ?? undefined)
-      .status(raw.status)
-      .expiresAt(raw.expiresAt)
-      .acceptedAt(raw.acceptedAt ?? undefined)
-      .acceptedByRecruiterProfileId(raw.acceptedByRecruiterProfileId ?? undefined)
-      .createdAt(raw.createdAt)
-      .updatedAt(raw.updatedAt)
-      .id(raw.id)
+      .firstName(persistence.firstName ?? undefined)
+      .lastName(persistence.lastName ?? undefined)
+      .message(persistence.message ?? undefined)
+      .status(persistence.status)
+      .expiresAt(persistence.expiresAt)
+      .acceptedAt(persistence.acceptedAt ?? undefined)
+      .acceptedByRecruiterProfileId(persistence.acceptedByRecruiterProfileId ?? undefined)
+      .createdAt(persistence.createdAt)
+      .updatedAt(persistence.updatedAt)
+      .id(persistence.id)
       .build();
   }
 
@@ -59,4 +60,4 @@ export class CompanyInvitationMapper {
       updatedAt: entity.updatedAt,
     };
   }
-} 
+}

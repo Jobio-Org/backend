@@ -21,4 +21,4 @@ export class UserCompany {
       updatedAt: new Date(),
     });
   }
-} 
+}

@@ -2,11 +2,12 @@ import { Module, forwardRef } from '@nestjs/common';
 
 import { CreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company.use-case';
 import { UpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company.use-case';
+import { AcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation.use-case';
+import { SendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation.use-case';
 import { RunCompanyPermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-permission-seeds';
 import { RunCompanyRolePermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-permission-seeds';
 import { RunCompanyRoleSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-seeds';
 import { RunCompanySeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-seeds/run-company-seeds.use-case';
-import { SendInvitationUseCase } from '~modules/companies/application/use-cases/send-invitation/send-invitation.use-case';
 import { CreateUserCompanyUseCase } from '~modules/companies/application/use-cases/user-companies/create-user-company/create-user-company.use-case';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyInvitationMapper } from '~modules/companies/domain/mappers/company-invitation/company-invitation.mapper';
@@ -99,6 +100,10 @@ import { ProfilesModule } from '~modules/profiles/profiles.module';
     {
       provide: CompaniesDiToken.SEND_INVITATION_USE_CASE,
       useClass: SendInvitationUseCase,
+    },
+    {
+      provide: CompaniesDiToken.ACCEPT_INVITATION_USE_CASE,
+      useClass: AcceptInvitationUseCase,
     },
     {
       provide: CompaniesDiToken.COMPANY_INVITATION_REPOSITORY,

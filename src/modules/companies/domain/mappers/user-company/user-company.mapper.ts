@@ -18,11 +18,7 @@ export interface IUserCompanyDataAccess {
 @Injectable()
 export class UserCompanyMapper implements IDataAccessMapper<UserCompany, IUserCompanyDataAccess> {
   toDomain(dataAccess: IUserCompanyDataAccess): UserCompany {
-    return UserCompany.builder(
-      dataAccess.recruiterProfileId,
-      dataAccess.companyId,
-      dataAccess.companyRoleId,
-    )
+    return UserCompany.builder(dataAccess.recruiterProfileId, dataAccess.companyId, dataAccess.companyRoleId)
       .id(dataAccess.id)
       .isActive(dataAccess.isActive)
       .joinedAt(dataAccess.joinedAt)
@@ -43,4 +39,4 @@ export class UserCompanyMapper implements IDataAccessMapper<UserCompany, IUserCo
       updatedAt: domain.updatedAt,
     };
   }
-} 
+}

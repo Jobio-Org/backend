@@ -21,7 +21,7 @@ export class GetUserDetailsByIdUseCase
 
   protected async implementation(): Promise<UserDetails | null> {
     const { id } = this._input;
-    
+
     return this.userDetailsRepository.findByUserId(id);
   }
 }

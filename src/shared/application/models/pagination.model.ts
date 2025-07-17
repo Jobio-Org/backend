@@ -69,4 +69,4 @@ export class PaginationResult<T> {
     nullable: true,
   })
   next: string | null;
-} 
+}

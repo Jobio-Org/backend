@@ -1,5 +1,5 @@
-import { IUseCase } from '~shared/application/use-cases/use-case.interface';
-import { IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
+import { type IUseCase } from '~shared/application/use-cases/use-case.interface';
+import { type IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
 
 export interface SeedResult {
   success: boolean;

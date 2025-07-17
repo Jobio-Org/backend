@@ -1,6 +1,6 @@
 import { SubCategory } from '~modules/categories/domain/entities/subcategory.entity';
 
-import { IDataAccessMapper } from '~shared/domain/mappers';
+import { type IDataAccessMapper } from '~shared/domain/mappers';
 
 export interface ISubCategoryDataAccess {
   id: string;

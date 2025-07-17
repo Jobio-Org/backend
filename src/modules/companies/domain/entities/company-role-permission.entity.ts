@@ -13,4 +13,4 @@ export class CompanyRolePermission {
       createdAt: new Date(),
     });
   }
-} 
+}

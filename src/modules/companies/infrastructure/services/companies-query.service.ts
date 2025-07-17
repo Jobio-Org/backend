@@ -18,12 +18,12 @@ export class CompaniesQueryService implements ICompaniesQueryService {
       return null;
     }
 
-    const activeCompany = userCompanies.find(uc => uc.isActive);
-    
+    const activeCompany = userCompanies.find((uc) => uc.isActive);
+
     if (activeCompany) {
       return activeCompany.companyId;
     }
 
     return userCompanies[0].companyId;
   }
-} 
+}

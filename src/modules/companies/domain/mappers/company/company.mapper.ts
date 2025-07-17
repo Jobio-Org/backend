@@ -50,4 +50,4 @@ export class CompanyMapper implements IDataAccessMapper<Company, ICompanyDataAcc
       updatedAt: domain.updatedAt,
     };
   }
-} 
+}

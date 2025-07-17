@@ -1,6 +1,6 @@
 import { CompanyRolePermission } from '~modules/companies/domain/entities/company-role-permission.entity';
 
-import { IDataAccessMapper } from '~shared/domain/mappers';
+import { type IDataAccessMapper } from '~shared/domain/mappers';
 
 export interface ICompanyRolePermissionDataAccess {
   id: string;
@@ -9,7 +9,9 @@ export interface ICompanyRolePermissionDataAccess {
   createdAt: Date;
 }
 
-export class CompanyRolePermissionMapper implements IDataAccessMapper<CompanyRolePermission, ICompanyRolePermissionDataAccess> {
+export class CompanyRolePermissionMapper
+  implements IDataAccessMapper<CompanyRolePermission, ICompanyRolePermissionDataAccess>
+{
   toDomain(persistence: ICompanyRolePermissionDataAccess): CompanyRolePermission {
     return CompanyRolePermission.builder(persistence.companyRoleId, persistence.companyPermissionId)
       .id(persistence.id)
@@ -25,4 +27,4 @@ export class CompanyRolePermissionMapper implements IDataAccessMapper<CompanyRol
       createdAt: entity.createdAt,
     };
   }
-} 
+}

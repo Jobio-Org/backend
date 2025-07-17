@@ -2,8 +2,8 @@ import { ClientException } from '~core/exceptions/domain/exceptions/client-excep
 
 export class InsufficientPermissionsException extends ClientException {
   public static readonly CODE = 'INSUFFICIENT_PERMISSIONS';
- 
-  constructor(message?: string) {
-    super(InsufficientPermissionsException.CODE, message || 'Insufficient permissions to perform this action');
+
+  constructor(message: string = 'Insufficient permissions to perform this action') {
+    super(InsufficientPermissionsException.CODE, message);
   }
-} 
+}

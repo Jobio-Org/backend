@@ -1,4 +1,4 @@
-import { NestApplication, NestFactory } from '@nestjs/core';
+import { type NestApplication, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { writeFileSync } from 'fs';

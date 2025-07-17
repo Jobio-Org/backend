@@ -1,5 +1,5 @@
-import { Type } from '@nestjs/common';
-import { ContextIdFactory, ModuleRef } from '@nestjs/core';
+import { type Type } from '@nestjs/common';
+import { ContextIdFactory, type ModuleRef } from '@nestjs/core';
 
 export class HandlerRegister<T, TypeT extends Type<T> = Type<T>> {
   private handlers = new Map<string, Set<T>>();

@@ -35,13 +35,13 @@ export class RunCompanyPermissionSeedsUseCase implements IRunCompanyPermissionSe
 
       if (!dryRun) {
         this.logger.log('Creating permissions...');
-        
+
         const permissions = await this.createPermissions();
         createdCount = permissions.length;
 
         this.logger.log(`Successfully created ${createdCount} permissions`);
       } else {
-        createdCount = 15; 
+        createdCount = 15;
         this.logger.log(`Dry run: Would create ${createdCount} permissions`);
       }
 

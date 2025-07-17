@@ -1,6 +1,6 @@
 import { CompanyPermission } from '~modules/companies/domain/entities/company-permission.entity';
 
-import { IDataAccessMapper } from '~shared/domain/mappers';
+import { type IDataAccessMapper } from '~shared/domain/mappers';
 
 export interface ICompanyPermissionDataAccess {
   id: string;
@@ -29,4 +29,4 @@ export class CompanyPermissionMapper implements IDataAccessMapper<CompanyPermiss
       updatedAt: entity.updatedAt,
     };
   }
-} 
+}

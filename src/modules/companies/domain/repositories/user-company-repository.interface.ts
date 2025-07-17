@@ -1,6 +1,6 @@
-import { UserCompany } from '../entities/user-company.entity';
+import { type IBaseRepository } from '~shared/domain/repositories/base-repository.interface';
 
-import { IBaseRepository } from '~shared/domain/repositories/base-repository.interface';
+import { type UserCompany } from '../entities/user-company.entity';
 
 export interface IUserCompanyRepository extends IBaseRepository<UserCompany, string> {
   findByRecruiterProfileId(recruiterProfileId: string): Promise<UserCompany[]>;

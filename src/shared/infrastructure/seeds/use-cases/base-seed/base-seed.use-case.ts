@@ -1,9 +1,9 @@
 import { Logger } from '@nestjs/common';
 
 import {
-  IBaseSeedInput,
-  IBaseSeedOutput,
-  IBaseSeedUseCase,
+  type IBaseSeedInput,
+  type IBaseSeedOutput,
+  type IBaseSeedUseCase,
 } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
 
 export abstract class BaseSeedUseCase<

@@ -1,5 +1,5 @@
-import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-import { Request } from 'express';
+import { type ExecutionContext, createParamDecorator } from '@nestjs/common';
+import { type Request } from 'express';
 
 import { extractAuthTokenOrThrow } from '~shared/infrastructure/util';
 

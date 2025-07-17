@@ -1,4 +1,4 @@
-import { IUseCase } from '~shared/application/use-cases/use-case.interface';
+import { type IUseCase } from '~shared/application/use-cases/use-case.interface';
 
 export interface IBaseSeedInput {
   /** Whether to clear existing data before seeding */

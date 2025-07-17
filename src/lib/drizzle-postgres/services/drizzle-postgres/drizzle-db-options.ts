@@ -1,4 +1,4 @@
-import { ClientConfig, PoolConfig } from 'pg';
+import { type ClientConfig, type PoolConfig } from 'pg';
 
 export type DrizzleDbOptions =
   | {

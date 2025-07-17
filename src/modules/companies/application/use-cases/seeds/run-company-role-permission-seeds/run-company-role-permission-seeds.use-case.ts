@@ -61,7 +61,7 @@ export class RunCompanyRolePermissionSeedsUseCase implements IRunCompanyRolePerm
 
         this.logger.log(`Successfully assigned ${createdCount} role permissions`);
       } else {
-        createdCount = 21; 
+        createdCount = 21;
         this.logger.log(`Dry run: Would assign ${createdCount} role permissions`);
       }
 

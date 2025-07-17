@@ -1,9 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
-import { InviteRecruiterDto } from '~modules/companies/application/dto/invite-recruiter.dto';
+import { InviteRecruiterDto } from '~modules/companies/application/dto/company-invitations/invite-recruiter.dto';
+import { InvitationAlreadyAcceptedException } from '~modules/companies/application/exceptions/company-invitations/invitation-already-accepted.exception';
+import { InvitationAlreadySentException } from '~modules/companies/application/exceptions/company-invitations/invitation-already-sent.exception';
+import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
+import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
-import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/send-invitation/send-invitation-use-case.interface';
+import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyInvitation } from '~modules/companies/domain/entities/company-invitation.entity';
 import { CompanyInvitationStatus } from '~modules/companies/domain/enums/company-management.enum';
@@ -46,14 +50,17 @@ export class SendInvitationUseCase
   protected async implementation(): Promise<void> {
     const { dto, inviterUserId } = this._input;
 
+    const invitationExpireTime = this.getInvitationExpireTime();
+
     // 2. Отримати recruiterProfileId по inviterUserId
     const inviterUserDetails = await this.userDetailsQueryService.getUserDetailsByUserId(inviterUserId);
     console.log('🚀 ~ implementation ~ inviterUserDetails:', inviterUserDetails);
-    if (!inviterUserDetails) throw new Error('Inviter user not found');
+    if (!inviterUserDetails) throw new EntityNotFoundException('user-details', inviterUserId);
 
     const inviterRecruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(inviterUserId);
     console.log('🚀 ~ implementation ~ inviterRecruiterProfile:', inviterRecruiterProfile);
-    if (!inviterRecruiterProfile) throw new Error('Inviter recruiter profile not found');
+    if (!inviterRecruiterProfile)
+      throw new EntityNotFoundException('recruiter-profile', inviterUserId, 'Inviter recruiter profile not found');
 
     const invitedByRecruiterProfileId = inviterRecruiterProfile.id;
     console.log('🚀 ~ implementation ~ invitedByRecruiterProfileId:', invitedByRecruiterProfileId);
@@ -63,7 +70,7 @@ export class SendInvitationUseCase
     console.log('🚀 ~ implementation ~ existingInvite:', existingInvite);
 
     if (existingInvite) {
-      throw new Error('Invitation already sent to this email for this company');
+      throw new InvitationAlreadySentException();
     }
 
     // 4. Перевірити, чи вже є такий учасник у компанії (user-company)
@@ -78,21 +85,16 @@ export class SendInvitationUseCase
       );
     }
     if (alreadyMember) {
-      throw new Error('User is already a member of this company');
+      throw new InvitationAlreadyAcceptedException('User is already a member of this company');
     }
     console.log('🚀 ~ implementation ~ alreadyMember:', alreadyMember);
 
     // 5. Перевірити права
-    const canInvite = await this.permissionService.canInviteWithRole(
-      inviterUserId,
-      dto.companyId,
-      dto.roleId,
-      dto.permissions,
-    );
+    const canInvite = await this.permissionService.canInviteWithRole(inviterUserId, dto.companyId);
     console.log('🚀 ~ implementation ~ canInvite:', canInvite);
 
     if (!canInvite) {
-      throw new Error('Insufficient permissions to invite with this role/permissions');
+      throw new InsufficientPermissionsException('Insufficient permissions to invite with this role/permissions');
     }
 
     // 6. Згенерувати токен
@@ -115,10 +117,10 @@ export class SendInvitationUseCase
       dto.roleId,
       dto.email,
       token,
+      new Date(Date.now() + invitationExpireTime),
     )
       .message(dto.message)
       .status(CompanyInvitationStatus.PENDING)
-      .expiresAt(new Date(Date.now() + 1000 * 60 * 60 * 24 * 3)) // 3 days
       .firstName(null)
       .lastName(null)
       .acceptedAt(null)
@@ -148,5 +150,9 @@ export class SendInvitationUseCase
 
   private generateLink(token: string): string {
     return `${this.configService.get('CLIENT_INVITE_REDIRECT_URL')}?token=${token}`;
+  }
+
+  private getInvitationExpireTime(): number {
+    return Number(this.configService.get('COMPANY_INVITATION_EXPIRE_TIME'));
   }
 }

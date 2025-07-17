@@ -77,7 +77,7 @@ export class GetUserProfileWithAuthUseCase
         const activeCompanyId = await this.companiesQueryService.getActiveCompanyIdByRecruiterProfileId(
           recruiterProfile.id,
         );
-        
+
         profile = RecruiterProfile.builder(recruiterProfile.userDetailsId)
           .id(recruiterProfile.id)
           .telegram(recruiterProfile.telegram)

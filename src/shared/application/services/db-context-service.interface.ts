@@ -1,4 +1,4 @@
-import { IUserRepository } from '~modules/auth/application/repositories/user-repository.interface';
+import { type IUserRepository } from '~modules/auth/application/repositories/user-repository.interface';
 
 export interface IDbContext {
   startTransaction(): Promise<void>;

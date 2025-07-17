@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyRole } from '~modules/companies/domain/entities/company-role.entity';
 import { ICompanyRoleRepository } from '~modules/companies/domain/repositories/company-role-repository.interface';
-import { CompaniesDiToken } from '~modules/companies/constants';
 
 import { IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
 import { SeedResult } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
@@ -45,14 +45,14 @@ export class RunCompanyRoleSeedsUseCase implements IRunCompanyRoleSeedsUseCase {
       }
 
       this.logger.log('Company role seeds completed successfully');
-      
+
       return {
         success: true,
         count: createdCount,
       };
     } catch (error) {
       this.logger.error('Failed to run company role seeds', error.stack);
-      
+
       return {
         success: false,
         count: 0,
@@ -90,4 +90,4 @@ export class RunCompanyRoleSeedsUseCase implements IRunCompanyRoleSeedsUseCase {
 
     return roles;
   }
-} 
+}

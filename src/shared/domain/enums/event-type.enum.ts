@@ -3,4 +3,5 @@ export enum DomainEventType {
   USER_CREATED = 'user.created',
   RECRUITER_PROFILE_CREATED = 'recruiter.profile.created',
   COMPANY_INVITATION_SENT = 'company.invitation.sent',
+  COMPANY_INVITATION_ACCEPTED = 'company.invitation.accepted',
 }

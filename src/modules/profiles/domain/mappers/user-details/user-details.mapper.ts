@@ -1,7 +1,7 @@
 import { UserDetails } from '~modules/profiles/domain/entities/user-details.entity';
 
-import { UserRole } from '~shared/domain/enums/user-role.enum';
-import { IDataAccessMapper } from '~shared/domain/mappers/data-access-mapper.interface';
+import { type UserRole } from '~shared/domain/enums/user-role.enum';
+import { type IDataAccessMapper } from '~shared/domain/mappers/data-access-mapper.interface';
 
 export interface IUserDetailsDataAccess {
   id: string;

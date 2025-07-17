@@ -1,7 +1,7 @@
-import { SubCategory } from '~modules/categories/domain/entities/subcategory.entity';
-import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
+import { type SubCategory } from '~modules/categories/domain/entities/subcategory.entity';
 
-import { IBaseRepository } from '~shared/domain/repositories/base-repository.interface';
+import { type PaginationQueryDto } from '~shared/application/dto/pagination.dto';
+import { type IBaseRepository } from '~shared/domain/repositories/base-repository.interface';
 
 export interface ISubCategoryRepository extends IBaseRepository<SubCategory, string> {
   findByName(name: string): Promise<SubCategory | null>;

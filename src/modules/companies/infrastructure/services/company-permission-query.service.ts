@@ -65,10 +65,10 @@ export class CompanyPermissionQueryService implements ICompanyPermissionQuerySer
     return userCompany.companyRoleId;
   }
 
-  async canInviteWithRole(userId: string, companyId: string, roleId: string, permissions?: string[]): Promise<boolean> {
+  async canInviteWithRole(userId: string, companyId: string): Promise<boolean> {
     // 1. Знайти recruiterProfile для userId
     const recruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(userId);
-    console.log("🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ recruiterProfile:", recruiterProfile)
+    console.log('🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ recruiterProfile:', recruiterProfile);
     if (!recruiterProfile) return false;
 
     // 2. Знайти userCompany (роль користувача у цій компанії)
@@ -76,19 +76,19 @@ export class CompanyPermissionQueryService implements ICompanyPermissionQuerySer
       recruiterProfile.id,
       companyId,
     );
-    console.log("🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ userCompany:", userCompany)
+    console.log('🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ userCompany:', userCompany);
     if (!userCompany) return false;
 
     // 3. Перевірити, чи має роль користувача право INVITE_USERS
     const invitePermission = await this.companyPermissionRepository.findByName(CompanyPermissionList.INVITE_USERS);
-    console.log("🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ invitePermission:", invitePermission)
+    console.log('🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ invitePermission:', invitePermission);
     if (!invitePermission) return false;
 
     const hasInvitePermission = await this.companyRolePermissionRepository.hasPermission(
       userCompany.companyRoleId,
       invitePermission.id,
     );
-    console.log("🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ hasInvitePermission:", hasInvitePermission)
+    console.log('🚀 ~ CompanyPermissionQueryService ~ canInviteWithRole ~ hasInvitePermission:', hasInvitePermission);
     if (!hasInvitePermission) return false;
 
     return true;
