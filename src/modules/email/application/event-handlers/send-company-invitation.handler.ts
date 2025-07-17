@@ -4,9 +4,9 @@ import { EventsHandler } from '~lib/nest-event-driven/decorators/event-handler.d
 import { IEventHandler } from '~lib/nest-event-driven/interfaces/event-handler.interface';
 
 import { CompanyInvitationSentEvent } from '~modules/companies/domain/events/company-invitation-sent.event';
+import { IEmailService } from '~modules/email/application/services/email-service.interface';
 import { EmailDiToken } from '~modules/email/constants';
-
-import { IEmailService } from '../services/email-service.interface';
+import { TemplateType } from '~modules/email/domain/enums/template-type.enum';
 
 @EventsHandler(CompanyInvitationSentEvent)
 export class SendCompanyInvitationHandler implements IEventHandler<CompanyInvitationSentEvent> {
@@ -14,11 +14,15 @@ export class SendCompanyInvitationHandler implements IEventHandler<CompanyInvita
 
   async handle(event: CompanyInvitationSentEvent): Promise<void> {
     const { email, link, message, companyName } = event.payload;
-    await this.emailService.sendMail({
+    await this.emailService.sendTemplateMail({
       to: email,
-      subject: `Запрошення до компанії${companyName ? ' ' + companyName : ''}`,
-      text: message || undefined,
-      html: `<p>${message || ''}</p><p><a href="${link}">Прийняти запрошення</a></p>`,
+      subject: `Invitation to${companyName ? ' ' + companyName : ''}`,
+      template: TemplateType.COMPANY_INVITATION,
+      context: {
+        message: message || '',
+        link,
+        companyName: companyName || '',
+      },
     });
   }
 }

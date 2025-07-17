@@ -1,7 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
+import * as fs from 'fs';
+import * as handlebars from 'handlebars';
 import * as nodemailer from 'nodemailer';
+import * as path from 'path';
 
 import { IEmailService } from '~modules/email/application/services/email-service.interface';
+import { TemplateType } from '~modules/email/domain/enums/template-type.enum';
+
 import { IAppConfigService } from '~shared/application/services/app-config-service.interface';
 import { BaseToken } from '~shared/constants';
 
@@ -16,7 +21,7 @@ export class EmailService implements IEmailService {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get('SMTP_HOST'),
       port: Number(this.configService.get('SMTP_PORT')),
-      secure: true, 
+      secure: true,
       auth: {
         user: this.configService.get('SMTP_USER'),
         pass: this.configService.get('SMTP_PASS'),
@@ -31,6 +36,26 @@ export class EmailService implements IEmailService {
       subject: options.subject,
       text: options.text,
       html: options.html,
+    });
+  }
+
+  async sendTemplateMail(options: {
+    to: string;
+    subject: string;
+    template: TemplateType;
+    context: Record<string, any>;
+  }): Promise<void> {
+    const templatePath = path.join(__dirname, '../templates', `${options.template}.hbs`);
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+
+    const compiledTemplate = handlebars.compile(templateSource);
+
+    const html = compiledTemplate(options.context);
+
+    await this.sendMail({
+      to: options.to,
+      subject: options.subject,
+      html,
     });
   }
 }

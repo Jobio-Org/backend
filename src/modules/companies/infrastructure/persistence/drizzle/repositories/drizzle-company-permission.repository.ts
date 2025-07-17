@@ -33,6 +33,7 @@ export class DrizzleCompanyPermissionRepository
 
   async findAll(): Promise<CompanyPermission[]> {
     const result = await this.db.select().from(companyPermission);
+
     return result.map((item) => this.mapper.toDomain(item));
   }
 

@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 
+import { SendCompanyInvitationHandler } from '~modules/email/application/event-handlers/send-company-invitation.handler';
+import { EmailDiToken } from '~modules/email/constants';
 import { EmailService } from '~modules/email/infrastructure/services/email.service';
-
-import { SendCompanyInvitationHandler } from './application/event-handlers/send-company-invitation.handler';
-import { EmailDiToken } from './constants';
 
 @Module({
   providers: [
@@ -13,6 +12,5 @@ import { EmailDiToken } from './constants';
     },
     SendCompanyInvitationHandler,
   ],
-  exports: [EmailDiToken.EMAIL_SERVICE],
 })
 export class EmailModule {}

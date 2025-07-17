@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 
 import { SupabaseUserMapper } from '~modules/auth/infrastructure/supabase/mappers/user/supabase-user.mapper';
 import { SupabaseClientService } from '~modules/auth/infrastructure/supabase/services/supabase-client/supabase-client.service';
-import { ICompaniesQueryService } from '~modules/companies/application/services/companies-query-service.interface';
+import { ICompaniesQueryService } from '~modules/companies/application/services/companies/companies-query-service.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import {
   type IGetUserProfileWithAuthUseCase,

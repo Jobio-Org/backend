@@ -1,7 +1,6 @@
-import { CreateUserCompanyDto } from '../../../dto/create-user-company.dto';
+import { CreateUserCompanyDto } from '~modules/companies/application/dto/user-companies/create-user-company.dto';
+import { UserCompany } from '~modules/companies/domain/entities/user-company.entity';
 
 import { IUseCase } from '~shared/application/use-cases/use-case.interface';
 
-import { UserCompany } from '~modules/companies/domain/entities/user-company.entity';
-
-export interface ICreateUserCompanyUseCase extends IUseCase<CreateUserCompanyDto, UserCompany> {} 
+export interface ICreateUserCompanyUseCase extends IUseCase<CreateUserCompanyDto, UserCompany> {}

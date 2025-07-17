@@ -1,4 +1,4 @@
-import { CreateCompanyDto } from '../../../dto/create-company.dto';
+import { CreateCompanyDto } from '../../../dto/companies/create-company.dto';
 
 import { IUseCase } from '~shared/application/use-cases/use-case.interface';
 

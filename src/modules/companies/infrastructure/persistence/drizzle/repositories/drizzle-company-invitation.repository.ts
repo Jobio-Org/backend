@@ -1,12 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { and, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
+
 import { CompanyInvitation } from '~modules/companies/domain/entities/company-invitation.entity';
 import {
   CompanyInvitationMapper,
   ICompanyInvitationDataAccess,
 } from '~modules/companies/domain/mappers/company-invitation/company-invitation.mapper';
 import { ICompanyInvitationRepository } from '~modules/companies/domain/repositories/company-invitation-repository.interface';
+
 import { IDataAccessMapper } from '~shared/domain/mappers';
 import {
   DrizzleRepository,
@@ -14,7 +18,6 @@ import {
 } from '~shared/infrastructure/database/drizzle/repository/drizzle.repository';
 import { MergedDbSchema } from '~shared/infrastructure/database/drizzle/schema';
 import { companyInvitation } from '~shared/infrastructure/database/drizzle/schema/public-database-schema';
-import { eq, and } from 'drizzle-orm';
 
 @Injectable()
 export class DrizzleCompanyInvitationRepository
@@ -31,11 +34,8 @@ export class DrizzleCompanyInvitationRepository
   async create(invitation: Partial<CompanyInvitation>): Promise<CompanyInvitation> {
     const data = this.mapper.toPersistence(invitation as CompanyInvitation);
 
-    const [created] = await this.db
-      .insert(companyInvitation)
-      .values(data)
-      .returning();
-      
+    const [created] = await this.db.insert(companyInvitation).values(data).returning();
+
     return this.mapper.toDomain(created);
   }
 
@@ -43,9 +43,17 @@ export class DrizzleCompanyInvitationRepository
     const [result] = await this.db
       .select()
       .from(companyInvitation)
-      .where(and(eq(companyInvitation.email, email), eq(companyInvitation.companyId, companyId), eq(companyInvitation.status, 'pending')))
+      .where(
+        and(
+          eq(companyInvitation.email, email),
+          eq(companyInvitation.companyId, companyId),
+          eq(companyInvitation.status, 'pending'),
+        ),
+      )
       .limit(1);
+
     if (!result) return null;
+
     return this.mapper.toDomain(result as ICompanyInvitationDataAccess);
   }
-} 
+}

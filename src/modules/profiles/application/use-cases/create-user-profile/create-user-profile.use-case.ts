@@ -48,7 +48,6 @@ export class CreateUserProfileUseCase
 
         this._eventDispatcher.registerEvent(
           new RecruiterProfileCreatedEvent({
-            userId,
             recruiterProfileId: savedRecruiterProfile.id,
           }),
         );

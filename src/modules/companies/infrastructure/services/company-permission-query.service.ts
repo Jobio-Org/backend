@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permission-query-service.interface';
+import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyPermissionList, CompanyRoleType } from '~modules/companies/domain/enums/company-management.enum';
 import { ICompanyPermissionRepository } from '~modules/companies/domain/repositories/company-permission-repository.interface';

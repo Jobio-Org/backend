@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CreateUserCompanyDto } from '../../../dto/create-user-company.dto';
-import { ICreateUserCompanyUseCase } from './create-user-company-use-case.interface';
+import { CreateUserCompanyDto } from '~modules/companies/application/dto/user-companies/create-user-company.dto';
+import { ICreateUserCompanyUseCase } from '~modules/companies/application/use-cases/user-companies/create-user-company/create-user-company-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { UserCompany } from '~modules/companies/domain/entities/user-company.entity';
 import { IUserCompanyRepository } from '~modules/companies/domain/repositories/user-company-repository.interface';
@@ -9,7 +9,10 @@ import { IUserCompanyRepository } from '~modules/companies/domain/repositories/u
 import { Command } from '~shared/application/CQS/command.abstract';
 
 @Injectable()
-export class CreateUserCompanyUseCase extends Command<CreateUserCompanyDto, UserCompany> implements ICreateUserCompanyUseCase {
+export class CreateUserCompanyUseCase
+  extends Command<CreateUserCompanyDto, UserCompany>
+  implements ICreateUserCompanyUseCase
+{
   constructor(
     @Inject(CompaniesDiToken.USER_COMPANY_REPOSITORY)
     private readonly userCompanyRepository: IUserCompanyRepository,
@@ -24,4 +27,4 @@ export class CreateUserCompanyUseCase extends Command<CreateUserCompanyDto, User
 
     return await this.userCompanyRepository.create(userCompany);
   }
-} 
+}

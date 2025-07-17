@@ -1,14 +1,12 @@
 import { Body, Controller, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { User } from '~modules/auth/domain/entities/user.entity';
 import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
-import { ReqUser } from '~modules/auth/infrastructure/decorators/user/user.decorator';
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
+import { UpdateCompanyDto } from '~modules/companies/application/dto/companies/update-company.dto';
 import { InviteRecruiterDto } from '~modules/companies/application/dto/invite-recruiter.dto';
-import { UpdateCompanyDto } from '~modules/companies/application/dto/update-company.dto';
 import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/insufficient-permissions.exception';
-import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permission-query-service.interface';
+import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/send-invitation/send-invitation-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
@@ -53,14 +51,10 @@ export class CompaniesController {
 
   @ApiOperation({
     summary: 'Invite recruiter to company',
-    description:
-      'Send invitation to recruiter to join company. Only users with appropriate permissions can perform this action.',
+    description: `Send invitation to recruiter to join company. Only users with ${CompanyPermissionList.INVITE_USERS} permission can perform this action.`,
   })
   @Post('invitations')
-  async inviteRecruiter(
-    @Body() dto: InviteRecruiterDto,
-    @ReqUser() user: User,
-  ): Promise<void> {
-    await this.sendInvitationUseCase.execute({ dto, inviterUserId: user.id });
+  async inviteRecruiter(@Body() dto: InviteRecruiterDto, @UserId() userId: string): Promise<void> {
+    await this.sendInvitationUseCase.execute({ dto, inviterUserId: userId });
   }
 }

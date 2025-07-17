@@ -25,18 +25,7 @@ export class CompanyInvitation {
       email,
       token,
       status: 'pending',
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3), // 3 days
     });
   }
-
-  static withId(id: string) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, id }); }
-  static withFirstName(firstName?: string) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, firstName }); }
-  static withLastName(lastName?: string) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, lastName }); }
-  static withMessage(message?: string) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, message }); }
-  static withStatus(status: string) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, status }); }
-  static withExpiresAt(expiresAt: Date) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, expiresAt }); }
-  static withAcceptedAt(acceptedAt?: Date) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, acceptedAt }); }
-  static withAcceptedByRecruiterProfileId(id?: string) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, acceptedByRecruiterProfileId: id }); }
-  static withCreatedAt(date: Date) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, createdAt: date }); }
-  static withUpdatedAt(date: Date) { return (b: CompanyInvitation) => Builder(CompanyInvitation, { ...b, updatedAt: date }); }
 } 

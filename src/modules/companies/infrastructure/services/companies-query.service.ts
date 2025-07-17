@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { ICompaniesQueryService } from '~modules/companies/application/services/companies-query-service.interface';
+import { ICompaniesQueryService } from '~modules/companies/application/services/companies/companies-query-service.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { IUserCompanyRepository } from '~modules/companies/domain/repositories/user-company-repository.interface';
 
