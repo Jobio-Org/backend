@@ -1,5 +1,5 @@
-import { Type } from '@nestjs/common';
-import { ContextIdFactory, ModuleRef } from '@nestjs/core';
+import { type Type } from '@nestjs/common';
+import { ContextIdFactory, type ModuleRef } from '@nestjs/core';
 
 export class HandlerRegister<T, TypeT extends Type<T> = Type<T>> {
   private handlers = new Map<string, Set<T>>();
@@ -17,7 +17,6 @@ export class HandlerRegister<T, TypeT extends Type<T> = Type<T>> {
       return false;
     }
 
-    // Всегда добавляем в scoped handlers, чтобы создавать через DI
     try {
       this.moduleRef.introspect(handler);
       if (Array.isArray(target)) {

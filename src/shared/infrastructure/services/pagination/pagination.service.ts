@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
+
 import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 import { PaginationMeta, PaginationResult } from '~shared/application/models/pagination.model';
 import { IPaginationService } from '~shared/application/services/pagination-service.interface';
 
 @Injectable()
 export class PaginationService implements IPaginationService {
-  paginate<T>(
-    items: T[],
-    total: number,
-    query: PaginationQueryDto,
-    baseUrl: string,
-  ): PaginationResult<T> {
+  paginate<T>(items: T[], total: number, query: PaginationQueryDto, baseUrl: string): PaginationResult<T> {
     const { page = 1, limit = 10 } = query;
     const totalPages = this.calculateTotalPages(total, limit);
     const hasPreviousPage = page > 1;
@@ -30,10 +26,10 @@ export class PaginationService implements IPaginationService {
     const next = hasNextPage ? this.buildPaginationUrl(baseUrl, page + 1, limit) : null;
 
     return {
-      results: items,
-      meta,
       prev,
       next,
+      results: items,
+      meta,
     };
   }
 
@@ -46,11 +42,10 @@ export class PaginationService implements IPaginationService {
   }
 
   buildPaginationUrl(baseUrl: string, page: number, limit: number): string {
-    const url = new URL(baseUrl, 'http://localhost'); // Base URL for parsing
+    const url = new URL(baseUrl, 'http://localhost');
     url.searchParams.set('page', page.toString());
     url.searchParams.set('limit', limit.toString());
-    
-    // Return only the path and query string
+
     return url.pathname + url.search;
   }
-} 
+}

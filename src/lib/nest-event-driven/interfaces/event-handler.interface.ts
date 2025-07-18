@@ -1,4 +1,4 @@
-import { Scope } from '@nestjs/common';
+import { type Scope } from '@nestjs/common';
 
 import { type IEvent } from '~lib/nest-event-driven/interfaces/event.interface';
 

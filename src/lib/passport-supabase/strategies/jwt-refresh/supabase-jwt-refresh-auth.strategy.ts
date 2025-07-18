@@ -1,7 +1,10 @@
-import { Request } from 'express';
+import { type Request } from 'express';
 
-import { IAuthResult, JwtFromRequestFunction } from '~lib/passport-supabase/core/types';
-import { ISupabaseBaseAuthStrategyOptions, SupabaseBaseAuthStrategy } from '~lib/passport-supabase/strategies/base';
+import { type IAuthResult, type JwtFromRequestFunction } from '~lib/passport-supabase/core/types';
+import {
+  type ISupabaseBaseAuthStrategyOptions,
+  SupabaseBaseAuthStrategy,
+} from '~lib/passport-supabase/strategies/base';
 
 export interface ISupabaseBaseJwtRefreshAuthStrategyOptions extends ISupabaseBaseAuthStrategyOptions {
   extractor: JwtFromRequestFunction;

@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { type Subject } from 'rxjs';
 
 import { type IEvent } from '~lib/nest-event-driven/interfaces/event.interface';
 

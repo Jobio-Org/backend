@@ -4,12 +4,13 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
 
-import { IRecruiterProfileRepository } from '~modules/profiles/domain//repositories/recruiter-profile-repository.interface';
+import { SupabaseClientService } from '~modules/auth/infrastructure/supabase/services/supabase-client/supabase-client.service';
 import { RecruiterProfile } from '~modules/profiles/domain/entities/recruiter-profile.entity';
 import {
   IRecruiterProfileDataAccess,
   RecruiterProfileMapper,
 } from '~modules/profiles/domain/mappers/recruiter-profile/recruiter-profile.mapper';
+import { IRecruiterProfileRepository } from '~modules/profiles/domain/repositories/recruiter-profile-repository.interface';
 
 import { IDataAccessMapper } from '~shared/domain/mappers';
 import {
@@ -27,6 +28,7 @@ export class DrizzleRecruiterProfileRepository
   constructor(
     @Inject(POSTGRES_DB) db: NodePgDatabase<MergedDbSchema>,
     @Inject(RecruiterProfileMapper) mapper: IDataAccessMapper<RecruiterProfile, IRecruiterProfileDataAccess>,
+    private readonly supabaseClientService: SupabaseClientService,
   ) {
     super(TableDefinition.create(recruiterProfile, 'id'), db, mapper);
   }
@@ -40,11 +42,5 @@ export class DrizzleRecruiterProfileRepository
 
     if (!result) return null;
     return this.mapper.toDomain(result as IRecruiterProfileDataAccess);
-  }
-
-  async findByCompany(company: string): Promise<RecruiterProfile[]> {
-    const results = await this.db.select().from(recruiterProfile).where(eq(recruiterProfile.company, company));
-
-    return results.map((result) => this.mapper.toDomain(result as IRecruiterProfileDataAccess));
   }
 }

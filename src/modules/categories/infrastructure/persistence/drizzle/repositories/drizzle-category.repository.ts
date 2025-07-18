@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
@@ -7,8 +7,8 @@ import { POSTGRES_DB } from '~lib/drizzle-postgres';
 import { Category } from '~modules/categories/domain/entities/category.entity';
 import { CategoryMapper, ICategoryDataAccess } from '~modules/categories/domain/mappers/category/category.mapper';
 import { ICategoryRepository } from '~modules/categories/domain/repositories/category-repository.interface';
+import { FindAllCategoriesInput } from '~modules/categories/domain/repositories/category-repository.interface';
 
-import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 import { IDataAccessMapper } from '~shared/domain/mappers';
 import {
   DrizzleRepository,
@@ -29,12 +29,11 @@ export class DrizzleCategoryRepository
     super(TableDefinition.create(category, 'id'), db, mapper);
   }
 
-  public async findAll(query: PaginationQueryDto): Promise<Category[]> {
-    const { page = 1, limit = 10 } = query;
+  public async findAll(query: FindAllCategoriesInput): Promise<Category[]> {
+    const { page = 1, limit = 10, name } = query;
     const offset = (page - 1) * limit;
-
-    const result = await this.db.select().from(category).limit(limit).offset(offset);
-
+    const where = name ? eq(category.name, name) : undefined;
+    const result = await this.db.select().from(category).where(where).limit(limit).offset(offset);
     return result.map((item) => this.mapper.toDomain(item));
   }
 
@@ -47,7 +46,7 @@ export class DrizzleCategoryRepository
   }
 
   public async count(): Promise<number> {
-    const result = await this.db.select().from(category);
-    return result.length;
+    const [result] = await this.db.select({ count: count() }).from(category);
+    return result.count ?? 0;
   }
 }

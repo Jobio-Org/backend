@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { type Request } from 'express';
 
 /**
  * Extracts the access token from the Authorization header

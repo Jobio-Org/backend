@@ -1,4 +1,4 @@
-import { ValidationError } from 'class-validator';
+import { type ValidationError } from 'class-validator';
 
 import { ClientException } from 'src/core/exceptions/domain/exceptions/client-exception/client.exception';
 

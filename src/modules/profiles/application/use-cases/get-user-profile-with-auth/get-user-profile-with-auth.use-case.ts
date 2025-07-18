@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { SupabaseUserMapper } from '~modules/auth/infrastructure/supabase/mappers/user/supabase-user.mapper';
 import { SupabaseClientService } from '~modules/auth/infrastructure/supabase/services/supabase-client/supabase-client.service';
+import { ICompaniesQueryService } from '~modules/companies/application/services/companies/companies-query-service.interface';
+import { CompaniesDiToken } from '~modules/companies/constants';
 import {
   type IGetUserProfileWithAuthUseCase,
   type IUserWithDetails,
@@ -34,6 +36,8 @@ export class GetUserProfileWithAuthUseCase
     private readonly candidateProfileRepository: ICandidateProfileRepository,
     @Inject(ProfilesDiToken.RECRUITER_PROFILE_REPOSITORY)
     private readonly recruiterProfileRepository: IRecruiterProfileRepository,
+    @Inject(CompaniesDiToken.COMPANIES_QUERY_SERVICE)
+    private readonly companiesQueryService: ICompaniesQueryService,
     private readonly supabaseClientService: SupabaseClientService,
     @Inject(SupabaseUserMapper)
     private readonly supabaseUserMapper: SupabaseUserMapper,
@@ -62,20 +66,37 @@ export class GetUserProfileWithAuthUseCase
       throw new Error('User details not found');
     }
 
-    let profile = null;
+    let profile: CandidateProfile | RecruiterProfile | null = null;
 
     if (userDetails.role === UserRole.CANDIDATE) {
       profile = await this.candidateProfileRepository.findByUserDetailsId(userDetails.id);
     } else if (userDetails.role === UserRole.RECRUITER) {
-      profile = await this.recruiterProfileRepository.findByUserDetailsId(userDetails.id);
+      const recruiterProfile = await this.recruiterProfileRepository.findByUserDetailsId(userDetails.id);
+
+      if (recruiterProfile) {
+        const activeCompanyId = await this.companiesQueryService.getActiveCompanyIdByRecruiterProfileId(
+          recruiterProfile.id,
+        );
+
+        profile = RecruiterProfile.builder(recruiterProfile.userDetailsId)
+          .id(recruiterProfile.id)
+          .telegram(recruiterProfile.telegram)
+          .phone(recruiterProfile.phone)
+          .linkedin(recruiterProfile.linkedin)
+          .website(recruiterProfile.website)
+          .createdAt(recruiterProfile.createdAt)
+          .updatedAt(recruiterProfile.updatedAt)
+          .activeCompanyId(activeCompanyId)
+          .build();
+      }
     }
 
     const userWithDetails: IUserWithDetails = {
       ...authUser,
       fullName: userDetails.fullName,
       role: userDetails.role,
-      userDetailsCreatedAt: userDetails.createdAt,
-      userDetailsUpdatedAt: userDetails.updatedAt,
+      createdAt: userDetails.createdAt,
+      updatedAt: userDetails.updatedAt,
     };
 
     return {

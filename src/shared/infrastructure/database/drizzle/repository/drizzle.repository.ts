@@ -1,9 +1,9 @@
-import { InferSelectModel, Table, eq } from 'drizzle-orm';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { type InferSelectModel, type Table, eq } from 'drizzle-orm';
+import { type NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-import { IDataAccessMapper } from '~shared/domain/mappers';
-import { IBaseRepository } from '~shared/domain/repositories';
-import { MergedDbSchema } from '~shared/infrastructure/database/drizzle/schema';
+import { type IDataAccessMapper } from '~shared/domain/mappers';
+import { type IBaseRepository } from '~shared/domain/repositories';
+import { type MergedDbSchema } from '~shared/infrastructure/database/drizzle/schema';
 
 export class TableDefinition<
   T extends Table<any> = Table<any>,

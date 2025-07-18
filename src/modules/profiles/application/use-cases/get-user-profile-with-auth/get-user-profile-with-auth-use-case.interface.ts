@@ -1,9 +1,8 @@
-import { CandidateProfile } from '~modules/profiles/domain/entities/candidate-profile.entity';
-import { RecruiterProfile } from '~modules/profiles/domain/entities/recruiter-profile.entity';
+import { type CandidateProfile } from '~modules/profiles/domain/entities/candidate-profile.entity';
+import { type RecruiterProfile } from '~modules/profiles/domain/entities/recruiter-profile.entity';
 
-import { Query } from '~shared/application/CQS/query.abstract';
+import { type Query } from '~shared/application/CQS/query.abstract';
 
-// Type for combined user data from auth and user details
 export interface IUserWithDetails {
   id: string;
   email?: string;
@@ -11,12 +10,11 @@ export interface IUserWithDetails {
   emailConfirmedAt?: Date;
   phoneConfirmedAt?: Date;
   lastSignInAt?: Date;
-  createdAt?: Date;
   signUpCompleted: boolean;
   fullName?: string | null;
   role: string;
-  userDetailsCreatedAt: Date;
-  userDetailsUpdatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IGetUserProfileWithAuthUseCase

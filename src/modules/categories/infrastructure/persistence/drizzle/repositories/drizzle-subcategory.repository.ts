@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
@@ -9,9 +9,11 @@ import {
   ISubCategoryDataAccess,
   SubCategoryMapper,
 } from '~modules/categories/domain/mappers/subcategory/subcategory.mapper';
-import { ISubCategoryRepository } from '~modules/categories/domain/repositories/subcategory-repository.interface';
+import {
+  FindAllSubCategoriesInput,
+  ISubCategoryRepository,
+} from '~modules/categories/domain/repositories/subcategory-repository.interface';
 
-import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 import { IDataAccessMapper } from '~shared/domain/mappers';
 import {
   DrizzleRepository,
@@ -32,12 +34,18 @@ export class DrizzleSubCategoryRepository
     super(TableDefinition.create(subCategory, 'id'), db, mapper);
   }
 
-  public async findAll(query: PaginationQueryDto): Promise<SubCategory[]> {
-    const { page = 1, limit = 10 } = query;
+  public async findAll(query: FindAllSubCategoriesInput): Promise<SubCategory[]> {
+    const { page = 1, limit = 10, name, categoryId } = query;
     const offset = (page - 1) * limit;
-
-    const result = await this.db.select().from(subCategory).limit(limit).offset(offset);
-
+    let where;
+    if (name && categoryId) {
+      where = and(eq(subCategory.name, name), eq(subCategory.categoryId, categoryId));
+    } else if (name) {
+      where = eq(subCategory.name, name);
+    } else if (categoryId) {
+      where = eq(subCategory.categoryId, categoryId);
+    }
+    const result = await this.db.select().from(subCategory).where(where).limit(limit).offset(offset);
     return result.map((item) => this.mapper.toDomain(item));
   }
 
@@ -49,23 +57,20 @@ export class DrizzleSubCategoryRepository
     return this.mapper.toDomain(result);
   }
 
-  public async findByCategoryId(categoryId: string, query: PaginationQueryDto): Promise<SubCategory[]> {
-    const { page = 1, limit = 10 } = query;
+  public async findByCategoryId(categoryId: string, query: FindAllSubCategoriesInput): Promise<SubCategory[]> {
+    const { page = 1, limit = 10, name } = query;
     const offset = (page - 1) * limit;
-
-    const result = await this.db
-      .select()
-      .from(subCategory)
-      .where(eq(subCategory.categoryId, categoryId))
-      .limit(limit)
-      .offset(offset);
-
+    let where = eq(subCategory.categoryId, categoryId);
+    if (name) {
+      where = and(eq(subCategory.categoryId, categoryId), eq(subCategory.name, name));
+    }
+    const result = await this.db.select().from(subCategory).where(where).limit(limit).offset(offset);
     return result.map((item) => this.mapper.toDomain(item));
   }
 
   public async count(): Promise<number> {
-    const result = await this.db.select().from(subCategory);
-    return result.length;
+    const [result] = await this.db.select({ count: count() }).from(subCategory);
+    return result.count ?? 0;
   }
 
   public async countByCategoryId(categoryId: string): Promise<number> {

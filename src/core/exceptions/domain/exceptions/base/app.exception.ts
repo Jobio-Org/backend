@@ -1,4 +1,4 @@
-import { ExceptionType } from '~core/exceptions/domain/mappers/app-exception/exception-type';
+import { type ExceptionType } from '~core/exceptions/domain/mappers/app-exception/exception-type';
 
 export abstract class AppException {
   public abstract readonly type: ExceptionType;

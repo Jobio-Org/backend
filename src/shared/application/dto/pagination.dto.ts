@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsPositive, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsOptional, IsPositive, Min } from 'class-validator';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({
@@ -32,4 +32,4 @@ export class PaginationQueryDto {
   @Type(() => Number)
   @Min(0)
   offset?: number;
-} 
+}

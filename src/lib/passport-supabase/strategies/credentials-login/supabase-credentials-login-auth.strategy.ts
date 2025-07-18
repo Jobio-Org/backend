@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 
 import { IAuthResult } from '~lib/passport-supabase/core';
-import { ISupabaseBaseAuthStrategyOptions, SupabaseBaseAuthStrategy } from '~lib/passport-supabase/strategies/base/supabase-base-auth.strategy';
+import {
+  ISupabaseBaseAuthStrategyOptions,
+  SupabaseBaseAuthStrategy,
+} from '~lib/passport-supabase/strategies/base/supabase-base-auth.strategy';
 
 export interface IEmailPasswordCredentials {
   email: string;

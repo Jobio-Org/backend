@@ -1,6 +1,6 @@
 import { Category } from '~modules/categories/domain/entities/category.entity';
 
-import { IDataAccessMapper } from '~shared/domain/mappers';
+import { type IDataAccessMapper } from '~shared/domain/mappers';
 
 export interface ICategoryDataAccess {
   id: string;

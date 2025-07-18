@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { type NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-import { IUserRepository } from '~modules/auth/application/repositories/user-repository.interface';
+import { type IUserRepository } from '~modules/auth/application/repositories/user-repository.interface';
 
-import { MergedDbSchema } from '~shared/infrastructure/database/drizzle/schema';
+import { type MergedDbSchema } from '~shared/infrastructure/database/drizzle/schema';
 import { authUsers } from '~shared/infrastructure/database/drizzle/schema/auth-database-schema';
 
 export class DrizzleUserRepository implements IUserRepository {

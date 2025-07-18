@@ -35,6 +35,7 @@ export class GlobalExceptionsFilter extends BaseExceptionFilter implements Excep
           exception['httpStatus'] ?? EXCEPTION_TYPE_STATUSES[exception.type] ?? HttpStatus.INTERNAL_SERVER_ERROR;
         response.status(status).send({
           message: exception.message,
+          code: exception.code,
           status,
         });
       }

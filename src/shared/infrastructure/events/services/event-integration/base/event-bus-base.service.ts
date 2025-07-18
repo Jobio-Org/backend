@@ -1,6 +1,6 @@
-import { IEventIntegrationService } from '~shared/application/services/event-integration-service.interface';
+import { type IEventIntegrationService } from '~shared/application/services/event-integration-service.interface';
 
-import { IEvent, IEventBus, IEventPublisher, IMessageSource } from 'src/lib/nest-event-driven';
+import { type IEvent, type IEventBus, type IEventPublisher, type IMessageSource } from 'src/lib/nest-event-driven';
 
 export abstract class EventBusBaseService implements IEventIntegrationService {
   constructor(

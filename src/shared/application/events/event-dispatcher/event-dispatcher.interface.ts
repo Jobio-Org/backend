@@ -1,4 +1,4 @@
-import { IEvent } from 'src/lib/nest-event-driven';
+import { type IEvent } from 'src/lib/nest-event-driven';
 
 export interface IEventDispatcher {
   registerEvent(event: IEvent): void;

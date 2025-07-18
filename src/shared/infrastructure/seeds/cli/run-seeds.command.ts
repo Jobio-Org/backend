@@ -2,10 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { Command } from 'commander';
 
 import { SeedsDiToken } from '~shared/infrastructure/seeds/constants';
-import { RunAllSeedsUseCase } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds.use-case';
+import { type IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
+import { type RunAllSeedsUseCase } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds.use-case';
 
 import { AppModule } from 'src/app.module';
-import { IBaseSeedInput } from '../use-cases/base-seed/base-seed-use-case.interface';
 
 export class RunSeedsCommand {
   private static program = new Command();
@@ -27,7 +27,7 @@ export class RunSeedsCommand {
 
   private static async executeAllSeeds(options: IBaseSeedInput = {}) {
     const { dryRun = true, clearExisting = false } = options;
-    
+
     console.log('🌱 Starting all seeds...');
     if (dryRun) {
       console.log('🔍 DRY RUN MODE - No actual changes will be made');

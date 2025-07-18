@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Inject, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
 import { ReqAccessToken } from '~modules/auth/infrastructure/decorators/session/session.decorator';
+import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
 import { CreateUserProfileDto } from '~modules/profiles/application/dto/create-user-profile.dto';
 import { UpdateCandidateProfileDto } from '~modules/profiles/application/dto/update-candidate-profile.dto';
@@ -40,10 +40,7 @@ export class ProfilesController {
 
   @ApiOperation({ summary: 'Get my profile', description: 'Get the profile of the authenticated user' })
   @Get('me')
-  async getMyProfile(
-    @UserId() userId: string,
-    @ReqAccessToken() accessToken: string,
-  ) {
+  async getMyProfile(@UserId() userId: string, @ReqAccessToken() accessToken: string) {
     return this.getUserProfileWithAuthUseCase.execute({ userId, accessToken });
   }
 
