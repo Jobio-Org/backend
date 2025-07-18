@@ -86,6 +86,24 @@ cp config/env.example config/.env
 $ npm install
 ```
 
+### Git hooks (Husky)
+
+This project uses [Husky](https://typicode.github.io/husky) to automatically run linting and type checking before each commit (`pre-commit`).  
+After installing dependencies (`npm install`), Husky is set up automatically.
+
+- Before every commit, `lint-staged` runs:
+  - ESLint checks all staged files
+  - Prettier formats all staged files
+  - TypeScript checks types for staged `.ts` files
+
+If there are any errors, the commit will be blocked.
+
+**If git hooks do not work:**  
+Reinstall Husky hooks manually:
+```bash
+npx husky install
+```
+
 ### Database Migrations
 
 1. **Generate migrations (if needed):**
