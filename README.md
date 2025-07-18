@@ -99,10 +99,21 @@ After installing dependencies (`npm install`), Husky is set up automatically.
 If there are any errors, the commit will be blocked.
 
 **If git hooks do not work:**  
+
 Reinstall Husky hooks manually:
 ```bash
 npx husky install
 ```
+
+***Skipping Husky validation (Not Recommended):***
+
+To skip Husky hooks (for example, to commit without running linting or formatting), use the `--no-verify` flag with your git command:
+
+```bash
+git commit -m "your message" --no-verify
+```
+
+This will bypass all git hooks, including pre-commit validation.
 
 ### Database Migrations
 
