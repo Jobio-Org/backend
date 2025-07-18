@@ -26,10 +26,10 @@ export class PaginationService implements IPaginationService {
     const next = hasNextPage ? this.buildPaginationUrl(baseUrl, page + 1, limit) : null;
 
     return {
-      results: items,
-      meta,
       prev,
       next,
+      results: items,
+      meta,
     };
   }
 

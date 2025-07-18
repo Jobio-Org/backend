@@ -3,14 +3,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IGetAllCategoriesUseCase } from '~modules/categories/application/use-cases/categories/get-all-categories/get-all-categories-use-case.interface';
 import { CategoriesDiToken } from '~modules/categories/constants';
 import { Category } from '~modules/categories/domain/entities/category.entity';
-import { ICategoryRepository } from '~modules/categories/domain/repositories/category-repository.interface';
+import { ICategoryRepository, FindAllCategoriesInput } from '~modules/categories/domain/repositories/category-repository.interface';
+import { GetAllCategoriesDto } from '~modules/categories/application/dto/get-all-categories.dto';
 
 import { PaginatedQuery } from '~shared/application/CQS/paginated-query.abstract';
-import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 
 @Injectable()
 export class GetAllCategoriesUseCase
-  extends PaginatedQuery<PaginationQueryDto, Category>
+  extends PaginatedQuery<GetAllCategoriesDto, Category>
   implements IGetAllCategoriesUseCase
 {
   constructor(
@@ -20,15 +20,20 @@ export class GetAllCategoriesUseCase
     super();
   }
 
-  protected async getItems(input: PaginationQueryDto): Promise<Category[]> {
-    return this.categoryRepository.findAll(input);
+  protected async getItems(input: GetAllCategoriesDto): Promise<Category[]> {
+    const repoInput: FindAllCategoriesInput = {
+      page: input.page,
+      limit: input.limit,
+      name: input.name,
+    };
+    return this.categoryRepository.findAll(repoInput);
   }
 
-  protected async getTotal(_input: PaginationQueryDto): Promise<number> {
+  protected async getTotal(_input: GetAllCategoriesDto): Promise<number> {
     return this.categoryRepository.count();
   }
 
-  protected getBaseUrl(_input: PaginationQueryDto): string {
+  protected getBaseUrl(_input: GetAllCategoriesDto): string {
     return '/categories';
   }
 }

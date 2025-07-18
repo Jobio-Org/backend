@@ -30,6 +30,9 @@ import { ProfilesDiToken } from '~modules/profiles/constants';
 import { ProfilesQueryService } from '~modules/profiles/infrastructure/services/profiles-query.service';
 import { UserDetailsQueryService } from '~modules/profiles/infrastructure/services/user-details-query.service';
 import { ProfilesModule } from '~modules/profiles/profiles.module';
+import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
+import { PaginationService } from '~shared/infrastructure/services/pagination/pagination.service';
+import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
 
 @Module({
   imports: [forwardRef(() => ProfilesModule)],
@@ -113,6 +116,15 @@ import { ProfilesModule } from '~modules/profiles/profiles.module';
     { provide: CompaniesDiToken.COMPANY_REPOSITORY, useClass: DrizzleCompanyRepository },
     { provide: CompaniesDiToken.USER_COMPANY_REPOSITORY, useClass: DrizzleUserCompanyRepository },
     { provide: ProfilesDiToken.USER_DETAILS_QUERY_SERVICE, useClass: UserDetailsQueryService },
+    {
+      provide: CompaniesDiToken.GET_ALL_COMPANIES_WITH_USERS_USE_CASE,
+      useClass: GetAllCompaniesUseCase,
+    },
+    PaginationService,
+    {
+      provide: CompaniesDiToken.GET_COMPANIES_BY_RECRUITER_USE_CASE,
+      useClass: GetCompaniesByRecruiterUseCase,
+    },
   ],
   controllers: [CompaniesController],
   exports: [
