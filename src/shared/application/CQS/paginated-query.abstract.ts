@@ -1,11 +1,10 @@
 import { Inject } from '@nestjs/common';
 
+import { Query } from '~shared/application/CQS/query.abstract';
+import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
+import { PaginationResult } from '~shared/application/models/pagination.model';
+import { IPaginationService } from '~shared/application/services/pagination-service.interface';
 import { BaseToken } from '~shared/constants';
-
-import { PaginationQueryDto } from '../dto/pagination.dto';
-import { PaginationResult } from '../models/pagination.model';
-import { IPaginationService } from '../services/pagination-service.interface';
-import { Query } from './query.abstract';
 
 export abstract class PaginatedQuery<TInput extends PaginationQueryDto, TOutput> extends Query<
   TInput,

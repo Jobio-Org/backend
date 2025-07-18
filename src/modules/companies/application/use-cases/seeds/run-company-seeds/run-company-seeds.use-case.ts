@@ -1,14 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import { IRunCompanyPermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-permission-seeds/run-company-permission-seeds-use-case.interface';
+import { IRunCompanyRolePermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-permission-seeds/run-company-role-permission-seeds-use-case.interface';
+import { IRunCompanyRoleSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-seeds/run-company-role-seeds-use-case.interface';
+import { IRunCompanySeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-seeds/run-company-seeds-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 
 import { IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
 import { SeedResult } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
-
-import { IRunCompanyPermissionSeedsUseCase } from '../run-company-permission-seeds';
-import { IRunCompanyRolePermissionSeedsUseCase } from '../run-company-role-permission-seeds';
-import { IRunCompanyRoleSeedsUseCase } from '../run-company-role-seeds';
-import { IRunCompanySeedsUseCase } from './run-company-seeds-use-case.interface';
 
 @Injectable()
 export class RunCompanySeedsUseCase implements IRunCompanySeedsUseCase {

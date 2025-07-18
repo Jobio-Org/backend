@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { RunSeedsCommand } from './shared/infrastructure/seeds/cli/run-seeds.command';
+import { RunSeedsCommand } from '~shared/infrastructure/seeds/cli/run-seeds.command';
 
 async function bootstrap() {
   await RunSeedsCommand.run();

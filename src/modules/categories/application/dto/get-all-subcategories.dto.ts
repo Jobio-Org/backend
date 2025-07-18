@@ -1,6 +1,7 @@
-import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
+
+import { PaginationQueryDto } from '~shared/application/dto/pagination.dto';
 
 export class GetAllSubCategoriesDto extends PaginationQueryDto {
   @ApiPropertyOptional({ description: 'Filter by subcategory name', example: 'Frontend' })
@@ -12,4 +13,4 @@ export class GetAllSubCategoriesDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   categoryId?: string;
-} 
+}

@@ -4,6 +4,7 @@ import { AcceptInvitationDto } from '~modules/companies/application/dto/company-
 import { InvitationAlreadyAcceptedException } from '~modules/companies/application/exceptions/company-invitations/invitation-already-accepted.exception';
 import { InvitationExpiredException } from '~modules/companies/application/exceptions/company-invitations/invitation-expired.exception';
 import { InvitationNotFoundException } from '~modules/companies/application/exceptions/company-invitations/invitation-not-found.exception';
+import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
 import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { UserCompany } from '~modules/companies/domain/entities/user-company.entity';
@@ -16,8 +17,6 @@ import { IUserDetailsQueryService } from '~modules/profiles/application/services
 import { ProfilesDiToken } from '~modules/profiles/constants';
 
 import { Command } from '~shared/application/CQS/command.abstract';
-
-import { EntityNotFoundException } from '../../../exceptions/not-found.exception';
 
 @Injectable()
 export class AcceptInvitationUseCase
@@ -40,23 +39,19 @@ export class AcceptInvitationUseCase
   protected async implementation(): Promise<void> {
     const { dto, userId } = this._input;
 
-    // 1. Знайти запрошення за токеном
     const invitation = await this.invitationRepository.findByToken(dto.token);
     if (!invitation) {
       throw new InvitationNotFoundException('Invalid invitation token');
     }
 
-    // 2. Перевірити статус запрошення
     if (invitation.status !== CompanyInvitationStatus.PENDING) {
       throw new InvitationAlreadyAcceptedException('Invitation is not pending');
     }
 
-    // 3. Перевірити термін дії запрошення
     if (invitation.expiresAt < new Date()) {
       throw new InvitationExpiredException();
     }
 
-    // 4. Перевірити, чи email запрошення співпадає з email користувача
     const userDetails = await this.userDetailsQueryService.getUserDetailsByUserId(userId);
     if (!userDetails) {
       throw new EntityNotFoundException('user-details', userId);
@@ -67,7 +62,6 @@ export class AcceptInvitationUseCase
       throw new EntityNotFoundException('recruiter-profile', userId);
     }
 
-    // 5. Перевірити, чи користувач ще не є учасником компанії
     const existingMembership = await this.userCompanyRepository.existsByRecruiterProfileIdAndCompanyId(
       recruiterProfile.id,
       invitation.companyId,
@@ -77,15 +71,13 @@ export class AcceptInvitationUseCase
       throw new InvitationAlreadyAcceptedException('User is already a member of this company');
     }
 
-    // 6. Оновити статус запрошення на accepted
-    const updatedInvitation = await this.invitationRepository.updateStatus(
+    await this.invitationRepository.updateStatus(
       invitation.id,
       CompanyInvitationStatus.ACCEPTED,
       new Date(),
       recruiterProfile.id,
     );
 
-    // 7. Створити запис user-company
     const userCompany = UserCompany.builder(
       recruiterProfile.id,
       invitation.companyId,
@@ -94,7 +86,6 @@ export class AcceptInvitationUseCase
 
     await this.userCompanyRepository.create(userCompany);
 
-    // 8. Відправити подію про прийняття запрошення
     this._eventDispatcher.registerEvent(
       new CompanyInvitationAcceptedEvent({
         invitationId: invitation.id,

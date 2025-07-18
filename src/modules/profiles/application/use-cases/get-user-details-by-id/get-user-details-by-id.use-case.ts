@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { IGetUserDetailsByIdUseCase } from '~modules/profiles/application/use-cases/get-user-details-by-id/ger-user-details-by-id-use-case.interface';
 import { ProfilesDiToken } from '~modules/profiles/constants';
 import { UserDetails } from '~modules/profiles/domain/entities/user-details.entity';
 import { IUserDetailsRepository } from '~modules/profiles/domain/repositories/user-details-repository.interface';
 
 import { Query } from '~shared/application/CQS/query.abstract';
-
-import { IGetUserDetailsByIdUseCase } from './ger-user-details-by-id-use-case.interface';
 
 @Injectable()
 export class GetUserDetailsByIdUseCase

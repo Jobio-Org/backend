@@ -2,11 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { Command } from 'commander';
 
 import { SeedsDiToken } from '~shared/infrastructure/seeds/constants';
+import { type IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
 import { type RunAllSeedsUseCase } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds.use-case';
 
 import { AppModule } from 'src/app.module';
-
-import { type IBaseSeedInput } from '../use-cases/base-seed/base-seed-use-case.interface';
 
 export class RunSeedsCommand {
   private static program = new Command();

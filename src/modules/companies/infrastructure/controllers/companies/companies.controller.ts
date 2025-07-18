@@ -1,29 +1,30 @@
-import { Body, Controller, Get, Inject, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PublicRoute } from '~modules/auth/infrastructure/decorators/public-route/public-route.decorator';
 import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
 import { GetAllCompaniesDto } from '~modules/companies/application/dto/companies/get-all-companies.dto';
+import {
+  GetCompaniesByRecruiterDto,
+  RecruiterProfileIdParamDto,
+} from '~modules/companies/application/dto/companies/get-companies-by-recruiter.dto';
 import { UpdateCompanyDto } from '~modules/companies/application/dto/companies/update-company.dto';
 import { AcceptInvitationDto } from '~modules/companies/application/dto/company-invitations/accept-invitation.dto';
 import { InviteRecruiterDto } from '~modules/companies/application/dto/company-invitations/invite-recruiter.dto';
 import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
+import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
+import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
 import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { Company } from '~modules/companies/domain/entities/company.entity';
 import { CompanyPermissionList } from '~modules/companies/domain/enums/company-management.enum';
-import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
-import { GetCompaniesByRecruiterDto } from '~modules/companies/application/dto/companies/get-companies-by-recruiter.dto';
-import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
-import { RecruiterProfileIdParamDto } from '~modules/companies/application/dto/companies/recruiter-profile-id-param.dto';
 
 import { PaginationResult } from '~shared/application/models/pagination.model';
 import { PaginationQuery } from '~shared/infrastructure/decorators/pagination/pagination.decorator';
-import { ParseUUIDPipe } from '@nestjs/common';
 
 @ApiTags('companies')
 @Controller('companies')
@@ -95,9 +96,7 @@ export class CompaniesController {
   @ApiResponse({ type: PaginationResult })
   @PublicRoute()
   @Get()
-  async getCompanies(
-    @PaginationQuery() query: GetAllCompaniesDto,
-  ): Promise<PaginationResult<Company>> {
+  async getCompanies(@PaginationQuery() query: GetAllCompaniesDto): Promise<PaginationResult<Company>> {
     return this.getAllCompaniesUseCase.execute(query);
   }
 

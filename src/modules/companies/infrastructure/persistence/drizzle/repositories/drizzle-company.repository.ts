@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { count, eq, and } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
@@ -7,10 +7,10 @@ import { POSTGRES_DB } from '~lib/drizzle-postgres';
 import { Company } from '~modules/companies/domain/entities/company.entity';
 import { CompanyMapper, ICompanyDataAccess } from '~modules/companies/domain/mappers/company/company.mapper';
 import {
-  FindAllWithUserCompanyPaginatedOutput,
-  ICompanyRepository,
   FindAllByRecruiterProfileIdPaginatedInput,
   FindAllByRecruiterProfileIdPaginatedOutput,
+  FindAllWithUserCompanyPaginatedOutput,
+  ICompanyRepository,
 } from '~modules/companies/domain/repositories/company-repository.interface';
 import { FindAllWithUserCompanyPaginatedInput } from '~modules/companies/domain/repositories/company-repository.interface';
 
@@ -72,7 +72,9 @@ export class DrizzleCompanyRepository
     };
   }
 
-  public async findAllByRecruiterProfileIdPaginated(query: FindAllByRecruiterProfileIdPaginatedInput): Promise<FindAllByRecruiterProfileIdPaginatedOutput> {
+  public async findAllByRecruiterProfileIdPaginated(
+    query: FindAllByRecruiterProfileIdPaginatedInput,
+  ): Promise<FindAllByRecruiterProfileIdPaginatedOutput> {
     const { recruiterProfileId, page = 1, limit = 10, name } = query;
     const offset = (page - 1) * limit;
     const where = [eq(userCompany.recruiterProfileId, recruiterProfileId)];

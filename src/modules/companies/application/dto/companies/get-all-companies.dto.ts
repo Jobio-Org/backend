@@ -9,4 +9,3 @@ export class GetAllCompaniesDto extends PaginationQueryDto {
   @IsString()
   name?: string;
 }
- 

@@ -1,10 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { GetAllCategoriesDto } from '~modules/categories/application/dto/get-all-categories.dto';
 import { IGetAllCategoriesUseCase } from '~modules/categories/application/use-cases/categories/get-all-categories/get-all-categories-use-case.interface';
 import { CategoriesDiToken } from '~modules/categories/constants';
 import { Category } from '~modules/categories/domain/entities/category.entity';
-import { ICategoryRepository, FindAllCategoriesInput } from '~modules/categories/domain/repositories/category-repository.interface';
-import { GetAllCategoriesDto } from '~modules/categories/application/dto/get-all-categories.dto';
+import {
+  FindAllCategoriesInput,
+  ICategoryRepository,
+} from '~modules/categories/domain/repositories/category-repository.interface';
 
 import { PaginatedQuery } from '~shared/application/CQS/paginated-query.abstract';
 

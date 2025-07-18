@@ -5,7 +5,9 @@ import { type IBaseRepository } from '~shared/domain/repositories/base-repositor
 export interface ICompanyRepository extends IBaseRepository<Company, string> {
   findAllPaginated(query: FindAllWithUserCompanyPaginatedInput): Promise<FindAllWithUserCompanyPaginatedOutput>;
   count(): Promise<number>;
-  findAllByRecruiterProfileIdPaginated(query: FindAllByRecruiterProfileIdPaginatedInput): Promise<FindAllByRecruiterProfileIdPaginatedOutput>;
+  findAllByRecruiterProfileIdPaginated(
+    query: FindAllByRecruiterProfileIdPaginatedInput,
+  ): Promise<FindAllByRecruiterProfileIdPaginatedOutput>;
 }
 
 export interface FindAllWithUserCompanyPaginatedInput {

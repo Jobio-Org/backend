@@ -20,7 +20,7 @@ import { IUserDetailsQueryService } from '~modules/profiles/application/services
 import { ProfilesDiToken } from '~modules/profiles/constants';
 
 import { Command } from '~shared/application/CQS/command.abstract';
-import { IAppConfigService } from '~shared/application/services';
+import { IAppConfigService } from '~shared/application/services/app-config-service.interface';
 import { BaseToken } from '~shared/constants';
 
 @Injectable()
@@ -52,28 +52,21 @@ export class SendInvitationUseCase
 
     const invitationExpireTime = this.getInvitationExpireTime();
 
-    // 2. Отримати recruiterProfileId по inviterUserId
     const inviterUserDetails = await this.userDetailsQueryService.getUserDetailsByUserId(inviterUserId);
-    console.log('🚀 ~ implementation ~ inviterUserDetails:', inviterUserDetails);
     if (!inviterUserDetails) throw new EntityNotFoundException('user-details', inviterUserId);
 
     const inviterRecruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(inviterUserId);
-    console.log('🚀 ~ implementation ~ inviterRecruiterProfile:', inviterRecruiterProfile);
     if (!inviterRecruiterProfile)
       throw new EntityNotFoundException('recruiter-profile', inviterUserId, 'Inviter recruiter profile not found');
 
     const invitedByRecruiterProfileId = inviterRecruiterProfile.id;
-    console.log('🚀 ~ implementation ~ invitedByRecruiterProfileId:', invitedByRecruiterProfileId);
 
-    // 3. Перевірити, чи вже є pending інвайт для цього email+companyId
     const existingInvite = await this.invitationRepository.findPendingByEmailAndCompany(dto.email, dto.companyId);
-    console.log('🚀 ~ implementation ~ existingInvite:', existingInvite);
 
     if (existingInvite) {
       throw new InvitationAlreadySentException();
     }
 
-    // 4. Перевірити, чи вже є такий учасник у компанії (user-company)
     let alreadyMember = false;
 
     const invitedRecruiterProfile = await this.profilesQueryService.getRecruiterProfileByEmail(dto.email);
@@ -87,30 +80,20 @@ export class SendInvitationUseCase
     if (alreadyMember) {
       throw new InvitationAlreadyAcceptedException('User is already a member of this company');
     }
-    console.log('🚀 ~ implementation ~ alreadyMember:', alreadyMember);
 
-    // 5. Перевірити права
     const canInvite = await this.permissionService.canInviteWithRole(inviterUserId, dto.companyId);
-    console.log('🚀 ~ implementation ~ canInvite:', canInvite);
 
     if (!canInvite) {
       throw new InsufficientPermissionsException('Insufficient permissions to invite with this role/permissions');
     }
 
-    // 6. Згенерувати токен
     const token = this.generateToken();
-    console.log('🚀 ~ implementation ~ token:', token);
 
-    // 7. Отримати companyName
     const company = await this.companyRepository.findById(dto.companyId);
-    console.log('🚀 ~ implementation ~ company:', company);
     const companyName = company?.name || '';
 
-    // 8. Отримати ім'я інвайтера
     const inviterName = inviterUserDetails.fullName || inviterUserDetails.userId;
-    console.log('🚀 ~ implementation ~ inviterName:', inviterName);
 
-    // 9. Створити запис у company_invitation
     const companyInvitation = CompanyInvitation.builder(
       dto.companyId,
       invitedByRecruiterProfileId,
@@ -129,10 +112,8 @@ export class SendInvitationUseCase
 
     await this.invitationRepository.create(companyInvitation);
 
-    // 10. Зібрати посилання для email
     const link = this.generateLink(token);
 
-    console.log('🚀 ~ implementation ~ link:', link);
     this._eventDispatcher.registerEvent(
       new CompanyInvitationSentEvent({
         email: dto.email,

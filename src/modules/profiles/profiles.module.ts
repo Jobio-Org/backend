@@ -4,6 +4,7 @@ import { CompaniesModule } from '~modules/companies/companies.module';
 import { CreateUserProfileUseCase } from '~modules/profiles/application/use-cases/create-user-profile/create-user-profile.use-case';
 import { GetRecruiterProfileByEmailUseCase } from '~modules/profiles/application/use-cases/get-recruiter-profile-by-email/get-recruiter-profile-by-email.use-case';
 import { GetRecruiterProfileUseCase } from '~modules/profiles/application/use-cases/get-recruiter-profile/get-recruiter-profile.use-case';
+import { GetUserDetailsByIdUseCase } from '~modules/profiles/application/use-cases/get-user-details-by-id/get-user-details-by-id.use-case';
 import { GetUserProfileWithAuthUseCase } from '~modules/profiles/application/use-cases/get-user-profile-with-auth/get-user-profile-with-auth.use-case';
 import { UpdateCandidateProfileUseCase } from '~modules/profiles/application/use-cases/update-candidate-profile/update-candidate-profile.use-case';
 import { UpdateRecruiterProfileUseCase } from '~modules/profiles/application/use-cases/update-recruiter-profile/update-recruiter-profile.use-case';
@@ -17,9 +18,7 @@ import { DrizzleCandidateProfileRepository } from '~modules/profiles/infrastruct
 import { DrizzleRecruiterProfileRepository } from '~modules/profiles/infrastructure/persistence/drizzle/repositories/drizzle-recruiter-profile.repository';
 import { DrizzleUserDetailsRepository } from '~modules/profiles/infrastructure/persistence/drizzle/repositories/drizzle-user-details.repository';
 import { ProfilesQueryService } from '~modules/profiles/infrastructure/services/profiles-query.service';
-
-import { GetUserDetailsByIdUseCase } from './application/use-cases/get-user-details-by-id/get-user-details-by-id.use-case';
-import { UserDetailsQueryService } from './infrastructure/services/user-details-query.service';
+import { UserDetailsQueryService } from '~modules/profiles/infrastructure/services/user-details-query.service';
 
 @Module({
   imports: [forwardRef(() => CompaniesModule)],
