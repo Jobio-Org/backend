@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { BaseSeedUseCase } from '~lib/database-seeds/base/base-seed.use-case';
+
 import { CategoriesDiToken } from '~modules/categories/constants';
 import { SubCategory } from '~modules/categories/domain/entities/subcategory.entity';
 import { ICategoryRepository } from '~modules/categories/domain/repositories/category-repository.interface';
 import { ISubCategoryRepository } from '~modules/categories/domain/repositories/subcategory-repository.interface';
-
-import { BaseSeedUseCase } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed.use-case';
 
 @Injectable()
 export class RunSubcategorySeedsUseCase extends BaseSeedUseCase {

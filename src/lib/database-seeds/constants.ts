@@ -1,0 +1,4 @@
+export enum DatabaseSeedsDiToken {
+  SEED_REGISTRY = 'SEED_REGISTRY',
+  RUN_ALL_SEEDS_USE_CASE = 'RUN_ALL_SEEDS_USE_CASE',
+}

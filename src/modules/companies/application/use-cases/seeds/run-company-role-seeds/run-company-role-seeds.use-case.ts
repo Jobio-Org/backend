@@ -1,12 +1,12 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import { IBaseSeedInput } from '~lib/database-seeds/base/base-seed-use-case.interface';
+import { SeedResult } from '~lib/database-seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
+
 import { IRunCompanyRoleSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-seeds/run-company-role-seeds-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyRole } from '~modules/companies/domain/entities/company-role.entity';
 import { ICompanyRoleRepository } from '~modules/companies/domain/repositories/company-role-repository.interface';
-
-import { IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
-import { SeedResult } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
 
 @Injectable()
 export class RunCompanyRoleSeedsUseCase implements IRunCompanyRoleSeedsUseCase {

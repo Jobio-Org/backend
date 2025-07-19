@@ -13,5 +13,4 @@ export interface IBaseSeedOutput {
   error?: string;
 }
 
-export interface IBaseSeedUseCase<TInput extends IBaseSeedInput, TOutput extends IBaseSeedOutput>
-  extends IUseCase<TInput, TOutput> {}
+export interface IBaseSeedUseCase extends IUseCase<IBaseSeedInput, IBaseSeedOutput> {}
