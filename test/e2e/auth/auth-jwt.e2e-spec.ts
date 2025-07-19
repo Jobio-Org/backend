@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { randomBytes } from 'crypto';
 import { sign } from 'jsonwebtoken';
 import * as request from 'supertest';
+import { createMockAppConfig, createMockJwtUser } from 'test/utils';
 
 import { CoreModule } from '~core/core.module';
 
@@ -44,33 +45,7 @@ class TestAuthController {
 describe('Auth JWT Token (e2e)', () => {
   let app: INestApplication;
   const jwtSecret = randomBytes(64).toString('base64');
-  const testUser = {
-    iss: 'https://example.com',
-    sub: 'c2ffc579-8f21-427c-80b3-aa8d22ff400d',
-    aud: 'authenticated',
-    email: 'test@test.com',
-    phone: '',
-    app_metadata: {
-      provider: 'email',
-      providers: ['email'],
-    },
-    user_metadata: {
-      email: 'test@test.com',
-      email_verified: true,
-      phone_verified: false,
-      sub: 'c2ffc579-8f21-427c-80b3-aa8d22ff400d',
-    },
-    role: 'authenticated',
-    aal: 'aal1',
-    amr: [
-      {
-        method: 'password',
-        timestamp: new Date().getTime(),
-      },
-    ],
-    session_id: '5488acd0-30b4-4cde-88eb-6c597de27242',
-    is_anonymous: false,
-  };
+  const testUser = createMockJwtUser();
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -78,20 +53,13 @@ describe('Auth JWT Token (e2e)', () => {
       controllers: [TestAuthController],
     })
       .overrideProvider(BaseToken.APP_CONFIG)
-      .useValue({
-        get: jest.fn((key: string) => {
-          switch (key) {
-            case 'JWT_SECRET':
-              return jwtSecret;
-            case 'SUPABASE_URL':
-              return 'https://example.com';
-            case 'SUPABASE_SECRET_KEY':
-              return 'test-key';
-            default:
-              return undefined;
-          }
+      .useValue(
+        createMockAppConfig({
+          JWT_SECRET: jwtSecret,
+          SUPABASE_URL: 'https://example.com',
+          SUPABASE_SECRET_KEY: 'test-key',
         }),
-      })
+      )
       .overrideModule(drizzlePostgresModule)
       .useModule(MockDrizzlePostgresModule)
       .compile();
