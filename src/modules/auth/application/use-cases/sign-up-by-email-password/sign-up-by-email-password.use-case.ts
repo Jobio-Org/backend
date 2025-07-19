@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { SignUpCredentialsDto } from '~modules/auth/application/dto/sign-up-credentials.dto';
+import { UserAlreadyExistsException } from '~modules/auth/application/exceptions/user-already-exists.exception';
 import { IAuthService } from '~modules/auth/application/services/auth-service.interface';
 import { ISignUpByEmailPasswordUseCase } from '~modules/auth/application/use-cases/sign-up-by-email-password/sign-up-by-email-password-use-case.interface';
 import { AuthDiToken } from '~modules/auth/constants';
@@ -24,6 +25,14 @@ export class SignUpByEmailPasswordUseCase
 
   protected async implementation(): Promise<void> {
     const { email, password, role } = this._input;
+
+    // Check if user already exists
+    const existingUser = await this.authService.getUserByEmail(email);
+
+    if (existingUser) {
+      // User already exists, throw exception
+      throw new UserAlreadyExistsException();
+    }
 
     const user = await this.authService.signUpByEmailPassword(
       email,

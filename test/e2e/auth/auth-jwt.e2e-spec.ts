@@ -1,9 +1,9 @@
+import { faker } from '@faker-js/faker';
 import { Controller, Get, INestApplication, Module } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { randomBytes } from 'crypto';
 import { sign } from 'jsonwebtoken';
 import * as request from 'supertest';
-import { createMockAppConfig, createMockJwtUser } from 'test/utils';
 
 import { CoreModule } from '~core/core.module';
 
@@ -17,6 +17,52 @@ import { drizzlePostgresModule } from '~shared/infrastructure/database/database.
 import { SharedModule } from '~shared/shared.module';
 
 import { POSTGRES_DB } from 'src/lib/drizzle-postgres';
+
+// Helper functions
+const createMockAppConfig = (overrides: Partial<any> = {}) => ({
+  get: jest.fn((key: string) => {
+    const config = {
+      JWT_SECRET: randomBytes(64).toString('base64'),
+      SUPABASE_URL: 'https://example.supabase.co',
+      SUPABASE_SECRET_KEY: 'test-secret-key',
+      CLIENT_AUTH_REDIRECT_URL: 'http://localhost:3000/auth/callback',
+      DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+      PORT: 3000,
+      NODE_ENV: 'test',
+      ...overrides,
+    };
+    return config[key] || undefined;
+  }),
+});
+
+const createMockJwtUser = (overrides: Partial<any> = {}) => ({
+  iss: 'https://example.supabase.co',
+  sub: faker.string.uuid(),
+  aud: 'authenticated',
+  email: faker.internet.email(),
+  phone: faker.phone.number(),
+  app_metadata: {
+    provider: 'email',
+    providers: ['email'],
+  },
+  user_metadata: {
+    email: faker.internet.email(),
+    email_verified: true,
+    phone_verified: false,
+    sub: faker.string.uuid(),
+  },
+  role: 'authenticated',
+  aal: 'aal1',
+  amr: [
+    {
+      method: 'password',
+      timestamp: Date.now(),
+    },
+  ],
+  session_id: faker.string.uuid(),
+  is_anonymous: false,
+  ...overrides,
+});
 
 @Module({
   providers: [{ provide: POSTGRES_DB, useValue: {} }],

@@ -45,8 +45,6 @@ export class DrizzleUserDetailsRepository
     const { data, error } = await this.supabaseClientService.client.rpc('get_auth_user_by_email', {
       email,
     });
-    console.log('🚀 ~ findByEmail ~ error:', error);
-    console.log('🚀 ~ findByEmail ~ data:', data);
 
     if (error) throw new Error('Failed to get recruiter profile by email');
 
