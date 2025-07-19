@@ -1,13 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
+import { IBaseSeedInput } from '~lib/database-seeds/base/base-seed-use-case.interface';
+import { SeedResult } from '~lib/database-seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
+
 import { IRunCompanyPermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-permission-seeds/run-company-permission-seeds-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyPermission } from '~modules/companies/domain/entities/company-permission.entity';
 import { CompanyPermissionList } from '~modules/companies/domain/enums/company-management.enum';
 import { ICompanyPermissionRepository } from '~modules/companies/domain/repositories/company-permission-repository.interface';
-
-import { IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
-import { SeedResult } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
 
 @Injectable()
 export class RunCompanyPermissionSeedsUseCase implements IRunCompanyPermissionSeedsUseCase {

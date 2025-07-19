@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { Command } from 'commander';
 
-import { SeedsDiToken } from '~shared/infrastructure/seeds/constants';
-import { type IBaseSeedInput } from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
-import { type RunAllSeedsUseCase } from '~shared/infrastructure/seeds/use-cases/run-all-seeds/run-all-seeds.use-case';
+import { type IBaseSeedInput } from '~lib/database-seeds/base/base-seed-use-case.interface';
+import { DatabaseSeedsDiToken } from '~lib/database-seeds/constants';
+import { type IRunAllSeedsUseCase } from '~lib/database-seeds/use-cases/run-all-seeds/run-all-seeds-use-case.interface';
 
 import { AppModule } from 'src/app.module';
 
@@ -38,7 +38,7 @@ export class RunSeedsCommand {
 
     try {
       const app = await NestFactory.createApplicationContext(AppModule);
-      const runAllSeedsUseCase = app.get<RunAllSeedsUseCase>(SeedsDiToken.RUN_ALL_SEEDS_USE_CASE);
+      const runAllSeedsUseCase = app.get<IRunAllSeedsUseCase>(DatabaseSeedsDiToken.RUN_ALL_SEEDS_USE_CASE);
 
       const result = await runAllSeedsUseCase.execute({ dryRun, clearExisting });
 
@@ -46,16 +46,18 @@ export class RunSeedsCommand {
         console.log('✅ All seeds completed successfully!');
         console.log('📊 Results:');
         Object.entries(result.results).forEach(([key, value]) => {
+          const seedResult = value as { success: boolean; count: number; error?: string };
           console.log(
-            `  ${key}: ${value.success ? '✅' : '❌'} ${value.count} items ${value.error ? `(${value.error})` : ''}`,
+            `  ${key}: ${seedResult.success ? '✅' : '❌'} ${seedResult.count} items ${seedResult.error ? `(${seedResult.error})` : ''}`,
           );
         });
       } else {
         console.log('❌ Some seeds failed!');
         console.log('📊 Results:');
         Object.entries(result.results).forEach(([key, value]) => {
+          const seedResult = value as { success: boolean; count: number; error?: string };
           console.log(
-            `  ${key}: ${value.success ? '✅' : '❌'} ${value.count} items ${value.error ? `(${value.error})` : ''}`,
+            `  ${key}: ${seedResult.success ? '✅' : '❌'} ${seedResult.count} items ${seedResult.error ? `(${seedResult.error})` : ''}`,
           );
         });
       }

@@ -16,6 +16,7 @@ import { CategoriesController } from '~modules/categories/infrastructure/control
 import { SubcategoriesController } from '~modules/categories/infrastructure/controllers/subcategories/subcategories.controller';
 import { DrizzleCategoryRepository } from '~modules/categories/infrastructure/persistence/drizzle/repositories/drizzle-category.repository';
 import { DrizzleSubCategoryRepository } from '~modules/categories/infrastructure/persistence/drizzle/repositories/drizzle-subcategory.repository';
+import { CategorySeedsRegistrationService } from '~modules/categories/infrastructure/services/category-seeds-registration.service';
 
 import { SharedModule } from '~shared/shared.module';
 
@@ -38,6 +39,7 @@ import { SharedModule } from '~shared/shared.module';
     },
     { provide: CategoriesDiToken.RUN_CATEGORY_SEEDS_USE_CASE, useClass: RunCategorySeedsUseCase },
     { provide: CategoriesDiToken.RUN_SUBCATEGORY_SEEDS_USE_CASE, useClass: RunSubcategorySeedsUseCase },
+    CategorySeedsRegistrationService,
   ],
   controllers: [CategoriesController, SubcategoriesController],
   exports: [

@@ -4,12 +4,12 @@ import {
   type IBaseSeedInput,
   type IBaseSeedOutput,
   type IBaseSeedUseCase,
-} from '~shared/infrastructure/seeds/use-cases/base-seed/base-seed-use-case.interface';
+} from '~lib/database-seeds/base/base-seed-use-case.interface';
 
 export abstract class BaseSeedUseCase<
   TInput extends IBaseSeedInput = IBaseSeedInput,
   TOutput extends IBaseSeedOutput = IBaseSeedOutput,
-> implements IBaseSeedUseCase<TInput, TOutput>
+> implements IBaseSeedUseCase
 {
   protected readonly logger: Logger;
 

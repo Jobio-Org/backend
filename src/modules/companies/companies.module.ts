@@ -28,6 +28,7 @@ import { DrizzleCompanyRepository } from '~modules/companies/infrastructure/pers
 import { DrizzleUserCompanyRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-user-company.repository';
 import { CompaniesQueryService } from '~modules/companies/infrastructure/services/companies-query.service';
 import { CompanyPermissionQueryService } from '~modules/companies/infrastructure/services/company-permission-query.service';
+import { CompanySeedsRegistrationService } from '~modules/companies/infrastructure/services/company-seeds-registration.service';
 import { ProfilesDiToken } from '~modules/profiles/constants';
 import { ProfilesQueryService } from '~modules/profiles/infrastructure/services/profiles-query.service';
 import { UserDetailsQueryService } from '~modules/profiles/infrastructure/services/user-details-query.service';
@@ -126,6 +127,7 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       provide: CompaniesDiToken.GET_COMPANIES_BY_RECRUITER_USE_CASE,
       useClass: GetCompaniesByRecruiterUseCase,
     },
+    CompanySeedsRegistrationService,
   ],
   controllers: [CompaniesController],
   exports: [
