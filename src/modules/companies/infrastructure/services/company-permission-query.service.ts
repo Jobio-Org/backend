@@ -6,8 +6,8 @@ import { CompanyPermissionList } from '~modules/companies/domain/enums/company-m
 import { ICompanyPermissionRepository } from '~modules/companies/domain/repositories/company-permission-repository.interface';
 import { ICompanyRolePermissionRepository } from '~modules/companies/domain/repositories/company-role-permission-repository.interface';
 import { IUserCompanyRepository } from '~modules/companies/domain/repositories/user-company-repository.interface';
-import { IProfilesQueryService } from '~modules/profiles/application/services/profiles-query-service.interface';
-import { ProfilesDiToken } from '~modules/profiles/constants';
+import { IRecruiterProfileQueryService } from '~modules/recruiter-profile/application/services/recruiter-profile-query-service.interface';
+import { RecruiterProfileDiToken } from '~modules/recruiter-profile/constants';
 
 @Injectable()
 export class CompanyPermissionQueryService implements ICompanyPermissionQueryService {
@@ -18,12 +18,12 @@ export class CompanyPermissionQueryService implements ICompanyPermissionQuerySer
     private readonly companyRolePermissionRepository: ICompanyRolePermissionRepository,
     @Inject(CompaniesDiToken.COMPANY_PERMISSION_REPOSITORY)
     private readonly companyPermissionRepository: ICompanyPermissionRepository,
-    @Inject(ProfilesDiToken.PROFILES_QUERY_SERVICE)
-    private readonly profilesQueryService: IProfilesQueryService,
+    @Inject(RecruiterProfileDiToken.RECRUITER_PROFILE_QUERY_SERVICE)
+    private readonly recruiterProfileQueryService: IRecruiterProfileQueryService,
   ) {}
 
   async canEditCompanyInfo(userId: string, companyId: string): Promise<boolean> {
-    const recruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(userId);
+    const recruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByUserId(userId);
 
     if (!recruiterProfile) {
       return false;
@@ -63,7 +63,7 @@ export class CompanyPermissionQueryService implements ICompanyPermissionQuerySer
   }
 
   async canInviteWithRole(userId: string, companyId: string): Promise<boolean> {
-    const recruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(userId);
+    const recruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByUserId(userId);
     if (!recruiterProfile) return false;
 
     const userCompany = await this.userCompanyRepository.findByRecruiterProfileIdAndCompanyId(

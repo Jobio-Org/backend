@@ -16,7 +16,6 @@ export class CompanySeedsRegistrationService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // Register company seeds
     this.seedRegistry.registerSeed('companySeeds', this.runCompanySeedsUseCase);
   }
 }
