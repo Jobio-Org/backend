@@ -8,7 +8,7 @@ import { UpdateRecruiterProfileUseCase } from '~modules/recruiter-profile/applic
 import { RecruiterProfileDiToken } from '~modules/recruiter-profile/constants';
 import { RecruiterProfileMapper } from '~modules/recruiter-profile/domain/mappers/recruiter-profile/recruiter-profile.mapper';
 import { RecruiterProfileController } from '~modules/recruiter-profile/infrastructure/controllers/recruiter-profile.controller';
-import { UserDetailsCreatedEventHandler } from '~modules/recruiter-profile/infrastructure/event-handlers/user-created.event-handler';
+import { UserDetailsCreatedEventHandler } from '~modules/recruiter-profile/infrastructure/event-handlers/user-details-created.event-handler';
 import { DrizzleRecruiterProfileRepository } from '~modules/recruiter-profile/infrastructure/persistence/drizzle/repositories/drizzle-recruiter-profile.repository';
 import { RecruiterProfileQueryService } from '~modules/recruiter-profile/infrastructure/services/recruiter-profile-query.service';
 import { UserDetailsModule } from '~modules/user-details/user-details.module';
@@ -20,7 +20,7 @@ import { UserDetailsModule } from '~modules/user-details/user-details.module';
     RecruiterProfileMapper,
     { provide: RecruiterProfileDiToken.RECRUITER_PROFILE_REPOSITORY, useClass: DrizzleRecruiterProfileRepository },
     { provide: RecruiterProfileDiToken.CREATE_RECRUITER_PROFILE_USE_CASE, useClass: CreateRecruiterProfileUseCase },
-    { provide: RecruiterProfileDiToken.GET_RECRUITER_PROFILE_BY_ID_USE_CASE, useClass: GetRecruiterProfileUseCase },
+    { provide: RecruiterProfileDiToken.GET_RECRUITER_PROFILE_USE_CASE, useClass: GetRecruiterProfileUseCase },
     {
       provide: RecruiterProfileDiToken.GET_RECRUITER_PROFILE_BY_EMAIL_USE_CASE,
       useClass: GetRecruiterProfileByEmailUseCase,

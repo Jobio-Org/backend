@@ -6,6 +6,7 @@ import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards
 import { UpdateCandidateProfileDto } from '~modules/candidate-profile/application/dto/update-candidate-profile.dto';
 import { IUpdateCandidateProfileUseCase } from '~modules/candidate-profile/application/use-cases/update-candidate-profile/update-candidate-profile-use-case.interface';
 import { CandidateProfileDiToken } from '~modules/candidate-profile/constants';
+import { CandidateOnly } from '~modules/user-context/infrastructure/decorators/candidate-only.decorator';
 
 @ApiTags('candidate')
 @ApiBearerAuth('JWT-auth')
@@ -21,6 +22,7 @@ export class CandidateProfileController {
     summary: 'Update candidate profile',
     description: 'Update the candidate profile for the authenticated user',
   })
+  @CandidateOnly()
   @Put('profile')
   async updateCandidateProfile(@Body() updateDto: UpdateCandidateProfileDto, @UserId() userId: string) {
     return this.updateCandidateProfileUseCase.execute({

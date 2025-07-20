@@ -16,7 +16,7 @@ export class CandidateProfileQueryService implements ICandidateProfileQueryServi
     private readonly getUserDetailsByIdUseCase: IGetUserDetailsByIdUseCase,
   ) {}
 
-  async getCandidateProfileByUserId(userId: string): Promise<CandidateProfile | null> {
+  async getCandidateProfileByUserDetailsId(userId: string): Promise<CandidateProfile | null> {
     const userDetails = await this.getUserDetailsByIdUseCase.execute({ userId });
 
     if (!userDetails) {
@@ -24,9 +24,5 @@ export class CandidateProfileQueryService implements ICandidateProfileQueryServi
     }
 
     return this.candidateProfileRepository.findByUserDetailsId(userDetails.id);
-  }
-
-  async getCandidateProfileWithUserDetails(userDetailsId: string): Promise<CandidateProfile | null> {
-    return this.candidateProfileRepository.findByUserDetailsId(userDetailsId);
   }
 }

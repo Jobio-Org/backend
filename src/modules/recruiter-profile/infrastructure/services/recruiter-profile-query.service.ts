@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ICompaniesQueryService } from '~modules/companies/application/services/companies/companies-query-service.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { GetRecruiterProfileByEmailDto } from '~modules/recruiter-profile/application/dto/get-recruiter-profile-by-email.dto';
+import { GetRecruiterProfileByUserDetailsIdDto } from '~modules/recruiter-profile/application/dto/get-recruiter-profile-by-user-details-id.dto';
 import { GetRecruiterProfileByUserIdDto } from '~modules/recruiter-profile/application/dto/get-recruiter-profile-by-user-id.dto';
 import { IRecruiterProfileQueryService } from '~modules/recruiter-profile/application/services/recruiter-profile-query-service.interface';
 import { IGetRecruiterProfileByEmailUseCase } from '~modules/recruiter-profile/application/use-cases/get-recruiter-profile-by-email/get-recruiter-profile-by-email-use-case.interface';
@@ -14,7 +15,7 @@ import { IRecruiterProfileRepository } from '~modules/recruiter-profile/domain/r
 @Injectable()
 export class RecruiterProfileQueryService implements IRecruiterProfileQueryService {
   constructor(
-    @Inject(RecruiterProfileDiToken.GET_RECRUITER_PROFILE_BY_ID_USE_CASE)
+    @Inject(RecruiterProfileDiToken.GET_RECRUITER_PROFILE_USE_CASE)
     private readonly getRecruiterProfileIdUseCase: IGetRecruiterProfileUseCase,
     @Inject(RecruiterProfileDiToken.GET_RECRUITER_PROFILE_BY_EMAIL_USE_CASE)
     private readonly getRecruiterProfileByEmailUseCase: IGetRecruiterProfileByEmailUseCase,
@@ -23,8 +24,10 @@ export class RecruiterProfileQueryService implements IRecruiterProfileQueryServi
     @Inject(CompaniesDiToken.COMPANIES_QUERY_SERVICE)
     private readonly companiesQueryService: ICompaniesQueryService,
   ) {}
-  async getRecruiterProfileWithActiveCompany(userDetailsId: string): Promise<RecruiterProfile | null> {
-    const recruiterProfile = await this.recruiterProfileRepository.findByUserDetailsId(userDetailsId);
+  async getRecruiterProfileByUserDetailsId(userDetailsId: string): Promise<RecruiterProfile | null> {
+    const dto = new GetRecruiterProfileByUserDetailsIdDto(userDetailsId);
+
+    const recruiterProfile = await this.recruiterProfileRepository.findByUserDetailsId(dto.userDetailsId);
 
     if (!recruiterProfile) {
       return null;

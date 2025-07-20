@@ -30,9 +30,6 @@ export class RecruiterProfile {
   public static builder(userDetailsId: string) {
     return Builder(RecruiterProfile, {
       userDetailsId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      activeCompanyId: undefined,
     });
   }
 }

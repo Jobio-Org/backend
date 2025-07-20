@@ -22,6 +22,7 @@ import { ISendInvitationUseCase } from '~modules/companies/application/use-cases
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { Company } from '~modules/companies/domain/entities/company.entity';
 import { CompanyPermissionList } from '~modules/companies/domain/enums/company-management.enum';
+import { RecruiterOnly } from '~modules/user-context/infrastructure/decorators/recruiter-only.decorator';
 
 import { PaginationResult } from '~shared/application/models/pagination.model';
 import { PaginationQuery } from '~shared/infrastructure/decorators/pagination/pagination.decorator';
@@ -49,6 +50,7 @@ export class CompaniesController {
     description: `Update company information. Only users with ${CompanyPermissionList.EDIT_COMPANY_INFO} permission can perform this action.`,
   })
   @UseGuards(JwtAccessAuthGuard)
+  @RecruiterOnly()
   @ApiBearerAuth('JWT-auth')
   @ApiResponse({ type: Company })
   @Put(':companyId')
@@ -74,6 +76,7 @@ export class CompaniesController {
     description: `Send invitation to recruiter to join company. Only users with ${CompanyPermissionList.INVITE_USERS} permission can perform this action.`,
   })
   @UseGuards(JwtAccessAuthGuard)
+  @RecruiterOnly()
   @ApiBearerAuth('JWT-auth')
   @Post('invitations')
   async inviteRecruiter(@Body() dto: InviteRecruiterDto, @UserId() userId: string): Promise<void> {
@@ -85,6 +88,7 @@ export class CompaniesController {
     description: 'Accept invitation to join company using invitation token.',
   })
   @UseGuards(JwtAccessAuthGuard)
+  @RecruiterOnly()
   @ApiBearerAuth('JWT-auth')
   @Post('invitations/accept')
   async acceptInvitation(@Body() dto: AcceptInvitationDto, @UserId() userId: string): Promise<void> {
