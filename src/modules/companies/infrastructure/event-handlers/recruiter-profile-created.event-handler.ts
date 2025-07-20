@@ -8,7 +8,7 @@ import { ICreateUserCompanyUseCase } from '~modules/companies/application/use-ca
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyRoleType } from '~modules/companies/domain/enums/company-management.enum';
 import { ICompanyRoleRepository } from '~modules/companies/domain/repositories/company-role-repository.interface';
-import { RecruiterProfileCreatedEvent } from '~modules/profiles/domain/events/recruiter-profile-created.event';
+import { RecruiterProfileCreatedEvent } from '~modules/recruiter-profile/domain/events/recruiter-profile-created.event';
 
 @Injectable()
 @EventsHandler(RecruiterProfileCreatedEvent)

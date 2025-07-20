@@ -15,9 +15,8 @@ import { CompanyInvitationSentEvent } from '~modules/companies/domain/events/com
 import { ICompanyInvitationRepository } from '~modules/companies/domain/repositories/company-invitation-repository.interface';
 import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
 import { IUserCompanyRepository } from '~modules/companies/domain/repositories/user-company-repository.interface';
-import { IProfilesQueryService } from '~modules/profiles/application/services/profiles-query-service.interface';
-import { IUserDetailsQueryService } from '~modules/profiles/application/services/user-details-query-service.interface';
-import { ProfilesDiToken } from '~modules/profiles/constants';
+import { IRecruiterProfileQueryService } from '~modules/recruiter-profile/application/services/recruiter-profile-query-service.interface';
+import { RecruiterProfileDiToken } from '~modules/recruiter-profile/constants';
 
 import { Command } from '~shared/application/CQS/command.abstract';
 import { IAppConfigService } from '~shared/application/services/app-config-service.interface';
@@ -33,12 +32,10 @@ export class SendInvitationUseCase
     private readonly invitationRepository: ICompanyInvitationRepository,
     @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
     private readonly permissionService: ICompanyPermissionQueryService,
-    @Inject(ProfilesDiToken.PROFILES_QUERY_SERVICE)
-    private readonly profilesQueryService: IProfilesQueryService,
+    @Inject(RecruiterProfileDiToken.RECRUITER_PROFILE_QUERY_SERVICE)
+    private readonly recruiterProfileQueryService: IRecruiterProfileQueryService,
     @Inject(CompaniesDiToken.COMPANY_REPOSITORY)
     private readonly companyRepository: ICompanyRepository,
-    @Inject(ProfilesDiToken.USER_DETAILS_QUERY_SERVICE)
-    private readonly userDetailsQueryService: IUserDetailsQueryService,
     @Inject(CompaniesDiToken.USER_COMPANY_REPOSITORY)
     private readonly userCompanyRepository: IUserCompanyRepository,
     @Inject(BaseToken.APP_CONFIG)
@@ -52,10 +49,7 @@ export class SendInvitationUseCase
 
     const invitationExpireTime = this.getInvitationExpireTime();
 
-    const inviterUserDetails = await this.userDetailsQueryService.getUserDetailsByUserId(inviterUserId);
-    if (!inviterUserDetails) throw new EntityNotFoundException('user-details', inviterUserId);
-
-    const inviterRecruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(inviterUserId);
+    const inviterRecruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByUserId(inviterUserId);
     if (!inviterRecruiterProfile)
       throw new EntityNotFoundException('recruiter-profile', inviterUserId, 'Inviter recruiter profile not found');
 
@@ -69,7 +63,7 @@ export class SendInvitationUseCase
 
     let alreadyMember = false;
 
-    const invitedRecruiterProfile = await this.profilesQueryService.getRecruiterProfileByEmail(dto.email);
+    const invitedRecruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByEmail(dto.email);
 
     if (invitedRecruiterProfile) {
       alreadyMember = await this.userCompanyRepository.existsByRecruiterProfileIdAndCompanyId(
@@ -92,7 +86,7 @@ export class SendInvitationUseCase
     const company = await this.companyRepository.findById(dto.companyId);
     const companyName = company?.name || '';
 
-    const inviterName = inviterUserDetails.fullName || inviterUserDetails.userId;
+    const inviterName = company.name || inviterUserId;
 
     const companyInvitation = CompanyInvitation.builder(
       dto.companyId,

@@ -12,9 +12,8 @@ import { CompanyInvitationStatus } from '~modules/companies/domain/enums/company
 import { CompanyInvitationAcceptedEvent } from '~modules/companies/domain/events/company-invitation-accepted.event';
 import { ICompanyInvitationRepository } from '~modules/companies/domain/repositories/company-invitation-repository.interface';
 import { IUserCompanyRepository } from '~modules/companies/domain/repositories/user-company-repository.interface';
-import { IProfilesQueryService } from '~modules/profiles/application/services/profiles-query-service.interface';
-import { IUserDetailsQueryService } from '~modules/profiles/application/services/user-details-query-service.interface';
-import { ProfilesDiToken } from '~modules/profiles/constants';
+import { IRecruiterProfileQueryService } from '~modules/recruiter-profile/application/services/recruiter-profile-query-service.interface';
+import { RecruiterProfileDiToken } from '~modules/recruiter-profile/constants';
 
 import { Command } from '~shared/application/CQS/command.abstract';
 
@@ -28,10 +27,8 @@ export class AcceptInvitationUseCase
     private readonly invitationRepository: ICompanyInvitationRepository,
     @Inject(CompaniesDiToken.USER_COMPANY_REPOSITORY)
     private readonly userCompanyRepository: IUserCompanyRepository,
-    @Inject(ProfilesDiToken.PROFILES_QUERY_SERVICE)
-    private readonly profilesQueryService: IProfilesQueryService,
-    @Inject(ProfilesDiToken.USER_DETAILS_QUERY_SERVICE)
-    private readonly userDetailsQueryService: IUserDetailsQueryService,
+    @Inject(RecruiterProfileDiToken.RECRUITER_PROFILE_QUERY_SERVICE)
+    private readonly recruiterProfileQueryService: IRecruiterProfileQueryService,
   ) {
     super();
   }
@@ -52,12 +49,7 @@ export class AcceptInvitationUseCase
       throw new InvitationExpiredException();
     }
 
-    const userDetails = await this.userDetailsQueryService.getUserDetailsByUserId(userId);
-    if (!userDetails) {
-      throw new EntityNotFoundException('user-details', userId);
-    }
-
-    const recruiterProfile = await this.profilesQueryService.getRecruiterProfileByUserId(userId);
+    const recruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByUserId(userId);
     if (!recruiterProfile) {
       throw new EntityNotFoundException('recruiter-profile', userId);
     }

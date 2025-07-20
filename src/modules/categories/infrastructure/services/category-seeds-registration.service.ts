@@ -19,7 +19,6 @@ export class CategorySeedsRegistrationService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // Register category seeds
     this.seedRegistry.registerSeed('categorySeeds', this.runCategorySeedsUseCase);
     this.seedRegistry.registerSeed('subcategorySeeds', this.runSubcategorySeedsUseCase);
   }

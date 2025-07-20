@@ -29,15 +29,12 @@ import { DrizzleUserCompanyRepository } from '~modules/companies/infrastructure/
 import { CompaniesQueryService } from '~modules/companies/infrastructure/services/companies-query.service';
 import { CompanyPermissionQueryService } from '~modules/companies/infrastructure/services/company-permission-query.service';
 import { CompanySeedsRegistrationService } from '~modules/companies/infrastructure/services/company-seeds-registration.service';
-import { ProfilesDiToken } from '~modules/profiles/constants';
-import { ProfilesQueryService } from '~modules/profiles/infrastructure/services/profiles-query.service';
-import { UserDetailsQueryService } from '~modules/profiles/infrastructure/services/user-details-query.service';
-import { ProfilesModule } from '~modules/profiles/profiles.module';
+import { RecruiterProfileModule } from '~modules/recruiter-profile/recruiter-profile.module';
 
 import { PaginationService } from '~shared/infrastructure/services/pagination/pagination.service';
 
 @Module({
-  imports: [forwardRef(() => ProfilesModule)],
+  imports: [forwardRef(() => RecruiterProfileModule)],
   providers: [
     {
       provide: CompaniesDiToken.RUN_COMPANY_SEEDS_USE_CASE,
@@ -114,10 +111,9 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       provide: CompaniesDiToken.COMPANY_INVITATION_REPOSITORY,
       useClass: DrizzleCompanyInvitationRepository,
     },
-    { provide: ProfilesDiToken.PROFILES_QUERY_SERVICE, useClass: ProfilesQueryService },
+
     { provide: CompaniesDiToken.COMPANY_REPOSITORY, useClass: DrizzleCompanyRepository },
     { provide: CompaniesDiToken.USER_COMPANY_REPOSITORY, useClass: DrizzleUserCompanyRepository },
-    { provide: ProfilesDiToken.USER_DETAILS_QUERY_SERVICE, useClass: UserDetailsQueryService },
     {
       provide: CompaniesDiToken.GET_ALL_COMPANIES_WITH_USERS_USE_CASE,
       useClass: GetAllCompaniesUseCase,
