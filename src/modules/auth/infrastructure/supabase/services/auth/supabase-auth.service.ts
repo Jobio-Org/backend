@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { AuthError } from '@supabase/supabase-js';
+import { AuthError, PostgrestError } from '@supabase/supabase-js';
 
 import { IAuthService } from '~modules/auth/application/services/auth-service.interface';
 import { User } from '~modules/auth/domain/entities/user.entity';
@@ -34,6 +34,28 @@ export class SupabaseAuthService implements IAuthService {
     return this.supabaseUserMapper.toDomain(data.user);
   }
 
+  public async getUserByEmail(email: string): Promise<User | null> {
+    // First get user id by email using RPC function
+    const { data: userData, error: rpcError } = await this.supabaseClientService.client.rpc('get_auth_user_by_email', {
+      email,
+    });
+
+    if (rpcError) throw this.supabaseErrorToAppException(rpcError);
+
+    if (!userData || !userData.length) return null;
+
+    const userId = userData[0].id;
+
+    // Then get full user object by id
+    const { data: user, error: userError } = await this.supabaseClientService.client.auth.admin.getUserById(userId);
+
+    if (userError) throw this.supabaseErrorToAppException(userError);
+
+    if (!user.user) return null;
+
+    return this.supabaseUserMapper.toDomain(user.user);
+  }
+
   async refreshSession(refreshToken: string) {
     const { data, error } = await this.supabaseAuthenticatedClientService.client.auth.refreshSession({
       refresh_token: refreshToken,
@@ -55,8 +77,9 @@ export class SupabaseAuthService implements IAuthService {
     if (error) throw this.supabaseErrorToAppException(error);
   }
 
-  private supabaseErrorToAppException(error: AuthError): AppException {
-    return CustomException.builder().message(error.message).code(error.code).httpStatus(error.status).build();
+  private supabaseErrorToAppException(error: AuthError | PostgrestError): AppException {
+    const status = 'status' in error ? error.status : 500;
+    return CustomException.builder().message(error.message).code(error.code).httpStatus(status).build();
   }
 
   public async sendResetPasswordEmail(email: string, redirectUrl: string): Promise<void> {

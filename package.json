@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "open-api:generate": "npm run build && node dist/src/main --api-client-and-exit",
     "api-client:generate": "npm run open-api:generate && openapi --useOptions --useUnionTypes --input ./api.json --output ./.api-client --name ApiClient",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./test/e2e/jest-e2e.json",
     "db:generate": "dotenv -e config/.env -- drizzle-kit generate --config=./config/drizzle.config.ts",
     "db:push": "dotenv -e config/.env -- drizzle-kit migrate --config=./config/drizzle.config.ts",
     "seeds:run-all": "npm run build && node dist/src/cli.js run-all",
@@ -82,6 +82,7 @@
     "winston": "^3.13.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
@@ -134,7 +135,9 @@
     "moduleNameMapper": {
       "src/(.*)": "<rootDir>/$1",
       "^~shared/(.*)$": "<rootDir>/shared/$1",
-      "^~modules/(.*)$": "<rootDir>/modules/$1"
+      "^~modules/(.*)$": "<rootDir>/modules/$1",
+      "^~core/(.*)$": "<rootDir>/core/$1",
+      "^~lib/(.*)$": "<rootDir>/lib/$1"
     }
   }
 }
