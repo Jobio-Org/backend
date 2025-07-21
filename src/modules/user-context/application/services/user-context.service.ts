@@ -9,13 +9,14 @@ import { RecruiterProfile } from '~modules/recruiter-profile/domain/entities/rec
 import { UserContextDto } from '~modules/user-context/application/dto/user-context.dto';
 import { InvalidUserRoleException } from '~modules/user-context/application/exceptions/invalid-user-role.exception';
 import { UserDetailsNotFoundException } from '~modules/user-context/application/exceptions/user-details-not-found.exception';
+import { IUserContextService } from '~modules/user-context/application/services/user-context-service.interface';
 import { IGetUserDetailsByIdUseCase } from '~modules/user-details/application/use-cases/get-user-details-by-id/get-user-details-by-id-use-case.interface';
 import { UserDetailsDiToken } from '~modules/user-details/constants';
 
 import { UserRole } from '~shared/domain/enums/user-role.enum';
 
 @Injectable()
-export class UserContextService {
+export class UserContextService implements IUserContextService {
   constructor(
     @Inject(UserDetailsDiToken.GET_USER_DETAILS_BY_ID_USE_CASE)
     private readonly getUserDetailsByIdUseCase: IGetUserDetailsByIdUseCase,

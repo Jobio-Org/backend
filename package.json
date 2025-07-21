@@ -135,7 +135,9 @@
     "moduleNameMapper": {
       "src/(.*)": "<rootDir>/$1",
       "^~shared/(.*)$": "<rootDir>/shared/$1",
-      "^~modules/(.*)$": "<rootDir>/modules/$1"
+      "^~modules/(.*)$": "<rootDir>/modules/$1",
+      "^~core/(.*)$": "<rootDir>/core/$1",
+      "^~lib/(.*)$": "<rootDir>/lib/$1"
     }
   }
 }

@@ -11,22 +11,6 @@ export class RecruiterProfile {
   public readonly updatedAt: Date;
   public readonly activeCompanyId?: string | null;
 
-  public get hasContactInfo(): boolean {
-    return !!(this.telegram || this.phone || this.linkedin);
-  }
-
-  public get hasCompanyInfo(): boolean {
-    return !!this.website;
-  }
-
-  public get isComplete(): boolean {
-    return this.hasContactInfo && this.hasCompanyInfo;
-  }
-
-  public get primaryContact(): string | null {
-    return this.telegram || this.phone || this.linkedin || null;
-  }
-
   public static builder(userDetailsId: string) {
     return Builder(RecruiterProfile, {
       userDetailsId,
