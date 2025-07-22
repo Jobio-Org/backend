@@ -56,7 +56,7 @@ docker-compose exec backend npm run db:push
 
 5. **Seed the database (optional):**
 ```bash
-docker-compose exec backend npm run seeds:run-all
+npx tsx database/seeds/companies.seed.ts 
 ```
 
 ### Available Services
@@ -129,18 +129,28 @@ $ npm run db:push
 
 ### Database Seeding
 
+Project uses [Snaplet Seed](https://snaplet-seed.netlify.app/) for database seeding.
+
+- **Example:**
+
+  ```bash
+  npx tsx database/seeds/companies.seed.ts
+  ```
+
+#### Resetting tables before seeding
+
+To reset (truncate) the relevant tables before seeding, add the `--reset` flag:
+
 ```bash
-# Run all seeds (clears existing data)
-$ npm run seeds:run-all
+npx tsx database/seeds/companies.seed.ts --reset
+```
 
-# Test seeds without making changes
-$ npm run seeds:dry-run
+#### Dry Run
 
-# Add new seeds without clearing existing data
-$ npm run seeds:no-clear
+By default, seed scripts may run in without dryRun mode. To enable dryRun (no actual writes to the database), change the `--dry-run` parameter in the script.
 
-# Test mode (dry-run + no clear)
-$ npm run seeds:test
+```bash
+npx tsx database/seeds/companies.seed.ts --dry-run
 ```
 
 ### Compile and run the project

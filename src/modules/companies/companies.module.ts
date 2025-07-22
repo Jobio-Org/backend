@@ -6,10 +6,6 @@ import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/u
 import { UpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company.use-case';
 import { AcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation.use-case';
 import { SendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation.use-case';
-import { RunCompanyPermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-permission-seeds/run-company-permission-seeds.use-case';
-import { RunCompanyRolePermissionSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-permission-seeds/run-company-role-permission-seeds.use-case';
-import { RunCompanyRoleSeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-role-seeds/run-company-role-seeds.use-case';
-import { RunCompanySeedsUseCase } from '~modules/companies/application/use-cases/seeds/run-company-seeds/run-company-seeds.use-case';
 import { CreateUserCompanyUseCase } from '~modules/companies/application/use-cases/user-companies/create-user-company/create-user-company.use-case';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyInvitationMapper } from '~modules/companies/domain/mappers/company-invitation/company-invitation.mapper';
@@ -28,7 +24,6 @@ import { DrizzleCompanyRepository } from '~modules/companies/infrastructure/pers
 import { DrizzleUserCompanyRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-user-company.repository';
 import { CompaniesQueryService } from '~modules/companies/infrastructure/services/companies-query.service';
 import { CompanyPermissionQueryService } from '~modules/companies/infrastructure/services/company-permission-query.service';
-import { CompanySeedsRegistrationService } from '~modules/companies/infrastructure/services/company-seeds-registration.service';
 import { RecruiterProfileModule } from '~modules/recruiter-profile/recruiter-profile.module';
 
 import { PaginationService } from '~shared/infrastructure/services/pagination/pagination.service';
@@ -36,22 +31,6 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
 @Module({
   imports: [forwardRef(() => RecruiterProfileModule)],
   providers: [
-    {
-      provide: CompaniesDiToken.RUN_COMPANY_SEEDS_USE_CASE,
-      useClass: RunCompanySeedsUseCase,
-    },
-    {
-      provide: CompaniesDiToken.RUN_COMPANY_PERMISSION_SEEDS_USE_CASE,
-      useClass: RunCompanyPermissionSeedsUseCase,
-    },
-    {
-      provide: CompaniesDiToken.RUN_COMPANY_ROLE_SEEDS_USE_CASE,
-      useClass: RunCompanyRoleSeedsUseCase,
-    },
-    {
-      provide: CompaniesDiToken.RUN_COMPANY_ROLE_PERMISSION_SEEDS_USE_CASE,
-      useClass: RunCompanyRolePermissionSeedsUseCase,
-    },
     {
       provide: CompaniesDiToken.CREATE_COMPANY_USE_CASE,
       useClass: CreateCompanyUseCase,
@@ -123,15 +102,8 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       provide: CompaniesDiToken.GET_COMPANIES_BY_RECRUITER_USE_CASE,
       useClass: GetCompaniesByRecruiterUseCase,
     },
-    CompanySeedsRegistrationService,
   ],
   controllers: [CompaniesController],
-  exports: [
-    CompaniesDiToken.RUN_COMPANY_SEEDS_USE_CASE,
-    CompaniesDiToken.RUN_COMPANY_PERMISSION_SEEDS_USE_CASE,
-    CompaniesDiToken.RUN_COMPANY_ROLE_SEEDS_USE_CASE,
-    CompaniesDiToken.RUN_COMPANY_ROLE_PERMISSION_SEEDS_USE_CASE,
-    CompaniesDiToken.COMPANIES_QUERY_SERVICE,
-  ],
+  exports: [CompaniesDiToken.COMPANIES_QUERY_SERVICE],
 })
 export class CompaniesModule {}

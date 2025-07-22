@@ -2,7 +2,6 @@ import { Global, Module, Scope } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
-import { DatabaseSeedsModule } from '~lib/database-seeds/database-seeds.module';
 import { EventDrivenModule } from '~lib/nest-event-driven/event-driven.module';
 
 import { EventDispatcher } from '~shared/application/events/event-dispatcher/implementation/event-dispatcher.interface';
@@ -30,7 +29,6 @@ import { validateConfig } from '~shared/infrastructure/util/validate-config';
       envFilePath: ['./config/.env', './config/.env.local'],
     }),
     DatabaseModule,
-    DatabaseSeedsModule,
   ],
   providers: [
     { provide: BaseToken.APP_CONFIG, useClass: ConfigService },
