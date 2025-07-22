@@ -10,15 +10,18 @@ import { BaseToken } from '~shared/constants';
   imports: [
     ThrottlerModule.forRootAsync({
       inject: [BaseToken.APP_CONFIG],
-      useFactory: (config: IAppConfigService) => ({
-        throttlers: [
-          {
-            ttl: config.get('THROTTLE_TTL'),
-            limit: config.get('THROTTLE_LIMIT'),
-          },
-        ],
-        storage: new ThrottlerStorageRedisService(config.get('REDIS_URL')),
-      }),
+      useFactory: (config: IAppConfigService) => {
+        const isProd = process.env.NODE_ENV === 'production';
+        return {
+          throttlers: [
+            {
+              ttl: config.get('THROTTLE_TTL'),
+              limit: config.get('THROTTLE_LIMIT'),
+            },
+          ],
+          storage: isProd ? new ThrottlerStorageRedisService(config.get('REDIS_URL')) : undefined,
+        };
+      },
     }),
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
