@@ -14,11 +14,13 @@ import { EventEmitterEventSource } from '~shared/infrastructure/events/event-sou
 import { EventEmitterEventPublisher } from '~shared/infrastructure/events/publishers/event-emitter/event-emitter.event-publisher';
 import { InMemoryEventIntegrationService } from '~shared/infrastructure/events/services/event-integration/in-memory/in-memory-event-integration.service';
 import { PaginationService } from '~shared/infrastructure/services/pagination/pagination.service';
+import { GlobalThrottlerModule } from '~shared/infrastructure/throttler/throttler.module';
 import { validateConfig } from '~shared/infrastructure/util/validate-config';
 
 @Global()
 @Module({
   imports: [
+    GlobalThrottlerModule,
     EventDrivenModule,
     EventEmitterModule.forRoot({ wildcard: true }),
     ConfigModule.forRoot({

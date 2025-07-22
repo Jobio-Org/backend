@@ -4,12 +4,12 @@ import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
 import { UserContextService } from '~modules/user-context/application/services/user-context.service';
 
-@Controller('auth/user')
+@Controller('auth')
 @UseGuards(JwtAccessAuthGuard)
 export class UserContextController {
   constructor(private readonly userContextService: UserContextService) {}
 
-  @Get('me')
+  @Get('/user/me')
   async getCurrentUser(@UserId() userId: string) {
     return this.userContextService.getUserContext(userId);
   }

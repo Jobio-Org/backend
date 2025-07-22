@@ -6,6 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY tsconfig*.json ./
+# Copy husky hooks (for prepare/install.mjs)
+COPY .husky ./.husky
 
 # Install ALL dependencies (dev + prod)
 RUN npm ci
@@ -21,24 +23,20 @@ FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nestjs -u 1001
-
 # Copy package files
 COPY package*.json ./
+COPY tsconfig*.json ./
+# Copy husky hooks (for prepare/install.mjs)
+COPY .husky ./.husky
 
-# Install only production dependencies
+ENV HUSKY=0
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application
-COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder /app/dist ./dist
 
 # Copy configuration files
-COPY --chown=nestjs:nodejs config ./config
-
-# Switch to non-root user
-USER nestjs
+COPY config ./config
 
 # Expose port
 EXPOSE 8080

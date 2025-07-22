@@ -51,4 +51,15 @@ export class AppConfigModel {
   @IsInt()
   @IsPositive()
   COMPANY_INVITATION_EXPIRE_TIME: number;
+
+  @IsString()
+  REDIS_URL: string;
+
+  @IsInt()
+  @IsPositive()
+  THROTTLE_TTL: number;
+
+  @IsInt()
+  @IsPositive()
+  THROTTLE_LIMIT: number;
 }
