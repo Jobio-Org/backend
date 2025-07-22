@@ -179,6 +179,27 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Database snapshots for E2E tests
+The project utilizes a Postgres database and an Authorization client hosted by Supabase. To avoid mocking the Supabase client and Postgres database each time and create robust end-to-end (E2E) tests, the project utilizes a workflow with two separate Supabase projects: one for production environments and another for staging/testing environments. To make it more smooth, it uses [Snaplet Seed](https://snapshot-six.vercel.app/snapshot/getting-started/overview) with 2 purposes: seeding the database with realistic data (using copycat under the hood) and creating snapshots (dumps) of the production database to sync up with the test database and cover more realistic scenarios. 
+
+> :warning: **Warning**: Snaplet was [shut down](https://supabase.com/blog/snaplet-is-now-open-source) as a company, so they don't maintain their web application, which is more convenient and reliable. They have become open-source now, and the documentation can be outdated in some aspects. If you have better alternatives in mind, then maybe you should reconsider this workflow. Overall, in this case, it does its job fine. 
+
+In order to capture and restore snapshots, set the following environment variables in the app config (.env):
+
+```
+SNAPLET_SOURCE_DATABASE_URL=
+SNAPLET_TARGET_DATABASE_URL=
+```
+
+`SNAPLET_SOURCE_DATABASE_URL` - it's a database connection string from which you need to make a snapshot (usually a production database)
+`SNAPLET_TARGET_DATABASE_URL` - it's a database connection string to which you need to restore (migrate/copy) the data from the snapshot (usually a developer's database)
+
+After this, run the `npm run snaplet:capture` script, which will create a snapshot from the provided source database. Then, run `npm run snaplet:restore` script, which will restore (migrate/copy) to the provided target database. (select the right snapshot in CLI if needed)
+
+To check all available snapshots, run the `npm run snaplet:list` script.
+
+After this, you can create a Supabase client and a PostgreSQL instance of the dev database with the latest data from the production database and seeds (if needed).
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
