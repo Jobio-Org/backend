@@ -20,6 +20,7 @@
     "snaplet:capture": "dotenv -e config/.env -- npx @snaplet/snapshot snapshot capture",
     "snaplet:restore": "dotenv -e config/.env -- npx @snaplet/snapshot snapshot restore",
     "snaplet:list": "npx @snaplet/snapshot snapshot ls",
+    "snaplet:sync": "npx @snaplet/seed sync",
     "open-api:generate": "npm run build && node dist/src/main --api-client-and-exit",
     "api-client:generate": "npm run open-api:generate && openapi --useOptions --useUnionTypes --input ./api.json --output ./.api-client --name ApiClient",
     "test:e2e": "jest --config ./test/e2e/jest-e2e.json",

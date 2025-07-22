@@ -137,6 +137,8 @@ Project uses [Snaplet Seed](https://snaplet-seed.netlify.app/) for database seed
   npx tsx database/seeds/companies.seed.ts
   ```
 
+Whenever the database structure changes (e.g after a new migration is applied), Snaplet will need be regenerated to reflect the new structure `npm run snaplet:sync` script. It will create dataModel.json file in /.snaplet directory.
+
 #### Resetting tables before seeding
 
 To reset (truncate) the relevant tables before seeding, add the `--reset` flag:
