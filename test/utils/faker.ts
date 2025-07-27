@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'crypto';
 import { sign } from 'jsonwebtoken';
 
@@ -35,11 +36,13 @@ export const createMockJwtUser = (overrides: Partial<any> = {}) => ({
 export const createMockAppConfig = (overrides: Partial<any> = {}) => ({
   get: jest.fn((key: string) => {
     const config = {
-      JWT_SECRET: randomBytes(64).toString('base64'),
-      SUPABASE_URL: 'https://example.supabase.co',
-      SUPABASE_SECRET_KEY: 'test-secret-key',
+      DB_URL: process.env.DB_URL_TEST,
+      JWT_SECRET: process.env.JWT_SECRET_TEST,
+      SUPABASE_URL: process.env.SUPABASE_URL_TEST,
+      SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY_TEST,
       CLIENT_AUTH_REDIRECT_URL: 'http://localhost:3000/auth/callback',
-      DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+      CLIENT_INVITE_REDIRECT_URL: 'http://localhost:3000/invite',
+      COMPANY_INVITATION_EXPIRE_TIME: '86400000',
       PORT: 3000,
       NODE_ENV: 'test',
       ...overrides,
@@ -47,6 +50,10 @@ export const createMockAppConfig = (overrides: Partial<any> = {}) => ({
     return config[key] || undefined;
   }),
 });
+
+export const createMockSupabaseClient = () => {
+  return createClient(process.env.SUPABASE_URL_TEST, process.env.SUPABASE_SECRET_KEY_TEST);
+};
 
 // Email
 export const createMockEmail = (overrides: Partial<any> = {}) => ({

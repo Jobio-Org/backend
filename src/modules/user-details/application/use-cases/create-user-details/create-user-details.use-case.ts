@@ -18,9 +18,9 @@ export class CreateUserDetailsUseCase extends Command<CreateUserDetailsDto, void
   }
 
   protected async implementation(): Promise<void> {
-    const { userId, fullName, role } = this._input;
+    const { userId, email, fullName, role } = this._input;
 
-    const userDetails = UserDetails.builder(userId, role).fullName(fullName).build();
+    const userDetails = UserDetails.builder(userId, email, role).fullName(fullName).build();
     await this.userDetailsRepository.create(userDetails);
   }
 }

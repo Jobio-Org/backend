@@ -4,7 +4,6 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
 
-import { SupabaseClientService } from '~modules/auth/infrastructure/supabase/services/supabase-client/supabase-client.service';
 import { UserDetails } from '~modules/user-details/domain/entities/user-details.entity';
 import {
   IUserDetailsDataAccess,
@@ -29,7 +28,6 @@ export class DrizzleUserDetailsRepository
   constructor(
     @Inject(POSTGRES_DB) db: NodePgDatabase<MergedDbSchema>,
     @Inject(UserDetailsMapper) mapper: IDataAccessMapper<UserDetails, IUserDetailsDataAccess>,
-    private readonly supabaseClientService: SupabaseClientService,
   ) {
     super(TableDefinition.create(userDetails, 'id'), db, mapper);
   }
@@ -42,19 +40,11 @@ export class DrizzleUserDetailsRepository
   }
 
   async findByEmail(email: string): Promise<UserDetails | null> {
-    const { data, error } = await this.supabaseClientService.client.rpc('get_auth_user_by_email', {
-      email,
-    });
+    const [result] = await this.db.select().from(userDetails).where(eq(userDetails.email, email)).limit(1);
 
-    if (error) throw new Error('Failed to get recruiter profile by email');
+    if (!result) return null;
 
-    if (Array.isArray(data) || !data.length) return null;
-
-    const userDetails = await this.findByUserId(data[0].id);
-
-    if (!userDetails) return null;
-
-    return userDetails;
+    return this.mapper.toDomain(result as IUserDetailsDataAccess);
   }
 
   async findByRole(role: UserRole): Promise<UserDetails[]> {

@@ -28,6 +28,7 @@ export class UserCreatedEventHandler {
 
     await this.createUserDetailsUseCase.execute({
       userId: user.id,
+      email: user.email,
       role,
     });
 

@@ -50,6 +50,13 @@
       "when": 1752263487389,
       "tag": "0006_red_micromax",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1753608756237,
+      "tag": "0007_silky_wonder_man",
+      "breakpoints": true
     }
   ]
 }
