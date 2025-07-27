@@ -49,6 +49,7 @@ export class UserContextService implements IUserContextService {
     const userContextDto = UserContextDto.builder()
       .id(userDetails.id)
       .userId(userDetails.userId)
+      .email(userDetails.email)
       .fullName(userDetails.fullName)
       .role(userDetails.role)
       .createdAt(userDetails.createdAt)

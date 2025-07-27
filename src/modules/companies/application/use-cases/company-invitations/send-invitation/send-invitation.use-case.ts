@@ -21,6 +21,7 @@ import { RecruiterProfileDiToken } from '~modules/recruiter-profile/constants';
 import { Command } from '~shared/application/CQS/command.abstract';
 import { IAppConfigService } from '~shared/application/services/app-config-service.interface';
 import { BaseToken } from '~shared/constants';
+import { UserRole } from '~shared/domain/enums/user-role.enum';
 
 @Injectable()
 export class SendInvitationUseCase
@@ -51,7 +52,11 @@ export class SendInvitationUseCase
 
     const inviterRecruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByUserId(inviterUserId);
     if (!inviterRecruiterProfile)
-      throw new EntityNotFoundException('recruiter-profile', inviterUserId, 'Inviter recruiter profile not found');
+      throw new EntityNotFoundException(
+        'recruiter-profile',
+        inviterUserId,
+        `Inviter ${UserRole.RECRUITER} profile not found`,
+      );
 
     const invitedByRecruiterProfileId = inviterRecruiterProfile.id;
 
@@ -61,16 +66,21 @@ export class SendInvitationUseCase
       throw new InvitationAlreadySentException();
     }
 
-    let alreadyMember = false;
-
     const invitedRecruiterProfile = await this.recruiterProfileQueryService.getRecruiterProfileByEmail(dto.email);
 
-    if (invitedRecruiterProfile) {
-      alreadyMember = await this.userCompanyRepository.existsByRecruiterProfileIdAndCompanyId(
-        invitedRecruiterProfile.id,
-        dto.companyId,
+    if (!invitedRecruiterProfile) {
+      throw new EntityNotFoundException(
+        'recruiter-profile',
+        dto.email,
+        `Invited ${UserRole.RECRUITER} profile not found`,
       );
     }
+
+    const alreadyMember = await this.userCompanyRepository.existsByRecruiterProfileIdAndCompanyId(
+      invitedRecruiterProfile.id,
+      dto.companyId,
+    );
+
     if (alreadyMember) {
       throw new InvitationAlreadyAcceptedException('User is already a member of this company');
     }
@@ -86,7 +96,7 @@ export class SendInvitationUseCase
     const company = await this.companyRepository.findById(dto.companyId);
     const companyName = company?.name || '';
 
-    const inviterName = company.name || inviterUserId;
+    const inviterName = company?.name || inviterUserId;
 
     const companyInvitation = CompanyInvitation.builder(
       dto.companyId,

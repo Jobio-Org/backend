@@ -12,12 +12,17 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
+import { authUsers } from '~shared/infrastructure/database/drizzle/schema/auth-database-schema';
+
 export const userDetails = pgTable(
   'user_details',
   {
     id: uuid('id').primaryKey().notNull().defaultRandom(),
-    userId: uuid('user_id').notNull(),
+    userId: uuid('user_id')
+      .references(() => authUsers.id, { onDelete: 'cascade' })
+      .notNull(),
     fullName: varchar('full_name', { length: 255 }),
+    email: varchar('email', { length: 255 }),
     role: varchar('role', { length: 50 }).notNull().default('candidate'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow(),
