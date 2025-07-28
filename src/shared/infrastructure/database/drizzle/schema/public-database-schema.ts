@@ -138,6 +138,31 @@ export const company = pgTable(
   }),
 );
 
+export const companyCategory = pgTable(
+  'company_category',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    companyId: uuid('company_id')
+      .references(() => company.id, { onDelete: 'cascade' })
+      .notNull(),
+    categoryId: uuid('category_id')
+      .references(() => category.id, { onDelete: 'cascade' })
+      .notNull(),
+    subCategoryId: uuid('sub_category_id').references(() => subCategory.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
+  },
+  (table) => ({
+    companyIdIdx: index('company_category_company_id_idx').on(table.companyId),
+    categoryIdIdx: index('company_category_category_id_idx').on(table.categoryId),
+    subCategoryIdIdx: index('company_category_sub_category_id_idx').on(table.subCategoryId),
+    companyCategorySubCategoryUnique: uniqueIndex('company_category_unique').on(
+      table.companyId,
+      table.categoryId,
+      table.subCategoryId,
+    ),
+  }),
+);
+
 export const companyPermission = pgTable(
   'company_permission',
   {

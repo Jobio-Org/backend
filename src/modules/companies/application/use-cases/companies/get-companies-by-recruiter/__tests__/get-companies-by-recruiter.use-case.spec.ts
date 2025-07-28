@@ -1,7 +1,6 @@
+import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
 import { Company } from '~modules/companies/domain/entities/company.entity';
 import { type ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
-
-import { GetCompaniesByRecruiterUseCase } from '../get-companies-by-recruiter.use-case';
 
 describe('GetCompaniesByRecruiterUseCase', () => {
   let useCase: GetCompaniesByRecruiterUseCase;

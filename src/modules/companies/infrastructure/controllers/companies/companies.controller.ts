@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@ne
 import { PublicRoute } from '~modules/auth/infrastructure/decorators/public-route/public-route.decorator';
 import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/companies/company-category.dto';
 import { GetAllCompaniesDto } from '~modules/companies/application/dto/companies/get-all-companies.dto';
 import {
   GetCompaniesByRecruiterDto,
@@ -16,6 +17,7 @@ import { InsufficientPermissionsException } from '~modules/companies/application
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
 import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
+import { IGetCompanyCategoriesUseCase } from '~modules/companies/application/use-cases/companies/get-company-categories/get-company-categories-use-case.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
 import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
@@ -33,6 +35,8 @@ export class CompaniesController {
   constructor(
     @Inject(CompaniesDiToken.UPDATE_COMPANY_USE_CASE)
     private readonly updateCompanyUseCase: IUpdateCompanyUseCase,
+    @Inject(CompaniesDiToken.GET_COMPANY_CATEGORIES_USE_CASE)
+    private readonly getCompanyCategoriesUseCase: IGetCompanyCategoriesUseCase,
     @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
     private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
     @Inject(CompaniesDiToken.SEND_INVITATION_USE_CASE)
@@ -46,19 +50,30 @@ export class CompaniesController {
   ) {}
 
   @ApiOperation({
+    summary: 'Get company categories',
+    description: 'Get all categories associated with a company.',
+  })
+  @PublicRoute()
+  @ApiResponse({ type: [Object] })
+  @Get(':companyId/categories')
+  async getCompanyCategories(@Param('companyId') companyId: string) {
+    return await this.getCompanyCategoriesUseCase.execute({ companyId });
+  }
+
+  @ApiOperation({
     summary: 'Update company information',
     description: `Update company information. Only users with ${CompanyPermissionList.EDIT_COMPANY_INFO} permission can perform this action.`,
   })
   @UseGuards(JwtAccessAuthGuard)
   @RecruiterOnly()
   @ApiBearerAuth('JWT-auth')
-  @ApiResponse({ type: Company })
+  @ApiResponse({ type: CompanyWithCategoriesDto })
   @Put(':companyId')
   async updateCompany(
     @Param('companyId') companyId: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @UserId() userId: string,
-  ): Promise<Company> {
+  ): Promise<CompanyWithCategoriesDto> {
     const canEdit = await this.companyPermissionQueryService.canEditCompanyInfo(userId, companyId);
 
     if (!canEdit) {

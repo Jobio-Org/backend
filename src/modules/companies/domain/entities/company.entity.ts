@@ -17,8 +17,6 @@ export class Company {
     return Builder(Company, {
       name,
       isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
   }
 }
