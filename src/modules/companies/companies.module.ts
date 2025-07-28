@@ -89,10 +89,6 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       provide: CompaniesDiToken.COMPANY_ROLE_PERMISSION_REPOSITORY,
       useClass: DrizzleCompanyRolePermissionRepository,
     },
-    {
-      provide: CompaniesDiToken.USER_COMPANY_REPOSITORY,
-      useClass: DrizzleUserCompanyRepository,
-    },
     RecruiterProfileCreatedEventHandler,
     {
       provide: CompaniesDiToken.SEND_INVITATION_USE_CASE,
