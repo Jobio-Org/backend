@@ -1,5 +1,7 @@
 import { IsOptional, IsUUID } from 'class-validator';
 
+import { Company } from '~modules/companies/domain/entities/company.entity';
+
 export class CompanyCategoryDto {
   @IsUUID()
   categoryId: string;
@@ -16,17 +18,6 @@ export class CompanyCategoryResponseDto {
   subCategoryName?: string;
 }
 
-export class CompanyWithCategoriesDto {
-  id: string;
-  name: string;
-  description?: string;
-  website?: string;
-  logo?: string;
-  industry?: string;
-  size?: string;
-  location?: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+export class CompanyWithCategoriesDto extends Company {
   categories: CompanyCategoryResponseDto[];
 }

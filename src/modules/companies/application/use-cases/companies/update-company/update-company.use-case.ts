@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/companies/company-category.dto';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
 import {
   IUpdateCompanyUseCase,

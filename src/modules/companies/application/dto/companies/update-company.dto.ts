@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
-import { CompanyCategoryDto } from './company-category.dto';
+import { CompanyCategoryDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 
 export class UpdateCompanyDto {
   @IsString()

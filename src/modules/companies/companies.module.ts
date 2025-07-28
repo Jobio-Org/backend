@@ -3,7 +3,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { CreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company.use-case';
 import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
 import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
-import { GetCompanyCategoriesUseCase } from '~modules/companies/application/use-cases/companies/get-company-categories/get-company-categories.use-case';
+import { GetCompanyByIdUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-id/get-company-by-id.use-case';
 import { UpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company.use-case';
 import { AcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation.use-case';
 import { SendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation.use-case';
@@ -49,8 +49,8 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       useClass: UpdateCompanyUseCase,
     },
     {
-      provide: CompaniesDiToken.GET_COMPANY_CATEGORIES_USE_CASE,
-      useClass: GetCompanyCategoriesUseCase,
+      provide: CompaniesDiToken.GET_COMPANY_BY_ID_USE_CASE,
+      useClass: GetCompanyByIdUseCase,
     },
     {
       provide: CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE,

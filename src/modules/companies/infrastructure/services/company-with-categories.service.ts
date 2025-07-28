@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/companies/company-category.dto';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
+import { ICompanyWithCategoriesService } from '~modules/companies/application/services/companies-with-categories/company-with-categories-service.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
 import {
   CompanyWithCategoriesMapper,
@@ -11,7 +12,7 @@ import { ICompanyCategoryRepository } from '~modules/companies/domain/repositori
 import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
 
 @Injectable()
-export class CompanyWithCategoriesService {
+export class CompanyWithCategoriesService implements ICompanyWithCategoriesService {
   constructor(
     @Inject(CompaniesDiToken.COMPANY_REPOSITORY)
     private readonly companyRepository: ICompanyRepository,

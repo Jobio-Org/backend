@@ -1,5 +1,5 @@
-import { type CompanyWithCategoriesDto } from '~modules/companies/application/dto/companies/company-category.dto';
 import { type UpdateCompanyDto } from '~modules/companies/application/dto/companies/update-company.dto';
+import { type CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 
 import { type IUseCase } from '~shared/application/use-cases/use-case.interface';
 

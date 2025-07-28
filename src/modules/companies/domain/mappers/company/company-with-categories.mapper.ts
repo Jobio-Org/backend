@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/companies/company-category.dto';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { CompanyCategory } from '~modules/companies/domain/entities/company-category.entity';
-import { Company } from '~modules/companies/domain/entities/company.entity';
 import { CompanyCategoryMapper } from '~modules/companies/domain/mappers/company-category/company-category.mapper';
 import { CompanyMapper, ICompanyDataAccess } from '~modules/companies/domain/mappers/company/company.mapper';
 import { CompanyCategoryWithNames } from '~modules/companies/domain/repositories/company-category-repository.interface';
@@ -43,11 +42,13 @@ export class CompanyWithCategoriesMapper
   }
 
   toPersistence(domain: CompanyWithCategoriesDto): ICompanyWithCategoriesDataAccess {
-    const companyData = this.companyMapper.toPersistence(domain as Company);
+    const companyData = this.companyMapper.toPersistence(domain);
+
     const categoriesData = domain.categories.map((categoryDto) => {
       const category = CompanyCategory.builder(domain.id, categoryDto.categoryId)
         .subCategoryId(categoryDto.subCategoryId)
         .build();
+
       return {
         ...this.companyCategoryMapper.toPersistence(category),
         categoryName: categoryDto.categoryName,

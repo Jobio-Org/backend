@@ -4,20 +4,22 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@ne
 import { PublicRoute } from '~modules/auth/infrastructure/decorators/public-route/public-route.decorator';
 import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
 import { JwtAccessAuthGuard } from '~modules/auth/infrastructure/supabase/guards/jwt-access-auth/jwt-access-auth.guard';
-import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/companies/company-category.dto';
 import { GetAllCompaniesDto } from '~modules/companies/application/dto/companies/get-all-companies.dto';
 import {
   GetCompaniesByRecruiterDto,
   RecruiterProfileIdParamDto,
 } from '~modules/companies/application/dto/companies/get-companies-by-recruiter.dto';
+import { GetCompanyByIdParamDto } from '~modules/companies/application/dto/companies/get-company-by-id.dto';
+import { GetCompanyByIdResponseDto } from '~modules/companies/application/dto/companies/get-company-by-id.dto';
 import { UpdateCompanyDto } from '~modules/companies/application/dto/companies/update-company.dto';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { AcceptInvitationDto } from '~modules/companies/application/dto/company-invitations/accept-invitation.dto';
 import { InviteRecruiterDto } from '~modules/companies/application/dto/company-invitations/invite-recruiter.dto';
 import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
 import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
-import { IGetCompanyCategoriesUseCase } from '~modules/companies/application/use-cases/companies/get-company-categories/get-company-categories-use-case.interface';
+import { IGetCompanyByIdUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-id/get-company-by-id-use-case.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
 import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
@@ -35,8 +37,8 @@ export class CompaniesController {
   constructor(
     @Inject(CompaniesDiToken.UPDATE_COMPANY_USE_CASE)
     private readonly updateCompanyUseCase: IUpdateCompanyUseCase,
-    @Inject(CompaniesDiToken.GET_COMPANY_CATEGORIES_USE_CASE)
-    private readonly getCompanyCategoriesUseCase: IGetCompanyCategoriesUseCase,
+    @Inject(CompaniesDiToken.GET_COMPANY_BY_ID_USE_CASE)
+    private readonly getCompanyByIdUseCase: IGetCompanyByIdUseCase,
     @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
     private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
     @Inject(CompaniesDiToken.SEND_INVITATION_USE_CASE)
@@ -50,14 +52,14 @@ export class CompaniesController {
   ) {}
 
   @ApiOperation({
-    summary: 'Get company categories',
-    description: 'Get all categories associated with a company.',
+    summary: 'Get company by ID',
+    description: 'Get detailed information about a company including categories.',
   })
   @PublicRoute()
-  @ApiResponse({ type: [Object] })
-  @Get(':companyId/categories')
-  async getCompanyCategories(@Param('companyId') companyId: string) {
-    return await this.getCompanyCategoriesUseCase.execute({ companyId });
+  @ApiResponse({ type: CompanyWithCategoriesDto })
+  @Get(':companyId')
+  async getCompanyById(@Param() params: GetCompanyByIdParamDto): Promise<GetCompanyByIdResponseDto> {
+    return this.getCompanyByIdUseCase.execute({ companyId: params.companyId });
   }
 
   @ApiOperation({
