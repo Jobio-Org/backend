@@ -9,13 +9,17 @@ import {
   GetCompaniesByRecruiterDto,
   RecruiterProfileIdParamDto,
 } from '~modules/companies/application/dto/companies/get-companies-by-recruiter.dto';
+import { GetCompanyByIdParamDto } from '~modules/companies/application/dto/companies/get-company-by-id.dto';
+import { GetCompanyByIdResponseDto } from '~modules/companies/application/dto/companies/get-company-by-id.dto';
 import { UpdateCompanyDto } from '~modules/companies/application/dto/companies/update-company.dto';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { AcceptInvitationDto } from '~modules/companies/application/dto/company-invitations/accept-invitation.dto';
 import { InviteRecruiterDto } from '~modules/companies/application/dto/company-invitations/invite-recruiter.dto';
 import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
 import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
+import { IGetCompanyByIdUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-id/get-company-by-id-use-case.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
 import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
@@ -33,6 +37,8 @@ export class CompaniesController {
   constructor(
     @Inject(CompaniesDiToken.UPDATE_COMPANY_USE_CASE)
     private readonly updateCompanyUseCase: IUpdateCompanyUseCase,
+    @Inject(CompaniesDiToken.GET_COMPANY_BY_ID_USE_CASE)
+    private readonly getCompanyByIdUseCase: IGetCompanyByIdUseCase,
     @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
     private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
     @Inject(CompaniesDiToken.SEND_INVITATION_USE_CASE)
@@ -46,19 +52,30 @@ export class CompaniesController {
   ) {}
 
   @ApiOperation({
+    summary: 'Get company by ID',
+    description: 'Get detailed information about a company including categories.',
+  })
+  @PublicRoute()
+  @ApiResponse({ type: CompanyWithCategoriesDto })
+  @Get(':companyId')
+  async getCompanyById(@Param() params: GetCompanyByIdParamDto): Promise<GetCompanyByIdResponseDto> {
+    return this.getCompanyByIdUseCase.execute({ companyId: params.companyId });
+  }
+
+  @ApiOperation({
     summary: 'Update company information',
     description: `Update company information. Only users with ${CompanyPermissionList.EDIT_COMPANY_INFO} permission can perform this action.`,
   })
   @UseGuards(JwtAccessAuthGuard)
   @RecruiterOnly()
   @ApiBearerAuth('JWT-auth')
-  @ApiResponse({ type: Company })
+  @ApiResponse({ type: CompanyWithCategoriesDto })
   @Put(':companyId')
   async updateCompany(
     @Param('companyId') companyId: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @UserId() userId: string,
-  ): Promise<Company> {
+  ): Promise<CompanyWithCategoriesDto> {
     const canEdit = await this.companyPermissionQueryService.canEditCompanyInfo(userId, companyId);
 
     if (!canEdit) {
