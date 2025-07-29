@@ -58,7 +58,6 @@ export const candidateProfile = pgTable(
   },
   (table) => ({
     userDetailsIdIdx: index('candidate_profile_user_details_id_idx').on(table.userDetailsId),
-    positionIdx: index('candidate_profile_position_idx').on(table.position),
     userDetailsIdUnique: uniqueIndex('candidate_profile_user_details_id_unique').on(table.userDetailsId),
   }),
 );
@@ -121,6 +120,7 @@ export const company = pgTable(
   {
     id: uuid('id').primaryKey().notNull().defaultRandom(),
     name: varchar('name', { length: 255 }).notNull(),
+    slug: varchar('slug', { length: 255 }),
     description: text('description'),
     website: varchar('website', { length: 255 }),
     logo: varchar('logo', { length: 500 }),
@@ -133,8 +133,8 @@ export const company = pgTable(
   },
   (table) => ({
     nameIdx: index('company_name_idx').on(table.name),
-    industryIdx: index('company_industry_idx').on(table.industry),
-    isActiveIdx: index('company_is_active_idx').on(table.isActive),
+    slugIdx: index('company_slug_idx').on(table.slug),
+    slugUnique: uniqueIndex('company_slug_unique').on(table.slug),
   }),
 );
 

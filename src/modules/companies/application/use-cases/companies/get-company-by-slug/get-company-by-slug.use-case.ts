@@ -1,22 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { GetCompanyByIdResponseDto } from '~modules/companies/application/dto/companies/get-company-by-id.dto';
+import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
-import {
-  IGetCompanyByIdInput,
-  IGetCompanyByIdUseCase,
-} from '~modules/companies/application/use-cases/companies/get-company-by-id/get-company-by-id-use-case.interface';
+import { IGetCompanyBySlugUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-slug/get-company-by-slug-use-case.interface';
 import { CompaniesDiToken } from '~modules/companies/constants';
+import { Company } from '~modules/companies/domain/entities/company.entity';
 import { ICompanyCategoryRepository } from '~modules/companies/domain/repositories/company-category-repository.interface';
 import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
 
 import { Query } from '~shared/application/CQS/query.abstract';
 
 @Injectable()
-export class GetCompanyByIdUseCase
-  extends Query<IGetCompanyByIdInput, GetCompanyByIdResponseDto>
-  implements IGetCompanyByIdUseCase
-{
+export class GetCompanyBySlugUseCase extends Query<string, Company> implements IGetCompanyBySlugUseCase {
   constructor(
     @Inject(CompaniesDiToken.COMPANY_REPOSITORY)
     private readonly companyRepository: ICompanyRepository,
@@ -26,16 +21,16 @@ export class GetCompanyByIdUseCase
     super();
   }
 
-  protected async implementation(): Promise<GetCompanyByIdResponseDto> {
-    const { companyId } = this._input;
+  protected async implementation(): Promise<CompanyWithCategoriesDto> {
+    const slug = this._input;
 
-    const company = await this.companyRepository.findById(companyId);
+    const company = await this.companyRepository.findBySlug(slug);
 
     if (!company) {
-      throw new EntityNotFoundException('company', companyId);
+      throw new EntityNotFoundException('company', slug);
     }
 
-    const categories = await this.companyCategoryRepository.findByCompanyIdWithNames(companyId);
+    const categories = await this.companyCategoryRepository.findByCompanyIdWithNames(company.id);
 
     return {
       ...company,

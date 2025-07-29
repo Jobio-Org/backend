@@ -8,6 +8,9 @@ export interface ICompanyRepository extends IBaseRepository<Company, string> {
   findAllByRecruiterProfileIdPaginated(
     query: FindAllByRecruiterProfileIdPaginatedInput,
   ): Promise<FindAllByRecruiterProfileIdPaginatedOutput>;
+  findByName(name: string): Promise<Company | null>;
+  findBySlug(slug: string): Promise<Company | null>;
+  existsBySlug(slug: string): Promise<boolean>;
 }
 
 export interface FindAllWithUserCompanyPaginatedInput {

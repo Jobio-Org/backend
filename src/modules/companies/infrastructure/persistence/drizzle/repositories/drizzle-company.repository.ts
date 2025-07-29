@@ -47,6 +47,20 @@ export class DrizzleCompanyRepository
     return this.mapper.toDomain(result);
   }
 
+  public async findBySlug(slug: string): Promise<Company | null> {
+    const [result] = await this.db.select().from(company).where(eq(company.slug, slug)).limit(1);
+
+    if (!result) return null;
+
+    return this.mapper.toDomain(result);
+  }
+
+  public async existsBySlug(slug: string): Promise<boolean> {
+    const [result] = await this.db.select({ exists: count() }).from(company).where(eq(company.slug, slug)).limit(1);
+
+    return (result?.exists ?? 0) > 0;
+  }
+
   public async count(): Promise<number> {
     const [result] = await this.db.select({ count: count() }).from(company);
     return result.count ?? 0;
@@ -76,12 +90,16 @@ export class DrizzleCompanyRepository
     query: FindAllByRecruiterProfileIdPaginatedInput,
   ): Promise<FindAllByRecruiterProfileIdPaginatedOutput> {
     const { recruiterProfileId, page = 1, limit = 10, name } = query;
+
     const offset = (page - 1) * limit;
     const where = [eq(userCompany.recruiterProfileId, recruiterProfileId)];
+
     if (name) {
       where.push(eq(company.name, name));
     }
+
     const andWhere = where.length > 1 ? and(...where) : where[0];
+
     const [results, totalResult] = await Promise.all([
       this.db
         .select({ company })
@@ -96,7 +114,9 @@ export class DrizzleCompanyRepository
         .innerJoin(company, eq(userCompany.companyId, company.id))
         .where(andWhere),
     ]);
+
     const total = totalResult[0]?.count ? Number(totalResult[0].count) : 0;
+
     return {
       results: results.map((row) => this.mapper.toDomain(row.company)),
       total,
