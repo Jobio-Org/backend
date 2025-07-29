@@ -7,6 +7,7 @@ import { IDataAccessMapper } from '~shared/domain/mappers/data-access-mapper.int
 export interface ICompanyDataAccess {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
   website: string | null;
   logo: string | null;
@@ -23,6 +24,7 @@ export class CompanyMapper implements IDataAccessMapper<Company, ICompanyDataAcc
   toDomain(dataAccess: ICompanyDataAccess): Company {
     return Company.builder(dataAccess.name)
       .id(dataAccess.id)
+      .slug(dataAccess.slug || null)
       .description(dataAccess.description || null)
       .website(dataAccess.website || null)
       .logo(dataAccess.logo || null)
@@ -39,6 +41,7 @@ export class CompanyMapper implements IDataAccessMapper<Company, ICompanyDataAcc
     return {
       id: domain.id,
       name: domain.name,
+      slug: domain.slug || null,
       description: domain.description || null,
       website: domain.website || null,
       logo: domain.logo || null,

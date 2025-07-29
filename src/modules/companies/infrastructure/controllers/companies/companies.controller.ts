@@ -15,11 +15,10 @@ import { UpdateCompanyDto } from '~modules/companies/application/dto/companies/u
 import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/company-categories/company-category.dto';
 import { AcceptInvitationDto } from '~modules/companies/application/dto/company-invitations/accept-invitation.dto';
 import { InviteRecruiterDto } from '~modules/companies/application/dto/company-invitations/invite-recruiter.dto';
-import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
-import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
 import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
 import { IGetCompanyByIdUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-id/get-company-by-id-use-case.interface';
+import { IGetCompanyBySlugUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-slug/get-company-by-slug-use-case.interface';
 import { IUpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company-use-case.interface';
 import { IAcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation-use-case.interface';
 import { ISendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation-use-case.interface';
@@ -39,8 +38,8 @@ export class CompaniesController {
     private readonly updateCompanyUseCase: IUpdateCompanyUseCase,
     @Inject(CompaniesDiToken.GET_COMPANY_BY_ID_USE_CASE)
     private readonly getCompanyByIdUseCase: IGetCompanyByIdUseCase,
-    @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
-    private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
+    @Inject(CompaniesDiToken.GET_COMPANY_BY_SLUG_USE_CASE)
+    private readonly getCompanyBySlugUseCase: IGetCompanyBySlugUseCase,
     @Inject(CompaniesDiToken.SEND_INVITATION_USE_CASE)
     private readonly sendInvitationUseCase: ISendInvitationUseCase,
     @Inject(CompaniesDiToken.ACCEPT_INVITATION_USE_CASE)
@@ -50,17 +49,6 @@ export class CompaniesController {
     @Inject(CompaniesDiToken.GET_COMPANIES_BY_RECRUITER_USE_CASE)
     private readonly getCompaniesByRecruiterUseCase: GetCompaniesByRecruiterUseCase,
   ) {}
-
-  @ApiOperation({
-    summary: 'Get company by ID',
-    description: 'Get detailed information about a company including categories.',
-  })
-  @PublicRoute()
-  @ApiResponse({ type: CompanyWithCategoriesDto })
-  @Get(':companyId')
-  async getCompanyById(@Param() params: GetCompanyByIdParamDto): Promise<GetCompanyByIdResponseDto> {
-    return this.getCompanyByIdUseCase.execute({ companyId: params.companyId });
-  }
 
   @ApiOperation({
     summary: 'Update company information',
@@ -75,15 +63,10 @@ export class CompaniesController {
     @Param('companyId') companyId: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @UserId() userId: string,
-  ): Promise<CompanyWithCategoriesDto> {
-    const canEdit = await this.companyPermissionQueryService.canEditCompanyInfo(userId, companyId);
-
-    if (!canEdit) {
-      throw new InsufficientPermissionsException();
-    }
-
-    return await this.updateCompanyUseCase.execute({
+  ): Promise<void> {
+    await this.updateCompanyUseCase.execute({
       companyId,
+      userId,
       ...updateCompanyDto,
     });
   }
@@ -119,6 +102,28 @@ export class CompaniesController {
   @Get()
   async getCompanies(@PaginationQuery() query: GetAllCompaniesDto): Promise<PaginationResult<Company>> {
     return this.getAllCompaniesUseCase.execute(query);
+  }
+
+  @ApiOperation({
+    summary: 'Get company by ID',
+    description: 'Get detailed information about a company including categories.',
+  })
+  @PublicRoute()
+  @ApiResponse({ type: CompanyWithCategoriesDto })
+  @Get('by-id/:companyId')
+  async getCompanyById(@Param() params: GetCompanyByIdParamDto): Promise<GetCompanyByIdResponseDto> {
+    return this.getCompanyByIdUseCase.execute({ companyId: params.companyId });
+  }
+
+  @ApiOperation({
+    summary: 'Get company by slug',
+    description: 'Get detailed information about a company by its slug.',
+  })
+  @PublicRoute()
+  @ApiResponse({ type: CompanyWithCategoriesDto })
+  @Get('by-slug/:companySlug')
+  async getCompanyBySlug(@Param('companySlug') companySlug: string): Promise<Company> {
+    return this.getCompanyBySlugUseCase.execute(companySlug);
   }
 
   @ApiOperation({ summary: 'Get companies by recruiter profile id' })

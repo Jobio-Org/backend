@@ -4,6 +4,7 @@ import { CreateCompanyUseCase } from '~modules/companies/application/use-cases/c
 import { GetAllCompaniesUseCase } from '~modules/companies/application/use-cases/companies/get-all-companies/get-all-companies.use-case';
 import { GetCompaniesByRecruiterUseCase } from '~modules/companies/application/use-cases/companies/get-companies-by-recruiter/get-companies-by-recruiter.use-case';
 import { GetCompanyByIdUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-id/get-company-by-id.use-case';
+import { GetCompanyBySlugUseCase } from '~modules/companies/application/use-cases/companies/get-company-by-slug/get-company-by-slug.use-case';
 import { UpdateCompanyUseCase } from '~modules/companies/application/use-cases/companies/update-company/update-company.use-case';
 import { AcceptInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/accept-invitation/accept-invitation.use-case';
 import { SendInvitationUseCase } from '~modules/companies/application/use-cases/company-invitations/send-invitation/send-invitation.use-case';
@@ -28,10 +29,10 @@ import { DrizzleCompanyRepository } from '~modules/companies/infrastructure/pers
 import { DrizzleUserCompanyRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-user-company.repository';
 import { CompaniesQueryService } from '~modules/companies/infrastructure/services/companies-query.service';
 import { CompanyPermissionQueryService } from '~modules/companies/infrastructure/services/company-permission-query.service';
-import { CompanyWithCategoriesService } from '~modules/companies/infrastructure/services/company-with-categories.service';
 import { RecruiterProfileModule } from '~modules/recruiter-profile/recruiter-profile.module';
 
 import { PaginationService } from '~shared/infrastructure/services/pagination/pagination.service';
+import { SlugService } from '~shared/infrastructure/services/slug/slug.service';
 
 @Module({
   imports: [forwardRef(() => RecruiterProfileModule)],
@@ -53,6 +54,10 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       useClass: GetCompanyByIdUseCase,
     },
     {
+      provide: CompaniesDiToken.GET_COMPANY_BY_SLUG_USE_CASE,
+      useClass: GetCompanyBySlugUseCase,
+    },
+    {
       provide: CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE,
       useClass: CompanyPermissionQueryService,
     },
@@ -60,7 +65,6 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       provide: CompaniesDiToken.COMPANIES_QUERY_SERVICE,
       useClass: CompaniesQueryService,
     },
-    CompanyWithCategoriesService,
     CompanyMapper,
     CompanyCategoryMapper,
     CompanyWithCategoriesMapper,
@@ -109,6 +113,7 @@ import { PaginationService } from '~shared/infrastructure/services/pagination/pa
       provide: CompaniesDiToken.GET_ALL_COMPANIES_WITH_USERS_USE_CASE,
       useClass: GetAllCompaniesUseCase,
     },
+    SlugService,
     PaginationService,
     {
       provide: CompaniesDiToken.GET_COMPANIES_BY_RECRUITER_USE_CASE,

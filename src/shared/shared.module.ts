@@ -13,6 +13,7 @@ import { EventEmitterEventSource } from '~shared/infrastructure/events/event-sou
 import { EventEmitterEventPublisher } from '~shared/infrastructure/events/publishers/event-emitter/event-emitter.event-publisher';
 import { InMemoryEventIntegrationService } from '~shared/infrastructure/events/services/event-integration/in-memory/in-memory-event-integration.service';
 import { PaginationService } from '~shared/infrastructure/services/pagination/pagination.service';
+import { SlugModule } from '~shared/infrastructure/services/slug/slug.module';
 import { GlobalThrottlerModule } from '~shared/infrastructure/throttler/throttler.module';
 import { validateConfig } from '~shared/infrastructure/util/validate-config';
 
@@ -29,6 +30,7 @@ import { validateConfig } from '~shared/infrastructure/util/validate-config';
       envFilePath: ['./config/.env', './config/.env.local'],
     }),
     DatabaseModule,
+    SlugModule,
   ],
   providers: [
     { provide: BaseToken.APP_CONFIG, useClass: ConfigService },

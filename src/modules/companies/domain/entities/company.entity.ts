@@ -3,6 +3,7 @@ import { Builder } from 'builder-pattern';
 export class Company {
   public readonly id: string;
   public readonly name: string;
+  public readonly slug?: string;
   public readonly description?: string;
   public readonly website?: string;
   public readonly logo?: string;

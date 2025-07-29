@@ -6,7 +6,7 @@ import { CompanyWithCategoriesDto } from '~modules/companies/application/dto/com
 export type GetCompanyByIdResponseDto = CompanyWithCategoriesDto;
 
 export class GetCompanyByIdParamDto {
-  @ApiProperty({ description: 'Company ID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ description: 'Company ID' })
   @IsUUID()
   companyId: string;
 }
