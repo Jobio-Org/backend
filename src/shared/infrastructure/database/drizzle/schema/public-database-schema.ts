@@ -295,3 +295,25 @@ export const companyInvitation = pgTable(
     ),
   }),
 );
+
+export const files = pgTable(
+  'files',
+  {
+    id: uuid('id').primaryKey().notNull().defaultRandom(),
+    name: varchar('name', { length: 255 }).notNull(),
+    originalName: varchar('original_name', { length: 255 }).notNull(),
+    path: text('path').notNull(),
+    mimeType: varchar('mime_type', { length: 100 }).notNull(),
+    type: varchar('type', { length: 50 }).notNull(),
+    bucket: varchar('bucket', { length: 100 }).notNull(),
+    url: text('url'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow(),
+  },
+  (table) => ({
+    nameIdx: index('files_name_idx').on(table.name),
+    pathIdx: index('files_path_idx').on(table.path),
+    bucketIdx: index('files_bucket_idx').on(table.bucket),
+    pathUnique: uniqueIndex('files_path_unique').on(table.path),
+  }),
+);
