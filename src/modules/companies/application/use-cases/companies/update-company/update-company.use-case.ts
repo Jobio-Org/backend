@@ -59,7 +59,6 @@ export class UpdateCompanyUseCase extends Command<UpdateCompanyInput, void> impl
       .description(updateData.description !== undefined ? updateData.description : existingCompany.description)
       .website(updateData.website !== undefined ? updateData.website : existingCompany.website)
       .logo(updateData.logo !== undefined ? updateData.logo : existingCompany.logo)
-      .industry(updateData.industry !== undefined ? updateData.industry : existingCompany.industry)
       .size(updateData.size !== undefined ? updateData.size : existingCompany.size)
       .location(updateData.location !== undefined ? updateData.location : existingCompany.location)
       .isActive(existingCompany.isActive)

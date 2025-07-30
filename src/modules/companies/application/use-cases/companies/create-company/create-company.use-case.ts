@@ -20,7 +20,7 @@ export class CreateCompanyUseCase extends Command<CreateCompanyDto, Company> imp
   }
 
   protected async implementation(): Promise<Company> {
-    const { name, description, website, logo, industry, size, location } = this._input;
+    const { name, description, website, logo, size, location } = this._input;
 
     const slug = await this.slugService.generateUniqueSlug(name, (slug) => this.companyRepository.existsBySlug(slug));
 
@@ -29,7 +29,6 @@ export class CreateCompanyUseCase extends Command<CreateCompanyDto, Company> imp
       .description(description)
       .website(website)
       .logo(logo)
-      .industry(industry)
       .size(size)
       .location(location)
       .build();

@@ -11,7 +11,6 @@ export interface ICompanyDataAccess {
   description: string | null;
   website: string | null;
   logo: string | null;
-  industry: string | null;
   size: string | null;
   location: string | null;
   isActive: boolean;
@@ -28,7 +27,6 @@ export class CompanyMapper implements IDataAccessMapper<Company, ICompanyDataAcc
       .description(dataAccess.description || null)
       .website(dataAccess.website || null)
       .logo(dataAccess.logo || null)
-      .industry(dataAccess.industry || null)
       .size(dataAccess.size || null)
       .location(dataAccess.location || null)
       .isActive(dataAccess.isActive)
@@ -45,7 +43,6 @@ export class CompanyMapper implements IDataAccessMapper<Company, ICompanyDataAcc
       description: domain.description || null,
       website: domain.website || null,
       logo: domain.logo || null,
-      industry: domain.industry || null,
       size: domain.size || null,
       location: domain.location || null,
       isActive: domain.isActive,

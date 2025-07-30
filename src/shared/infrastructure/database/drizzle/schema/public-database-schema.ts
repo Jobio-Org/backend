@@ -124,7 +124,6 @@ export const company = pgTable(
     description: text('description'),
     website: varchar('website', { length: 255 }),
     logo: varchar('logo', { length: 500 }),
-    industry: varchar('industry', { length: 255 }),
     size: varchar('size', { length: 50 }),
     location: varchar('location', { length: 255 }),
     isActive: boolean('is_active').notNull().default(true),

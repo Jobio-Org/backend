@@ -18,10 +18,6 @@ export class CreateCompanyDto {
 
   @IsString()
   @IsOptional()
-  industry?: string;
-
-  @IsString()
-  @IsOptional()
   size?: string;
 
   @IsString()
