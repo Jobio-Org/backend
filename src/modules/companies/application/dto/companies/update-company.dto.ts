@@ -22,10 +22,6 @@ export class UpdateCompanyDto {
 
   @IsString()
   @IsOptional()
-  industry?: string;
-
-  @IsString()
-  @IsOptional()
   size?: string;
 
   @IsString()

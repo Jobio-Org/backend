@@ -31,7 +31,6 @@ export class CompanyWithCategoriesMapper
       description: company.description,
       website: company.website,
       logo: company.logo,
-      industry: company.industry,
       size: company.size,
       location: company.location,
       isActive: company.isActive,

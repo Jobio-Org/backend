@@ -7,7 +7,6 @@ export class Company {
   public readonly description?: string;
   public readonly website?: string;
   public readonly logo?: string;
-  public readonly industry?: string;
   public readonly size?: string;
   public readonly location?: string;
   public readonly isActive: boolean;
