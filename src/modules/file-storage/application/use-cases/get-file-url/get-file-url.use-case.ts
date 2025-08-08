@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { Query } from '~shared/application/CQS/query.abstract';
+import { GetFileUrlDto } from '~modules/file-storage/application/dto/get-file-url.dto';
+import { FileNotFoundException } from '~modules/file-storage/application/exceptions/file-not-found.exception';
+import { IFileStorageService } from '~modules/file-storage/application/services/file-storage.service';
+import { IGetFileUrlUseCase } from '~modules/file-storage/application/use-cases/get-file-url/get-file-url-use-case.interface';
+import { FileStorageDiToken } from '~modules/file-storage/constants';
+import { IFileRepository } from '~modules/file-storage/domain/repositories/file-repository.interface';
 
-import { GetFileUrlDto } from '../../../application/dto/get-file-url.dto';
-import { FileNotFoundException } from '../../../application/exceptions/file-not-found.exception';
-import { IFileStorageService } from '../../../application/services/file-storage.service';
-import { FileStorageDiToken } from '../../../constants';
-import { IFileRepository } from '../../../domain/repositories/file-repository.interface';
-import { IGetFileUrlUseCase } from './get-file-url-use-case.interface';
+import { Query } from '~shared/application/CQS/query.abstract';
 
 @Injectable()
 export class GetFileUrlUseCase extends Query<GetFileUrlDto, string> implements IGetFileUrlUseCase {
@@ -23,13 +23,12 @@ export class GetFileUrlUseCase extends Query<GetFileUrlDto, string> implements I
   protected async implementation(): Promise<string> {
     const { fileId, expiresIn } = this._input;
 
-    // Check if file exists
     const file = await this.fileRepository.findById(fileId);
+
     if (!file) {
-      throw new FileNotFoundException(`File with ID ${fileId} not found`);
+      throw new FileNotFoundException(fileId);
     }
 
-    // Get file URL from storage
     return await this.fileStorageService.getFileUrl(fileId, expiresIn);
   }
 }

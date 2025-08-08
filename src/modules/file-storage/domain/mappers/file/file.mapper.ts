@@ -1,9 +1,8 @@
 import { File } from '~modules/file-storage/domain/entities/file.entity';
 import { type FileBucket, type FileType } from '~modules/file-storage/domain/enums/file-type.enum';
+import { FilePath } from '~modules/file-storage/domain/value-objects/file-path.value-object';
 
 import { type IDataAccessMapper } from '~shared/domain/mappers';
-
-import { FilePath } from '../../value-objects/file-path.value-object';
 
 export interface IFileDataAccess {
   id: string;
@@ -11,8 +10,8 @@ export interface IFileDataAccess {
   originalName: string;
   path: string;
   mimeType: string;
-  type: string; // string, бо з БД
-  bucket: string; // string, бо з БД
+  type: string;
+  bucket: string;
   url: string | null;
   createdAt: Date;
   updatedAt: Date;
