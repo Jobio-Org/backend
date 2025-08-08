@@ -7,6 +7,7 @@ import { UploadFileUseCase } from './application/use-cases/upload-file/upload-fi
 import { FileStorageDiToken } from './constants';
 import { FileMapper } from './domain/mappers/file/file.mapper';
 import { FileStorageController } from './infrastructure/controllers/file-storage.controller';
+import { CompanyLogoUploadRequestedEventHandler } from './infrastructure/event-handlers/company-logo-upload-requested.event-handler';
 import { FileDeletedEventHandler } from './infrastructure/event-handlers/file-deleted.event-handler';
 import { FileUploadedEventHandler } from './infrastructure/event-handlers/file-uploaded.event-handler';
 import { DrizzleFileRepository } from './infrastructure/persistence/drizzle/repositories/drizzle-file.repository';
@@ -41,8 +42,9 @@ import { SupabaseStorageService } from './infrastructure/services/supabase/supab
     FileMapper,
     FileUploadedEventHandler,
     FileDeletedEventHandler,
+    CompanyLogoUploadRequestedEventHandler,
   ],
   controllers: [FileStorageController],
-  exports: [FileStorageDiToken.FILE_STORAGE_SERVICE, FileStorageDiToken.FILE_REPOSITORY],
+  exports: [FileStorageDiToken.FILE_STORAGE_SERVICE],
 })
 export class FileStorageModule {}

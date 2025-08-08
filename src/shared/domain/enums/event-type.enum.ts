@@ -6,4 +6,6 @@ export enum DomainEventType {
   RECRUITER_PROFILE_CREATED = 'recruiter.profile.created',
   COMPANY_INVITATION_SENT = 'company.invitation.sent',
   COMPANY_INVITATION_ACCEPTED = 'company.invitation.accepted',
+  COMPANY_LOGO_UPLOAD_REQUESTED = 'company.logo.upload.requested',
+  COMPANY_LOGO_UPLOADED = 'company.logo.uploaded',
 }

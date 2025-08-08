@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { EventsHandler } from '~lib/nest-event-driven';
+import { EventsHandler, IEventHandler } from '~lib/nest-event-driven';
 
 import { InvalidRoleException } from '~modules/companies/application/exceptions/company-roles/invalid-role.exception';
 import { ICreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company-use-case.interface';
@@ -12,7 +12,7 @@ import { RecruiterProfileCreatedEvent } from '~modules/recruiter-profile/domain/
 
 @Injectable()
 @EventsHandler(RecruiterProfileCreatedEvent)
-export class RecruiterProfileCreatedEventHandler {
+export class RecruiterProfileCreatedEventHandler implements IEventHandler<RecruiterProfileCreatedEvent> {
   constructor(
     @Inject(CompaniesDiToken.CREATE_COMPANY_USE_CASE)
     private readonly createCompanyUseCase: ICreateCompanyUseCase,

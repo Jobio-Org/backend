@@ -9,6 +9,11 @@ export class AppValidationPipe extends ValidationPipe implements PipeTransform {
       exceptionFactory: (error) => ValidationFailedException.from(error),
       transform: true,
       transformOptions: { enableImplicitConversion: true },
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      skipMissingProperties: true,
+      skipNullProperties: true,
+      skipUndefinedProperties: true,
     });
   }
 }

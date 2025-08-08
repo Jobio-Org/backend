@@ -19,6 +19,7 @@ import { CompanyWithCategoriesMapper } from '~modules/companies/domain/mappers/c
 import { CompanyMapper } from '~modules/companies/domain/mappers/company/company.mapper';
 import { UserCompanyMapper } from '~modules/companies/domain/mappers/user-company/user-company.mapper';
 import { CompaniesController } from '~modules/companies/infrastructure/controllers/companies/companies.controller';
+import { CompanyLogoUploadedEventHandler } from '~modules/companies/infrastructure/event-handlers/company-logo-uploaded.event-handler';
 import { RecruiterProfileCreatedEventHandler } from '~modules/companies/infrastructure/event-handlers/recruiter-profile-created.event-handler';
 import { DrizzleCompanyCategoryRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-category.repository';
 import { DrizzleCompanyInvitationRepository } from '~modules/companies/infrastructure/persistence/drizzle/repositories/drizzle-company-invitation.repository';
@@ -94,6 +95,7 @@ import { SlugService } from '~shared/infrastructure/services/slug/slug.service';
       useClass: DrizzleCompanyRolePermissionRepository,
     },
     RecruiterProfileCreatedEventHandler,
+    CompanyLogoUploadedEventHandler,
     {
       provide: CompaniesDiToken.SEND_INVITATION_USE_CASE,
       useClass: SendInvitationUseCase,
