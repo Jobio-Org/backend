@@ -1,0 +1,348 @@
+# Database Patterns Guide
+
+## Database Architecture
+
+This project uses PostgreSQL with Drizzle ORM, implementing the repository pattern for data access abstraction.
+
+## Repository Pattern Implementation
+
+### 1. Repository Interface (Domain Layer)
+```typescript
+// domain/repositories/{entity}-repository.interface.ts
+export interface I{Entity}Repository {
+  create(entity: {Entity}): Promise<{Entity}>;
+  findById(id: string): Promise<{Entity} | null>;
+  findBySlug(slug: string): Promise<{Entity} | null>;
+  update(id: string, entity: Partial<{Entity}>): Promise<{Entity}>;
+  delete(id: string): Promise<void>;
+  existsBySlug(slug: string): Promise<boolean>;
+  
+  // Query methods
+  findAll(options?: FindAllOptions): Promise<{Entity}[]>;
+  findWithPagination(options: PaginationOptions): Promise<PaginationResult<{Entity}>>;
+}
+```
+
+### 2. Repository Implementation (Infrastructure Layer)
+```typescript
+// infrastructure/persistence/drizzle/repositories/drizzle-{entity}.repository.ts
+import { Injectable } from '@nestjs/common';
+import { eq, and, like, desc } from 'drizzle-orm';
+import { I{Entity}Repository } from '~modules/{module-name}/domain/repositories/{entity}-repository.interface';
+import { {Entity} } from '~modules/{module-name}/domain/entities/{entity}.entity';
+import { {Entity}Mapper } from '~modules/{module-name}/domain/mappers/{entity}/{entity}.mapper';
+import { {entity}Table } from '~shared/infrastructure/database/schemas/{entity}.schema';
+
+@Injectable()
+export class Drizzle{Entity}Repository implements I{Entity}Repository {
+  constructor(
+    private readonly db: DrizzleService,
+    private readonly mapper: {Entity}Mapper,
+  ) {}
+
+  async create(entity: {Entity}): Promise<{Entity}> {
+    const rawData = this.mapper.toPersistence(entity);
+    
+    const [result] = await this.db
+      .insert({entity}Table)
+      .values(rawData)
+      .returning();
+    
+    return this.mapper.toDomain(result);
+  }
+
+  async findById(id: string): Promise<{Entity} | null> {
+    const [result] = await this.db
+      .select()
+      .from({entity}Table)
+      .where(eq({entity}Table.id, id))
+      .limit(1);
+    
+    return result ? this.mapper.toDomain(result) : null;
+  }
+
+  async findBySlug(slug: string): Promise<{Entity} | null> {
+    const [result] = await this.db
+      .select()
+      .from({entity}Table)
+      .where(eq({entity}Table.slug, slug))
+      .limit(1);
+    
+    return result ? this.mapper.toDomain(result) : null;
+  }
+
+  async update(id: string, entity: Partial<{Entity}>): Promise<{Entity}> {
+    const rawData = this.mapper.toPersistence(entity);
+    
+    const [result] = await this.db
+      .update({entity}Table)
+      .set({
+        ...rawData,
+        updated_at: new Date(),
+      })
+      .where(eq({entity}Table.id, id))
+      .returning();
+    
+    return this.mapper.toDomain(result);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.db
+      .delete({entity}Table)
+      .where(eq({entity}Table.id, id));
+  }
+
+  async existsBySlug(slug: string): Promise<boolean> {
+    const [result] = await this.db
+      .select({ id: {entity}Table.id })
+      .from({entity}Table)
+      .where(eq({entity}Table.slug, slug))
+      .limit(1);
+    
+    return !!result;
+  }
+
+  async findAll(options?: FindAllOptions): Promise<{Entity}[]> {
+    let query = this.db.select().from({entity}Table);
+    
+    if (options?.where) {
+      query = query.where(and(
+        options.where.isActive !== undefined && eq({entity}Table.is_active, options.where.isActive),
+        options.where.search && like({entity}Table.name, `%${options.where.search}%`)
+      ));
+    }
+    
+    if (options?.orderBy) {
+      query = query.orderBy(
+        options.orderBy.field === 'name' ? {entity}Table.name : {entity}Table.created_at,
+        options.orderBy.direction === 'desc' ? desc : asc
+      );
+    }
+    
+    const results = await query;
+    return results.map(result => this.mapper.toDomain(result));
+  }
+
+  async findWithPagination(options: PaginationOptions): Promise<PaginationResult<{Entity}>> {
+    const { page = 1, limit = 10, search, filters } = options;
+    const offset = (page - 1) * limit;
+    
+    // Build where conditions
+    const whereConditions = [];
+    
+    if (search) {
+      whereConditions.push(like({entity}Table.name, `%${search}%`));
+    }
+    
+    if (filters?.isActive !== undefined) {
+      whereConditions.push(eq({entity}Table.is_active, filters.isActive));
+    }
+    
+    const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+    
+    // Get total count
+    const [{ count }] = await this.db
+      .select({ count: sql<number>`count(*)` })
+      .from({entity}Table)
+      .where(whereClause);
+    
+    // Get paginated results
+    const results = await this.db
+      .select()
+      .from({entity}Table)
+      .where(whereClause)
+      .orderBy(desc({entity}Table.created_at))
+      .limit(limit)
+      .offset(offset);
+    
+    const entities = results.map(result => this.mapper.toDomain(result));
+    
+    return {
+      data: entities,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
+        hasNext: page * limit < count,
+        hasPrev: page > 1,
+      },
+    };
+  }
+}
+```
+
+## Database Schema Definition
+
+### 1. Table Schema
+```typescript
+// shared/infrastructure/database/schemas/{entity}.schema.ts
+import { pgTable, text, timestamp, boolean, uuid } from 'drizzle-orm/pg-core';
+
+export const {entity}Table = pgTable('{entity}s', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  slug: text('slug').unique().notNull(),
+  description: text('description'),
+  website: text('website'),
+  logo: text('logo'),
+  size: text('size'),
+  location: text('location'),
+  is_active: boolean('is_active').notNull().default(true),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+  updated_at: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export type {Entity}Table = typeof {entity}Table.$inferSelect;
+export type New{Entity}Table = typeof {entity}Table.$inferInsert;
+```
+
+### 2. Relations
+```typescript
+// shared/infrastructure/database/schemas/index.ts
+import { relations } from 'drizzle-orm';
+import { companyTable } from './company.schema';
+import { companyCategoryTable } from './company-category.schema';
+
+export const companyRelations = relations(companyTable, ({ many }) => ({
+  categories: many(companyCategoryTable),
+  users: many(userCompanyTable),
+}));
+
+export const companyCategoryRelations = relations(companyCategoryTable, ({ one }) => ({
+  company: one(companyTable, {
+    fields: [companyCategoryTable.company_id],
+    references: [companyTable.id],
+  }),
+}));
+```
+
+## Query Services
+
+### 1. Query Service Implementation
+```typescript
+// infrastructure/services/{entity}-query.service.ts
+import { Injectable } from '@nestjs/common';
+import { I{Entity}Repository } from '~modules/{module-name}/domain/repositories/{entity}-repository.interface';
+
+@Injectable()
+export class {Entity}QueryService {
+  constructor(
+    @Inject({ModuleName}DiToken.{ENTITY}_REPOSITORY)
+    private readonly {entity}Repository: I{Entity}Repository,
+  ) {}
+
+  async get{Entity}WithDetails(id: string): Promise<{Entity}WithDetails> {
+    const {entity} = await this.{entity}Repository.findById(id);
+    if (!{entity}) {
+      throw new {Entity}NotFoundException();
+    }
+    
+    // Fetch related data
+    const categories = await this.get{Entity}Categories(id);
+    const users = await this.get{Entity}Users(id);
+    
+    return {
+      ...{entity},
+      categories,
+      users,
+    };
+  }
+
+  async search{Entity}s(query: string, filters: SearchFilters): Promise<{Entity}[]> {
+    return this.{entity}Repository.findAll({
+      where: {
+        search: query,
+        ...filters,
+      },
+      orderBy: {
+        field: 'name',
+        direction: 'asc',
+      },
+    });
+  }
+}
+```
+
+## Transaction Management
+
+### 1. Automatic Transaction Handling
+```typescript
+// Commands automatically handle transactions
+export class Create{Entity}UseCase extends Command<Create{Entity}Dto, {Entity}> {
+  protected async implementation(): Promise<{Entity}> {
+    // Transaction is automatically started
+    const {entity} = await this.{entity}Repository.create(this._input);
+    
+    // If any operation fails, transaction is automatically rolled back
+    await this.process{Entity}Creation({entity});
+    
+    // Transaction is automatically committed on success
+    return {entity};
+  }
+}
+```
+
+### 2. Manual Transaction Control
+```typescript
+@Injectable()
+export class {Entity}Service {
+  constructor(
+    @Inject(BaseToken.DB_CONTEXT)
+    private readonly dbContext: IDbContext,
+  ) {}
+
+  async complexOperation(): Promise<void> {
+    await this.dbContext.startTransaction();
+    
+    try {
+      // Multiple database operations
+      await this.operation1();
+      await this.operation2();
+      await this.operation3();
+      
+      await this.dbContext.commitTransaction();
+    } catch (error) {
+      await this.dbContext.rollbackTransaction();
+      throw error;
+    }
+  }
+}
+```
+
+## Best Practices
+
+### 1. Repository Design
+- Keep repositories focused on single entity
+- Use interfaces for abstraction
+- Implement common CRUD operations
+- Add specific query methods as needed
+
+### 2. Query Optimization
+- Use proper indexes on frequently queried fields
+- Implement pagination for large datasets
+- Use select() to limit returned fields
+- Avoid N+1 queries with proper joins
+
+### 3. Data Mapping
+- Use mappers to transform between domain and persistence
+- Keep domain entities clean from database concerns
+- Handle data type conversions in mappers
+- Validate data integrity
+
+### 4. Error Handling
+- Handle database-specific errors appropriately
+- Provide meaningful error messages
+- Log database errors for debugging
+- Use proper exception types
+
+### 5. Testing
+- Mock repositories in unit tests
+- Test repository implementations with test database
+- Use transaction rollback in tests
+- Test edge cases and error scenarios
+
+description:
+globs:
+alwaysApply: false
+---

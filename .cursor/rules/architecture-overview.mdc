@@ -1,0 +1,58 @@
+# Jobio Backend Architecture Overview
+
+This project follows a clean architecture pattern with Domain-Driven Design (DDD) principles and NestJS framework.
+
+## Core Architecture Layers
+
+### 1. Core Module (`src/core/`)
+- **Global module** that provides foundational services across the entire application
+- Contains validation, exception handling, and logging infrastructure
+- Always imported first in the application
+
+### 2. Shared Module (`src/shared/`)
+- **Global module** with common utilities and services
+- Provides database connections, event handling, pagination, and other shared functionality
+- Contains base classes and interfaces for CQS pattern
+
+### 3. Feature Modules (`src/modules/`)
+- Business logic organized by domain (companies, auth, users, etc.)
+- Each module follows the same layered architecture pattern
+
+## Module Structure Pattern
+
+Every feature module follows this consistent structure:
+
+```
+src/modules/{module-name}/
+├── {module-name}.module.ts          # Module configuration
+├── constants.ts                     # Dependency injection tokens
+├── domain/                         # Business logic and entities
+│   ├── entities/                   # Domain entities
+│   ├── repositories/               # Repository interfaces
+│   ├── mappers/                    # Data transformation
+│   ├── events/                     # Domain events
+│   └── enums/                      # Domain enums
+├── application/                    # Application services and use cases
+│   ├── use-cases/                  # Business operations
+│   ├── services/                   # Application services
+│   ├── dto/                        # Data transfer objects
+│   └── exceptions/                 # Domain exceptions
+└── infrastructure/                 # External concerns
+    ├── controllers/                # HTTP endpoints
+    ├── persistence/                # Database implementations
+    ├── services/                   # Infrastructure services
+    └── event-handlers/             # Event processing
+```
+
+## Key Design Principles
+
+1. **Dependency Injection**: Use DI tokens from constants.ts for all dependencies
+2. **CQS Pattern**: Commands and Queries are separated using base classes from shared
+3. **Repository Pattern**: Abstract data access through repository interfaces
+4. **Event-Driven**: Use domain events for cross-module communication
+5. **Validation**: Centralized validation through core validation module
+6. **Error Handling**: Consistent exception handling through core exceptions module
+description:
+globs:
+alwaysApply: false
+---

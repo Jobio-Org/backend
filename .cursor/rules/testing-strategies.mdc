@@ -1,0 +1,428 @@
+# Testing Strategies Guide
+
+## Testing Pyramid
+
+This project follows the testing pyramid approach:
+- **Unit Tests**: Test individual components in isolation
+- **Integration Tests**: Test component interactions
+- **E2E Tests**: Test complete user workflows
+
+## Unit Testing
+
+### 1. Use Case Testing
+```typescript
+// test/unit/use-cases/create-company.use-case.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { CreateCompanyUseCase } from '~modules/companies/application/use-cases/companies/create-company/create-company.use-case';
+import { CompaniesDiToken } from '~modules/companies/constants';
+import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
+import { Company } from '~modules/companies/domain/entities/company.entity';
+
+describe('CreateCompanyUseCase', () => {
+  let useCase: CreateCompanyUseCase;
+  let mockRepository: jest.Mocked<ICompanyRepository>;
+  let mockSlugService: jest.Mocked<SlugService>;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CreateCompanyUseCase,
+        {
+          provide: CompaniesDiToken.COMPANY_REPOSITORY,
+          useValue: {
+            create: jest.fn(),
+            existsBySlug: jest.fn(),
+          },
+        },
+        {
+          provide: SlugService,
+          useValue: {
+            generateUniqueSlug: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    useCase = module.get<CreateCompanyUseCase>(CreateCompanyUseCase);
+    mockRepository = module.get(CompaniesDiToken.COMPANY_REPOSITORY);
+    mockSlugService = module.get(SlugService);
+  });
+
+  describe('execute', () => {
+    it('should create company with unique slug', async () => {
+      // Arrange
+      const input = { name: 'Test Company', description: 'Test Description' };
+      const expectedSlug = 'test-company';
+      const expectedCompany = Company.builder('Test Company')
+        .slug(expectedSlug)
+        .description('Test Description')
+        .build();
+
+      mockSlugService.generateUniqueSlug.mockResolvedValue(expectedSlug);
+      mockRepository.existsBySlug.mockResolvedValue(false);
+      mockRepository.create.mockResolvedValue(expectedCompany);
+
+      // Act
+      const result = await useCase.execute(input);
+
+      // Assert
+      expect(mockSlugService.generateUniqueSlug).toHaveBeenCalledWith(
+        'Test Company',
+        expect.any(Function)
+      );
+      expect(mockRepository.create).toHaveBeenCalledWith(expectedCompany);
+      expect(result).toEqual(expectedCompany);
+    });
+
+    it('should throw error if company creation fails', async () => {
+      // Arrange
+      const input = { name: 'Test Company' };
+      const error = new Error('Database error');
+
+      mockSlugService.generateUniqueSlug.mockResolvedValue('test-company');
+      mockRepository.existsBySlug.mockResolvedValue(false);
+      mockRepository.create.mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(useCase.execute(input)).rejects.toThrow('Database error');
+    });
+  });
+});
+```
+
+### 2. Entity Testing
+```typescript
+// test/unit/domain/entities/company.entity.spec.ts
+import { Company } from '~modules/companies/domain/entities/company.entity';
+
+describe('Company Entity', () => {
+  describe('builder', () => {
+    it('should create company with default values', () => {
+      // Act
+      const company = Company.builder('Test Company').build();
+
+      // Assert
+      expect(company.name).toBe('Test Company');
+      expect(company.isActive).toBe(true);
+      expect(company.createdAt).toBeInstanceOf(Date);
+      expect(company.updatedAt).toBeInstanceOf(Date);
+    });
+
+    it('should create company with custom values', () => {
+      // Act
+      const company = Company.builder('Test Company')
+        .description('Test Description')
+        .website('https://test.com')
+        .build();
+
+      // Assert
+      expect(company.description).toBe('Test Description');
+      expect(company.website).toBe('https://test.com');
+    });
+  });
+});
+```
+
+### 3. Mapper Testing
+```typescript
+// test/unit/domain/mappers/company.mapper.spec.ts
+import { CompanyMapper } from '~modules/companies/domain/mappers/company/company.mapper';
+import { Company } from '~modules/companies/domain/entities/company.entity';
+
+describe('CompanyMapper', () => {
+  let mapper: CompanyMapper;
+
+  beforeEach(() => {
+    mapper = new CompanyMapper();
+  });
+
+  describe('toDomain', () => {
+    it('should map raw data to domain entity', () => {
+      // Arrange
+      const rawData = {
+        id: 'company-id',
+        name: 'Test Company',
+        slug: 'test-company',
+        description: 'Test Description',
+        is_active: true,
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z',
+      };
+
+      // Act
+      const result = mapper.toDomain(rawData);
+
+      // Assert
+      expect(result).toBeInstanceOf(Company);
+      expect(result.id).toBe('company-id');
+      expect(result.name).toBe('Test Company');
+      expect(result.slug).toBe('test-company');
+      expect(result.description).toBe('Test Description');
+      expect(result.isActive).toBe(true);
+    });
+  });
+
+  describe('toPersistence', () => {
+    it('should map domain entity to persistence format', () => {
+      // Arrange
+      const company = Company.builder('Test Company')
+        .slug('test-company')
+        .description('Test Description')
+        .build();
+
+      // Act
+      const result = mapper.toPersistence(company);
+
+      // Assert
+      expect(result).toEqual({
+        name: 'Test Company',
+        slug: 'test-company',
+        description: 'Test Description',
+        is_active: true,
+      });
+    });
+  });
+});
+```
+
+## Integration Testing
+
+### 1. Controller Testing
+```typescript
+// test/integration/controllers/companies.controller.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
+import { CompaniesController } from '~modules/companies/infrastructure/controllers/companies/companies.controller';
+import { CompaniesModule } from '~modules/companies/companies.module';
+
+describe('CompaniesController (Integration)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [CompaniesModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
+  describe('GET /companies', () => {
+    it('should return paginated companies', async () => {
+      // Act
+      const response = await request(app.getHttpServer())
+        .get('/companies')
+        .query({ page: 1, limit: 10 })
+        .expect(200);
+
+      // Assert
+      expect(response.body).toHaveProperty('data');
+      expect(response.body).toHaveProperty('pagination');
+      expect(Array.isArray(response.body.data)).toBe(true);
+    });
+  });
+});
+```
+
+### 2. Repository Testing
+```typescript
+// test/integration/persistence/company.repository.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { CompaniesModule } from '~modules/companies/companies.module';
+import { CompaniesDiToken } from '~modules/companies/constants';
+import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
+
+describe('CompanyRepository (Integration)', () => {
+  let repository: ICompanyRepository;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CompaniesModule],
+    }).compile();
+
+    repository = module.get<ICompanyRepository>(CompaniesDiToken.COMPANY_REPOSITORY);
+  });
+
+  describe('create', () => {
+    it('should create and retrieve company', async () => {
+      // Arrange
+      const companyData = {
+        name: 'Integration Test Company',
+        description: 'Test Description',
+      };
+
+      // Act
+      const createdCompany = await repository.create(companyData);
+      const retrievedCompany = await repository.findById(createdCompany.id);
+
+      // Assert
+      expect(createdCompany).toBeDefined();
+      expect(createdCompany.name).toBe(companyData.name);
+      expect(retrievedCompany).toEqual(createdCompany);
+    });
+  });
+});
+```
+
+## E2E Testing
+
+### 1. Complete Workflow Testing
+```typescript
+// test/e2e/companies/companies.e2e-spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
+import { AppModule } from '~app.module';
+
+describe('Companies E2E', () => {
+  let app: INestApplication;
+  let authToken: string;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+
+    // Setup authentication
+    const loginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+    authToken = loginResponse.body.accessToken;
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  describe('Company Management Workflow', () => {
+    it('should create, update, and delete company', async () => {
+      // 1. Create company
+      const createResponse = await request(app.getHttpServer())
+        .post('/companies')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          name: 'E2E Test Company',
+          description: 'Test Description',
+        })
+        .expect(201);
+
+      const companyId = createResponse.body.id;
+
+      // 2. Update company
+      await request(app.getHttpServer())
+        .put(`/companies/${companyId}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          description: 'Updated Description',
+        })
+        .expect(200);
+
+      // 3. Verify update
+      const getResponse = await request(app.getHttpServer())
+        .get(`/companies/${companyId}`)
+        .expect(200);
+
+      expect(getResponse.body.description).toBe('Updated Description');
+    });
+  });
+});
+```
+
+## Testing Best Practices
+
+### 1. Test Organization
+- **Unit tests**: Test individual components in isolation
+- **Integration tests**: Test component interactions
+- **E2E tests**: Test complete user workflows
+- **Test files**: Mirror the source code structure
+
+### 2. Test Naming
+- Use descriptive test names that explain the scenario
+- Follow the pattern: `should [expected behavior] when [condition]`
+- Group related tests using `describe` blocks
+
+### 3. Test Data
+- Use factories or builders for test data
+- Keep test data realistic but minimal
+- Use constants for commonly used test values
+
+### 4. Mocking Strategy
+- Mock external dependencies (databases, APIs)
+- Mock cross-module dependencies
+- Use real implementations for domain logic
+
+### 5. Assertions
+- Test one thing per test
+- Use specific assertions (avoid generic `toBeTruthy`)
+- Test both happy path and error scenarios
+- Verify side effects when appropriate
+
+### 6. Test Setup
+- Use `beforeEach` for common setup
+- Use `beforeAll` for expensive setup (database connections)
+- Clean up after tests to avoid interference
+
+## Testing Tools
+
+### 1. Jest Configuration
+```json
+// jest.config.js
+module.exports = {
+  moduleNameMapping: {
+    '^~modules/(.*)$': '<rootDir>/src/modules/$1',
+    '^~shared/(.*)$': '<rootDir>/src/shared/$1',
+    '^~core/(.*)$': '<rootDir>/src/core/$1',
+    '^~lib/(.*)$': '<rootDir>/src/lib/$1',
+  },
+  testEnvironment: 'node',
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.spec.ts',
+    '!src/**/*.e2e-spec.ts',
+  ],
+};
+```
+
+### 2. Test Utilities
+```typescript
+// test/utils/test-factory.ts
+export class CompanyTestFactory {
+  static createCompany(overrides: Partial<Company> = {}): Company {
+    return Company.builder('Test Company')
+      .slug('test-company')
+      .description('Test Description')
+      .build();
+  }
+
+  static createCompanyDto(overrides: Partial<CreateCompanyDto> = {}): CreateCompanyDto {
+    return {
+      name: 'Test Company',
+      description: 'Test Description',
+      ...overrides,
+    };
+  }
+}
+```
+
+## Coverage Goals
+
+- **Unit Tests**: 90%+ coverage for domain and application layers
+- **Integration Tests**: 80%+ coverage for infrastructure layer
+- **E2E Tests**: Cover critical user workflows
+- **Overall Coverage**: Maintain 85%+ across the entire codebase
+description:
+globs:
+alwaysApply: false
+---

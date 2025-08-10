@@ -1,0 +1,141 @@
+# CQS Pattern Implementation Guide
+
+## Command Query Separation (CQS)
+
+This project implements the CQS pattern using base classes from the shared module. Commands modify state, Queries read data.
+
+## Base Classes
+
+### Command Base Class
+```typescript
+// Extends Command for operations that modify state
+import { Command } from '~shared/application/CQS/command.abstract';
+
+export class CreateEntityUseCase extends Command<CreateEntityDto, Entity> implements ICreateEntityUseCase {
+  constructor(
+    @Inject(DiToken.ENTITY_REPOSITORY)
+    private readonly entityRepository: IEntityRepository,
+  ) {
+    super();
+  }
+
+  protected async implementation(): Promise<Entity> {
+    // Business logic here
+    // Transaction is automatically handled by base class
+    // Events are automatically dispatched after successful execution
+  }
+}
+```
+
+### Query Base Class
+```typescript
+// Extends Query for read-only operations
+import { Query } from '~shared/application/CQS/query.abstract';
+
+export class GetEntityByIdUseCase extends Query<GetEntityByIdDto, Entity> implements IGenEntityByIdUseCase {
+  constructor(
+    @Inject(DiToken.ENTITY_REPOSITORY)
+    private readonly entityRepository: IEntityRepository,
+  ) {
+    super();
+  }
+
+  protected async implementation(): Promise<Entity> {
+    // Read-only logic here
+    // No transaction needed for queries
+  }
+}
+```
+
+## Automatic Features
+
+### Commands
+- **Transaction Management**: Automatically starts, commits, or rolls back transactions
+- **Event Dispatching**: Automatically dispatches domain events after successful execution
+- **Error Handling**: Automatic rollback on errors
+
+### Queries
+- **No Transactions**: Read-only operations don't need transactions
+- **Performance**: Optimized for data retrieval
+
+## Implementation Examples
+
+### Creating a Command
+```typescript
+@Injectable()
+export class UpdateCompanyUseCase extends Command<UpdateCompanyDto, Company> implements IUpdateCompanyUseCase {
+  constructor(
+    @Inject(CompaniesDiToken.COMPANY_REPOSITORY)
+    private readonly companyRepository: ICompanyRepository,
+    private readonly slugService: SlugService,
+  ) {
+    super();
+  }
+
+  protected async implementation(): Promise<Company> {
+    const { companyId, name, description } = this._input;
+    
+    const company = await this.companyRepository.findById(companyId);
+    if (!company) {
+      throw new CompanyNotFoundException();
+    }
+    
+    const updatedCompany = Company.builder(name)
+      .description(description)
+      .build();
+    
+    return await this.companyRepository.update(companyId, updatedCompany);
+  }
+}
+```
+
+### Creating a Query
+```typescript
+@Injectable()
+export class GetCompanyByIdUseCase extends Query<GetCompanyByIdDto, Company> {
+  constructor(
+    @Inject(CompaniesDiToken.COMPANY_REPOSITORY)
+    private readonly companyRepository: ICompanyRepository,
+  ) {
+    super();
+  }
+
+  protected async implementation(): Promise<Company> {
+    const { companyId } = this._input;
+    
+    const company = await this.companyRepository.findById(companyId);
+    if (!company) {
+      throw new CompanyNotFoundException();
+    }
+    
+    return company;
+  }
+}
+```
+
+## When to Use Each
+
+### Use Commands When:
+- Creating, updating, or deleting entities
+- Modifying application state
+- Operations that should be transactional
+- Operations that might trigger domain events
+
+### Use Queries When:
+- Reading data
+- Searching or filtering
+- Generating reports
+- Any operation that doesn't modify state
+
+## Best Practices
+
+1. **Single Responsibility**: Each use case should do one thing well
+2. **Input Validation**: Validate input in the use case, not just in DTOs
+3. **Error Handling**: Throw domain-specific exceptions
+4. **Dependency Injection**: Use DI tokens for all dependencies
+5. **Naming**: Use descriptive names like `CreateCompanyUseCase`, `GetCompanyByIdUseCase`
+6. **Testing**: Test business logic independently of infrastructure concerns
+description:
+globs:
+alwaysApply: false
+---
