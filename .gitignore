@@ -57,11 +57,14 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Openapi generated
-
 /api.json
-.api-client/*
-!.api-client/.npmrc
-!.api-client/package.json
+
+# Generated API client in packages
+/packages/api-client/*
+!/packages/api-client/.gitkeep
+!/packages/api-client/package.json
+!/packages/api-client/.npmrc
+!/packages/api-client/README.md
 
 # Config
 /config/.env
