@@ -12,7 +12,6 @@ export class FileUploadedEventHandler {
     // Examples:
     // - Send notification to user
     // - Update file metadata
-    // - Trigger image processing
     // - Log file upload activity
 
     console.log(`File uploaded: ${event.file.name}`);

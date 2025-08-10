@@ -1,12 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { SupabaseClientService } from '~modules/auth/infrastructure/supabase/services/supabase-client/supabase-client.service';
+import { FileNotFoundException } from '~modules/file-storage/application/exceptions/file-not-found.exception';
+import { FileUploadException } from '~modules/file-storage/application/exceptions/file-upload.exception';
 import { IFileStorageService } from '~modules/file-storage/application/services/file-storage.service';
 import { FileStorageDiToken } from '~modules/file-storage/constants';
 import { File } from '~modules/file-storage/domain/entities/file.entity';
 import { FileBucket } from '~modules/file-storage/domain/enums/file-type.enum';
 import { IFileRepository } from '~modules/file-storage/domain/repositories/file-repository.interface';
 import { FilePath } from '~modules/file-storage/domain/value-objects/file-path.value-object';
+import {
+  ImageProcessingOptions,
+  ImageProcessingService,
+} from '~modules/file-storage/infrastructure/services/image-processing/image-processing.service';
 
 @Injectable()
 export class SupabaseStorageService implements IFileStorageService {
@@ -14,22 +20,47 @@ export class SupabaseStorageService implements IFileStorageService {
     private readonly supabaseClientService: SupabaseClientService,
     @Inject(FileStorageDiToken.FILE_REPOSITORY)
     private readonly fileRepository: IFileRepository,
+    @Inject(FileStorageDiToken.IMAGE_PROCESSING_SERVICE)
+    private readonly imageProcessingService: ImageProcessingService,
   ) {}
 
   async uploadFile(file: Express.Multer.File, bucket: FileBucket): Promise<File> {
+    return this.uploadFileWithProcessing(file, bucket);
+  }
+
+  async uploadFileWithProcessing(
+    file: Express.Multer.File,
+    bucket: FileBucket,
+    processingOptions?: ImageProcessingOptions,
+  ): Promise<File> {
     try {
       const supabase = this.supabaseClientService.client;
 
-      const fileExtension = file.originalname.split('.').pop();
+      let uploadBuffer = file.buffer;
+      let uploadMimetype = file.mimetype;
+      let fileExtension = file.originalname.split('.').pop();
+
+      if (this.imageProcessingService.isImageFile(file)) {
+        const recommendedOptions = this.imageProcessingService.getRecommendedOptions(file.mimetype, file.size, bucket);
+
+        const finalOptions = { ...recommendedOptions, ...processingOptions };
+
+        const processed = await this.imageProcessingService.processImage(file.buffer, file.mimetype, finalOptions);
+
+        uploadBuffer = processed.buffer;
+        uploadMimetype = processed.mimetype;
+        fileExtension = processed.extension;
+      }
+
       const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExtension}`;
       const filePath = `${bucket}/${uniqueFileName}`;
 
-      const { error } = await supabase.storage.from(bucket).upload(uniqueFileName, file.buffer, {
-        contentType: file.mimetype,
+      const { error } = await supabase.storage.from(bucket).upload(uniqueFileName, uploadBuffer, {
+        contentType: uploadMimetype,
       });
 
       if (error) {
-        throw new Error(`Failed to upload file to Supabase: ${error.message}`);
+        throw new FileUploadException(`Failed to upload file to Supabase: ${error.message}`);
       }
 
       const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(uniqueFileName);
@@ -38,7 +69,7 @@ export class SupabaseStorageService implements IFileStorageService {
         uniqueFileName,
         file.originalname,
         FilePath.create(filePath),
-        file.mimetype,
+        uploadMimetype,
         bucket,
       )
         .url(urlData.publicUrl)
@@ -56,7 +87,7 @@ export class SupabaseStorageService implements IFileStorageService {
     try {
       const file = await this.fileRepository.findById(fileId);
       if (!file) {
-        throw new Error('File not found');
+        throw new FileNotFoundException('File not found');
       }
 
       const supabase = this.supabaseClientService.client;
@@ -77,7 +108,7 @@ export class SupabaseStorageService implements IFileStorageService {
     try {
       const file = await this.fileRepository.findById(fileId);
       if (!file) {
-        throw new Error('File not found');
+        throw new FileNotFoundException('File not found');
       }
 
       const supabase = this.supabaseClientService.client;
