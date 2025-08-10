@@ -1,0 +1,6 @@
+# Generated API client files
+api-client/*
+!api-client/.gitkeep
+!api-client/package.json
+!api-client/.npmrc
+!api-client/README.md
