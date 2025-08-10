@@ -3,7 +3,6 @@ import { type CompanyCategory } from '~modules/companies/domain/entities/company
 import { type IBaseRepository } from '~shared/domain/repositories/base-repository.interface';
 
 export interface CompanyCategoryWithNames {
-  id: string;
   categoryId: string;
   categoryName: string;
   subCategoryId?: string;

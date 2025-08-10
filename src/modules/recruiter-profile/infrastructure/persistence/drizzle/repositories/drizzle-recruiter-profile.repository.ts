@@ -4,7 +4,6 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 import { POSTGRES_DB } from '~lib/drizzle-postgres';
 
-import { SupabaseClientService } from '~modules/auth/infrastructure/supabase/services/supabase-client/supabase-client.service';
 import { RecruiterProfile } from '~modules/recruiter-profile/domain/entities/recruiter-profile.entity';
 import {
   IRecruiterProfileDataAccess,
@@ -28,7 +27,6 @@ export class DrizzleRecruiterProfileRepository
   constructor(
     @Inject(POSTGRES_DB) db: NodePgDatabase<MergedDbSchema>,
     @Inject(RecruiterProfileMapper) mapper: IDataAccessMapper<RecruiterProfile, IRecruiterProfileDataAccess>,
-    private readonly supabaseClientService: SupabaseClientService,
   ) {
     super(TableDefinition.create(recruiterProfile, 'id'), db, mapper);
   }

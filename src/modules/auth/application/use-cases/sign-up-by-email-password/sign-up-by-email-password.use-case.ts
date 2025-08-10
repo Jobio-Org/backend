@@ -26,11 +26,9 @@ export class SignUpByEmailPasswordUseCase
   protected async implementation(): Promise<void> {
     const { email, password, role } = this._input;
 
-    // Check if user already exists
     const existingUser = await this.authService.getUserByEmail(email);
 
     if (existingUser) {
-      // User already exists, throw exception
       throw new UserAlreadyExistsException();
     }
 

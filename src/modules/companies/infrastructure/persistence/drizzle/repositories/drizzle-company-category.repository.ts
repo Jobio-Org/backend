@@ -60,7 +60,6 @@ export class DrizzleCompanyCategoryRepository
       .where(eq(companyCategory.companyId, companyId));
 
     return dbRecords.map((record) => ({
-      id: record.id,
       categoryId: record.categoryId,
       categoryName: record.categoryName,
       subCategoryId: record.subCategoryId || undefined,

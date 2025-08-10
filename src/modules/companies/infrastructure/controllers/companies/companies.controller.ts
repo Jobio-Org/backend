@@ -1,5 +1,19 @@
-import { Body, Controller, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { ValidationFailedException } from '~core/validation/domain/exceptions/validation-failed/validation-failed.exception';
 
 import { PublicRoute } from '~modules/auth/infrastructure/decorators/public-route/public-route.decorator';
 import { UserId } from '~modules/auth/infrastructure/decorators/user-id/user-id.decorator';
@@ -57,17 +71,24 @@ export class CompaniesController {
   @UseGuards(JwtAccessAuthGuard)
   @RecruiterOnly()
   @ApiBearerAuth('JWT-auth')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateCompanyDto })
   @ApiResponse({ type: CompanyWithCategoriesDto })
   @Put(':companyId')
+  @UseInterceptors(FileInterceptor('logo'))
   async updateCompany(
     @Param('companyId') companyId: string,
-    @Body() updateCompanyDto: UpdateCompanyDto,
     @UserId() userId: string,
+    @UploadedFile() logoFile: Express.Multer.File | undefined,
+    @Body() updateCompanyDto: UpdateCompanyDto,
   ): Promise<void> {
+    const { logo: swaggerLogo, ...rest } = updateCompanyDto;
+
     await this.updateCompanyUseCase.execute({
       companyId,
       userId,
-      ...updateCompanyDto,
+      logoFile,
+      ...rest,
     });
   }
 

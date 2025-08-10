@@ -7,6 +7,7 @@ import { CandidateProfileModule } from '~modules/candidate-profile/candidate-pro
 import { CategoriesModule } from '~modules/categories/categories.module';
 import { CompaniesModule } from '~modules/companies/companies.module';
 import { EmailModule } from '~modules/email/email.module';
+import { FileStorageModule } from '~modules/file-storage/file-storage.module';
 import { RecruiterProfileModule } from '~modules/recruiter-profile/recruiter-profile.module';
 import { UserContextModule } from '~modules/user-context/user-context.module';
 import { UserDetailsModule } from '~modules/user-details/user-details.module';
@@ -28,6 +29,7 @@ import { AppService } from 'src/app.service';
     CategoriesModule,
     CompaniesModule,
     EmailModule,
+    FileStorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

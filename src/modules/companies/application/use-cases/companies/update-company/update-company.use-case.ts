@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { InsufficientPermissionsException } from '~modules/companies/application/exceptions/company-permissions/insufficient-permissions.exception';
+import { LogoUploadException } from '~modules/companies/application/exceptions/logo-upload.exception';
 import { EntityNotFoundException } from '~modules/companies/application/exceptions/not-found.exception';
 import { ICompanyPermissionQueryService } from '~modules/companies/application/services/company-permissions/company-permission-query-service.interface';
 import {
@@ -10,10 +11,13 @@ import {
 import { CompaniesDiToken } from '~modules/companies/constants';
 import { CompanyCategory } from '~modules/companies/domain/entities/company-category.entity';
 import { Company } from '~modules/companies/domain/entities/company.entity';
+import { CompanyLogoUploadRequestedEvent } from '~modules/companies/domain/events/company-logo-upload-requested.event';
 import { ICompanyCategoryRepository } from '~modules/companies/domain/repositories/company-category-repository.interface';
 import { ICompanyRepository } from '~modules/companies/domain/repositories/company-repository.interface';
 
 import { Command } from '~shared/application/CQS/command.abstract';
+import { IEventDispatcher } from '~shared/application/events/event-dispatcher/event-dispatcher.interface';
+import { BaseToken } from '~shared/constants';
 import { SlugService } from '~shared/infrastructure/services/slug/slug.service';
 
 @Injectable()
@@ -26,12 +30,14 @@ export class UpdateCompanyUseCase extends Command<UpdateCompanyInput, void> impl
     private readonly slugService: SlugService,
     @Inject(CompaniesDiToken.COMPANY_PERMISSION_QUERY_SERVICE)
     private readonly companyPermissionQueryService: ICompanyPermissionQueryService,
+    @Inject(BaseToken.EVENT_DISPATCHER)
+    private readonly eventDispatcher: IEventDispatcher,
   ) {
     super();
   }
 
   protected async implementation(): Promise<void> {
-    const { companyId, categories, userId, ...updateData } = this._input;
+    const { companyId, categories, userId, logoFile, ...updateData } = this._input;
 
     const existingCompany = await this.companyRepository.findById(companyId);
 
@@ -53,12 +59,29 @@ export class UpdateCompanyUseCase extends Command<UpdateCompanyInput, void> impl
       );
     }
 
+    if (logoFile) {
+      try {
+        this.eventDispatcher.registerEvent(
+          new CompanyLogoUploadRequestedEvent({
+            companyId,
+            logoFile,
+            userId,
+          }),
+        );
+      } catch (error) {
+        if (error instanceof LogoUploadException) {
+          throw error;
+        }
+        throw new LogoUploadException(`Failed to upload logo: ${error.message}`, error);
+      }
+    }
+
     const updatedCompany = Company.builder(updateData.name || existingCompany.name)
       .id(existingCompany.id)
       .slug(slug)
       .description(updateData.description !== undefined ? updateData.description : existingCompany.description)
       .website(updateData.website !== undefined ? updateData.website : existingCompany.website)
-      .logo(updateData.logo !== undefined ? updateData.logo : existingCompany.logo)
+      .logo(existingCompany.logo) // Will be updated by event handler
       .size(updateData.size !== undefined ? updateData.size : existingCompany.size)
       .location(updateData.location !== undefined ? updateData.location : existingCompany.location)
       .isActive(existingCompany.isActive)
