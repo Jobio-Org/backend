@@ -1,0 +1,184 @@
+# Module Creation Guide
+
+## Creating a New Module
+
+When creating a new module, follow this step-by-step process:
+
+### 1. Create Module Structure
+```bash
+mkdir -p src/modules/{module-name}/{domain,application,infrastructure}/{entities,repositories,mappers,events,enums,use-cases,services,dto,exceptions,controllers,persistence,event-handlers}
+```
+
+### 2. Create Module Files
+
+#### `{module-name}.module.ts`
+```typescript
+import { Module } from '@nestjs/common';
+
+@Module({
+  imports: [],
+  providers: [
+    // Use cases with DI tokens
+    // Domain mappers
+    // Repository implementations
+    // Services
+    // Event handlers
+  ],
+  controllers: [],
+  exports: [], // Export what other modules need
+})
+export class {ModuleName}Module {}
+```
+
+#### `constants.ts`
+```typescript
+export const {ModuleName}DiToken = {
+  // Use case tokens
+  CREATE_{ENTITY}_USE_CASE: Symbol('CREATE_{ENTITY}_USE_CASE'),
+  
+  // Repository tokens
+  {ENTITY}_REPOSITORY: Symbol('{ENTITY}_REPOSITORY'),
+  
+  // Service tokens
+  {ENTITY}_SERVICE: Symbol('{ENTITY}_SERVICE'),
+} as const;
+```
+
+### 3. Create Domain Layer
+
+#### Entity (`domain/entities/{entity}.entity.ts`)
+```typescript
+import { Builder } from 'builder-pattern';
+
+export class {Entity} {
+  public readonly id: string;
+  // Define properties
+  
+  public static builder() {
+    return Builder({Entity}, {
+      // Default values
+    });
+  }
+}
+```
+
+#### Repository Interface (`domain/repositories/{entity}-repository.interface.ts`)
+```typescript
+export interface I{Entity}Repository {
+  create(entity: {Entity}): Promise<{Entity}>;
+  findById(id: string): Promise<{Entity} | null>;
+  // Define other methods
+}
+```
+
+#### Mapper (`domain/mappers/{entity}/{entity}.mapper.ts`)
+```typescript
+export class {Entity}Mapper {
+  toDomain(raw: any): {Entity} {
+    // Map from persistence to domain
+  }
+  
+  toPersistence(entity: {Entity}): any {
+    // Map from domain to persistence
+  }
+}
+```
+
+### 4. Create Application Layer
+
+#### Use Case (`application/use-cases/{operation}/{operation}.use-case.ts`)
+```typescript
+import { Inject, Injectable } from '@nestjs/common';
+import { Command } from '~shared/application/CQS/command.abstract';
+
+@Injectable()
+export class {Operation}UseCase extends Command<{InputDto}, {OutputType}> implements I{Operation}UseCase {
+  constructor(
+    @Inject({ModuleName}DiToken.{ENTITY}_REPOSITORY)
+    private readonly {entity}Repository: I{Entity}Repository,
+  ) {
+    super();
+  }
+
+  protected async implementation(): Promise<{OutputType}> {
+    // Business logic implementation
+  }
+}
+```
+
+#### DTO (`application/dto/{operation}.dto.ts`)
+```typescript
+import { IsString, IsOptional } from 'class-validator';
+
+export class {Operation}Dto {
+  @IsString()
+  name: string;
+  
+  @IsOptional()
+  @IsString()
+  description?: string;
+}
+```
+
+### 5. Create Infrastructure Layer
+
+#### Controller (`infrastructure/controllers/{entity}/{entity}.controller.ts`)
+```typescript
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+
+@ApiTags('{entity}')
+@Controller('{entity}')
+export class {Entity}Controller {
+  constructor(
+    @Inject({ModuleName}DiToken.CREATE_{ENTITY}_USE_CASE)
+    private readonly create{Entity}UseCase: ICreate{Entity}UseCase,
+  ) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Create {entity}' })
+  async create(@Body() dto: Create{Entity}Dto): Promise<{Entity}> {
+    return this.create{Entity}UseCase.execute(dto);
+  }
+}
+```
+
+#### Repository Implementation (`infrastructure/persistence/drizzle/repositories/drizzle-{entity}.repository.ts`)
+```typescript
+import { Injectable } from '@nestjs/common';
+import { I{Entity}Repository } from '~modules/{module-name}/domain/repositories/{entity}-repository.interface';
+
+@Injectable()
+export class Drizzle{Entity}Repository implements I{Entity}Repository {
+  async create(entity: {Entity}): Promise<{Entity}> {
+    // Database implementation
+  }
+}
+```
+
+### 6. Register in App Module
+```typescript
+// src/app.module.ts
+import { {ModuleName}Module } from '~modules/{module-name}/{module-name}.module';
+
+@Module({
+  imports: [
+    // ... other modules
+    {ModuleName}Module,
+  ],
+})
+export class AppModule {}
+```
+
+## Best Practices
+
+1. **Naming Convention**: Use PascalCase for classes, camelCase for methods/properties
+2. **Dependency Injection**: Always use DI tokens from constants.ts
+3. **Error Handling**: Extend base exception classes from core module
+4. **Validation**: Use class-validator decorators in DTOs
+5. **Testing**: Create unit tests for use cases and integration tests for controllers
+6. **Documentation**: Use Swagger decorators for API documentation
+description:
+globs:
+alwaysApply: false
+---

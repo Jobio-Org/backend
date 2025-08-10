@@ -1,4 +1,6 @@
-import { type File } from '../../../domain/entities/file.entity';
+import { type File } from '~modules/file-storage/domain/entities/file.entity';
+
+import { type IUseCase } from '~shared/application/use-cases/use-case.interface';
 
 export interface UploadFileInput {
   file: Express.Multer.File;
@@ -7,6 +9,6 @@ export interface UploadFileInput {
 
 export type UploadFileOutput = File;
 
-export interface IUploadFileUseCase {
+export interface IUploadFileUseCase extends IUseCase<UploadFileInput, UploadFileOutput> {
   execute(input: UploadFileInput): Promise<UploadFileOutput>;
 }

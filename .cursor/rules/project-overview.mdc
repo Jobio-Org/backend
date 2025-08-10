@@ -1,0 +1,173 @@
+# Jobio Backend Project Overview
+
+## Project Description
+
+Jobio Backend is a NestJS-based application following Clean Architecture principles with Domain-Driven Design (DDD). The project serves as a job recruitment platform backend with comprehensive company management, user authentication, and profile management capabilities.
+
+## Technology Stack
+
+- **Framework**: NestJS (Node.js)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Supabase integration with JWT
+- **Architecture**: Clean Architecture + DDD
+- **Testing**: Jest with comprehensive test coverage
+- **Documentation**: Swagger/OpenAPI
+- **Event Handling**: Custom event-driven architecture
+
+## Project Structure
+
+```
+src/
+├── core/                    # Global foundational services
+│   ├── validation/         # Input validation
+│   ├── exceptions/         # Error handling
+│   └── logger/            # Logging infrastructure
+├── shared/                 # Common utilities and services
+│   ├── application/       # Base classes (CQS, events)
+│   ├── infrastructure/    # Database, pagination, utilities
+│   └── domain/           # Shared domain models
+├── lib/                    # Custom libraries
+│   ├── drizzle-postgres/  # Database integration
+│   ├── nest-event-driven/ # Event handling
+│   ├── passport-supabase/ # Authentication strategies
+│   └── flag-parser/       # Command line parsing
+└── modules/                # Business domain modules
+    ├── auth/              # Authentication & authorization
+    ├── companies/         # Company management
+    ├── user-context/      # User context management
+    ├── categories/        # Job categories
+    ├── email/            # Email services
+    ├── file-storage/     # File upload/management
+    └── ...               # Other domain modules
+```
+
+## Key Architectural Patterns
+
+### 1. Clean Architecture
+- **Domain Layer**: Business entities, value objects, and domain logic
+- **Application Layer**: Use cases, DTOs, and application services
+- **Infrastructure Layer**: Controllers, repositories, and external integrations
+
+### 2. Domain-Driven Design (DDD)
+- Rich domain models with business logic
+- Repository pattern for data access
+- Domain events for cross-module communication
+- Value objects and entities
+
+### 3. Command Query Separation (CQS)
+- Commands: Modify state, return void or entity
+- Queries: Read data, return data without side effects
+- Automatic transaction management for commands
+
+### 4. Event-Driven Architecture
+- Domain events for loose coupling
+- Event handlers for cross-module communication
+- Automatic event dispatching after successful commands
+
+## Module Architecture
+
+Each module follows a consistent structure:
+
+```
+{module-name}/
+├── {module-name}.module.ts    # Module configuration
+├── constants.ts               # DI tokens
+├── domain/                   # Business logic
+│   ├── entities/            # Domain entities
+│   ├── repositories/        # Repository interfaces
+│   ├── mappers/             # Data transformation
+│   ├── events/              # Domain events
+│   └── enums/               # Domain enums
+├── application/              # Application services
+│   ├── use-cases/           # Business operations
+│   ├── services/            # Application services
+│   ├── dto/                 # Data transfer objects
+│   └── exceptions/          # Domain exceptions
+└── infrastructure/           # External concerns
+    ├── controllers/         # HTTP endpoints
+    ├── persistence/         # Database implementations
+    ├── services/            # Infrastructure services
+    └── event-handlers/      # Event processing
+```
+
+## Development Guidelines
+
+### 1. Code Organization
+- Follow the established module structure
+- Use consistent naming conventions
+- Implement proper separation of concerns
+
+### 2. Dependency Injection
+- Use DI tokens from constants.ts
+- Avoid circular dependencies
+- Export only necessary services
+
+### 3. Error Handling
+- Use domain-specific exceptions
+- Implement proper validation
+- Handle errors at appropriate layers
+
+### 4. Testing
+- Maintain high test coverage
+- Test business logic independently
+- Use proper mocking strategies
+
+### 5. Documentation
+- Document API endpoints with Swagger
+- Use clear and descriptive names
+- Maintain up-to-date documentation
+
+## Common Patterns
+
+### 1. Entity Creation
+```typescript
+// Use builder pattern for entities
+const company = Company.builder('Company Name')
+  .description('Description')
+  .website('https://example.com')
+  .build();
+```
+
+### 2. Use Case Implementation
+```typescript
+// Extend Command or Query base classes
+export class CreateEntityUseCase extends Command<CreateEntityDto, Entity> implmenets ICreateEntityUseCase {
+  protected async implementation(): Promise<Entity> {
+    // Business logic here
+  }
+}
+```
+
+### 3. Repository Pattern
+```typescript
+// Define interface in domain, implement in infrastructure
+export interface IEntityRepository {
+  create(entity: Entity): Promise<Entity>;
+  findById(id: string): Promise<Entity | null>;
+}
+```
+
+### 4. Event Handling
+```typescript
+// Use domain events for cross-module communication
+@EventsHandler(EntityCreatedEvent)
+export class EntityCreatedEventHandler implements IEventHandler<EntityCreatedEvent> {
+  async handle(event: EntityCreatedEvent): Promise<void> {
+    // Handle event
+  }
+}
+```
+
+## Contributing
+
+When adding new features or modules:
+1. Follow the established architecture patterns
+2. Implement comprehensive testing
+3. Update documentation
+4. Follow naming conventions
+5. Use proper error handling
+6. Implement proper validation
+description:
+globs:
+alwaysApply: false
+---

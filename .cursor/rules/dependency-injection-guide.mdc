@@ -1,0 +1,193 @@
+# Dependency Injection Guide
+
+## DI Token System
+
+This project uses a centralized DI token system to manage dependencies and avoid circular dependencies.
+
+## Creating DI Tokens
+
+### 1. Define Tokens in `constants.ts`
+```typescript
+export const {ModuleName}DiToken = {
+  // Use case tokens
+  CREATE_{ENTITY}_USE_CASE: Symbol('CREATE_{ENTITY}_USE_CASE'),
+  UPDATE_{ENTITY}_USE_CASE: Symbol('UPDATE_{ENTITY}_USE_CASE'),
+  GET_{ENTITY}_BY_ID_USE_CASE: Symbol('GET_{ENTITY}_BY_ID_USE_CASE'),
+  
+  // Repository tokens
+  {ENTITY}_REPOSITORY: Symbol('{ENTITY}_REPOSITORY'),
+  
+  // Service tokens
+  {ENTITY}_SERVICE: Symbol('{ENTITY}_SERVICE'),
+  
+  // Query service tokens
+  {ENTITY}_QUERY_SERVICE: Symbol('{ENTITY}_QUERY_SERVICE'),
+} as const;
+```
+
+### 2. Register Providers in Module
+```typescript
+@Module({
+  providers: [
+    // Use cases with DI tokens
+    {
+      provide: {ModuleName}DiToken.CREATE_{ENTITY}_USE_CASE,
+      useClass: Create{Entity}UseCase,
+    },
+    
+    // Repositories with DI tokens
+    {
+      provide: {ModuleName}DiToken.{ENTITY}_REPOSITORY,
+      useClass: Drizzle{Entity}Repository,
+    },
+    
+    // Services
+    {
+      provide: {ModuleName}DiToken.{ENTITY}_SERVICE,
+      useClass: {Entity}Service,
+    },
+    
+    // Domain mappers (no DI tokens needed)
+    {Entity}Mapper,
+    
+    // Event handlers
+    {Entity}CreatedEventHandler,
+  ],
+})
+export class {ModuleName}Module {}
+```
+
+## Using DI Tokens
+
+### 1. Inject in Use Cases
+```typescript
+@Injectable()
+export class Create{Entity}UseCase extends Command<Create{Entity}Dto, {Entity}> {
+  constructor(
+    @Inject({ModuleName}DiToken.{ENTITY}_REPOSITORY)
+    private readonly {entity}Repository: I{Entity}Repository,
+    
+    @Inject({ModuleName}DiToken.{ENTITY}_SERVICE)
+    private readonly {entity}Service: I{Entity}Service,
+  ) {
+    super();
+  }
+}
+```
+
+### 2. Inject in Controllers
+```typescript
+@Controller('{entity}')
+export class {Entity}Controller {
+  constructor(
+    @Inject({ModuleName}DiToken.CREATE_{ENTITY}_USE_CASE)
+    private readonly create{Entity}UseCase: ICreate{Entity}UseCase,
+    
+    @Inject({ModuleName}DiToken.GET_{ENTITY}_BY_ID_USE_CASE)
+    private readonly get{Entity}ByIdUseCase: IGet{Entity}ByIdUseCase,
+  ) {}
+}
+```
+
+### 3. Inject in Event Handlers
+```typescript
+@EventsHandler({Entity}CreatedEvent)
+export class {Entity}CreatedEventHandler implements IEventHandler<{Entity}CreatedEvent> {
+  constructor(
+    @Inject({ModuleName}DiToken.{ENTITY}_SERVICE)
+    private readonly {entity}Service: I{Entity}Service,
+  ) {}
+}
+```
+
+## Cross-Module Dependencies
+
+### 1. Forward References for Circular Dependencies (though try to avoid it to keep modules loosed coupled)
+```typescript
+@Module({
+  imports: [forwardRef(() => OtherModule)],
+  // ... rest of module config
+})
+export class {ModuleName}Module {}
+```
+
+### 2. Importing Shared Services
+```typescript
+// Shared services are automatically available
+@Injectable()
+export class {Entity}Service {
+  constructor(
+    private readonly paginationService: PaginationService, // From shared module
+    private readonly slugService: SlugService, // From shared module
+  ) {}
+}
+```
+
+### 3. Using Core Services
+```typescript
+// Core services are globally available
+@Injectable()
+export class {Entity}UseCase {
+  constructor(
+    private readonly logger: Logger, // From core module
+  ) {}
+}
+```
+
+## Best Practices
+
+### 1. Token Naming Convention
+- Use UPPER_SNAKE_CASE for token names
+- Be descriptive: `CREATE_COMPANY_USE_CASE` not just `CREATE_USE_CASE`
+- Group related tokens together
+
+### 2. Provider Registration
+- Always use DI tokens for use cases, repositories, and services
+- Domain mappers don't need DI tokens (they're stateless)
+- Event handlers don't need DI tokens unless they have complex dependencies
+
+### 3. Interface Usage
+- Define interfaces for all injectable services
+- Use interfaces in constructor parameters
+- This enables better testing and loose coupling
+
+### 4. Module Exports
+```typescript
+@Module({
+  // ... providers and imports
+  exports: [
+    // Export what other modules need
+    {ModuleName}DiToken.{ENTITY}_SERVICE,
+    {ModuleName}DiToken.{ENTITY}_REPOSITORY,
+  ],
+})
+export class {ModuleName}Module {}
+```
+
+## Testing with DI Tokens
+
+```typescript
+describe('CreateCompanyUseCase', () => {
+  let useCase: CreateCompanyUseCase;
+  let mockRepository: jest.Mocked<ICompanyRepository>;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [
+        CreateCompanyUseCase,
+        {
+          provide: CompanyDiToken.COMPANY_REPOSITORY,
+          useValue: mockRepository,
+        },
+      ],
+    }).compile();
+
+    useCase = module.get<CreateCompanyUseCase>(CreateCompanyUseCase);
+    mockRepository = module.get(CompanyDiToken.COMPANY_REPOSITORY);
+  });
+});
+```
+description:
+globs:
+alwaysApply: false
+---

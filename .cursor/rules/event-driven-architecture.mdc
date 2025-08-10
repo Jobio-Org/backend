@@ -1,0 +1,216 @@
+# Event-Driven Architecture Guide
+
+## Domain Events Overview
+
+This project uses custom implementation of domain events to decouple modules and enable loose coupling between different parts of the system.
+
+## Event Structure
+
+### 1. Domain Events
+```typescript
+// domain/events/{entity}-{action}.event.ts
+export class {Entity}{Action}Event {
+  constructor(
+    public readonly {entity}Id: string,
+    public readonly data: {Entity}{Action}EventData,
+    public readonly occurredAt: Date = new Date(),
+  ) {}
+}
+
+export interface {Entity}{Action}EventData {
+  // Event-specific data
+  name?: string;
+  description?: string;
+  // ... other properties
+}
+```
+
+### 2. Event Handler Interface
+```typescript
+// domain/events/{entity}-{action}.event.ts
+export interface I{Entity}{Action}EventHandler {
+  handle(event: {Entity}{Action}Event): Promise<void>;
+}
+```
+
+## Implementing Event Handlers
+
+### 1. Create Event Handler
+```typescript
+// infrastructure/event-handlers/{entity}-{action}.event-handler.ts
+import { Injectable } from '@nestjs/common';
+import { EventsHandler, IEventHandler } from '~lib/nest-event-driven';
+
+@Injectable()
+@EventsHandler({Entity}{Action}Event)
+export class {Entity}{Action}EventHandler implements IEventHandler<{Entity}{Action}Event> {
+  constructor(
+    @Inject(DiToken.SOME_SERVICE)
+    private readonly someService: ISomeService,
+  ) {}
+
+  async handle(event: {Entity}{Action}Event): Promise<void> {
+    const { {entity}Id, data } = event;
+    
+    // Handle the event
+    await this.someService.process{Action}({entity}Id, data);
+  }
+}
+```
+
+### 2. Register Event Handler in Module
+```typescript
+@Module({
+  providers: [
+    // ... other providers
+    {Entity}{Action}EventHandler,
+  ],
+})
+export class {ModuleName}Module {}
+```
+
+## Dispatching Events
+
+### 1. In Use Cases (Automatic)
+```typescript
+// Events are automatically dispatched after successful command execution
+@Injectable()
+export class Create{Entity}UseCase extends Command<Create{Entity}Dto, {Entity}> {
+  constructor(
+    @Inject(DiToken.{ENTITY}_REPOSITORY)
+    private readonly {entity}Repository: I{Entity}Repository,
+  ) {
+    super();
+  }
+
+  protected async implementation(): Promise<{Entity}> {
+    const {entity} = {Entity}.builder(this._input.name).build();
+    
+    const created{Entity} = await this.{entity}Repository.create({entity});
+    
+    // Event is automatically dispatched by base Command class, you need to only register an event
+    this._eventDispatcher.registerEvent(
+      new {Entity}CreateEvent({
+        invitationId: invitation.id,
+      }),
+    );
+    
+    return created{Entity};
+  }
+}
+```
+
+### 2. Manual Event Dispatching (not recommended, try to always do it with Command class)
+```typescript
+@Injectable()
+export class {Entity}Service {
+  constructor(
+    @Inject(BaseToken.EVENT_DISPATCHER)
+    private readonly eventDispatcher: IEventDispatcher,
+  ) {}
+
+  async processSomething(): Promise<void> {
+    // ... business logic
+    
+    // Manually dispatch event
+    this.eventDispatcher.dispatch(new {Entity}ProcessedEvent(entityId, data));
+  }
+}
+```
+
+## Event Handler Examples
+
+### 1. Company Logo Uploaded Event
+```typescript
+@Injectable()
+@EventsHandler(CompanyLogoUploadedEvent)
+export class CompanyLogoUploadedEventHandler implements IEventHandler<CompanyLogoUploadedEvent> {
+  constructor(
+    @Inject(CompaniesDiToken.COMPANY_REPOSITORY)
+    private readonly companyRepository: ICompanyRepository,
+  ) {}
+
+  async handle(event: CompanyLogoUploadedEvent): Promise<void> {
+    const { companyId, logoUrl } = event;
+    
+    // Update company with new logo
+    await this.companyRepository.updateLogo(companyId, logoUrl);
+  }
+}
+```
+
+## Cross-Module Communication
+
+### 1. Module A Dispatches Event
+```typescript
+// In auth module
+@Injectable()
+export class UserRegisteredUseCase extends Command<UserRegistrationDto, User> {
+  protected async implementation(): Promise<User> {
+    // ... user creation logic
+    
+    // Dispatch event that other modules can listen to (dispatches automatically in Command class)
+    this._eventDispatcher.registerEvent(new UserRegisteredEvent(user.id, {
+      email: user.email,
+      role: user.role,
+    }));
+    
+    return user;
+  }
+}
+```
+
+### 2. Module B Handles Event
+```typescript
+// In email module
+@Injectable()
+@EventsHandler(UserRegisteredEvent)
+export class UserRegisteredEventHandler implements IEventHandler<UserRegisteredEvent> {
+  constructor(
+    @Inject(EmailDiToken.WELCOME_EMAIL_SERVICE)
+    private readonly welcomeEmailService: IWelcomeEmailService,
+  ) {}
+
+  async handle(event: UserRegisteredEvent): Promise<void> {
+    const { userId, data } = event;
+    
+    // Send welcome email
+    await this.welcomeEmailService.sendWelcomeEmail(userId, data.email);
+  }
+}
+```
+
+## Best Practices
+
+### 1. Event Naming
+- Use past tense: `CompanyCreatedEvent`, `UserUpdatedEvent`
+- Be descriptive about what happened
+- Include relevant data in the event
+
+### 2. Event Data
+- Keep events lightweight
+- Include only necessary data
+- Avoid including entire entities (use IDs instead)
+
+### 3. Event Handler Responsibilities
+- Keep handlers focused on single responsibility
+- Avoid complex business logic in handlers
+- Use handlers for side effects and cross-module communication
+
+### 4. Error Handling
+- Event handlers should handle their own errors
+- Failed event handling shouldn't break the main flow
+- Log errors appropriately
+
+## Event Flow
+
+1. **Command Execution**: Use case executes business logic
+2. **Event Creation**: Domain event is created with relevant data
+3. **Event Dispatch**: Event is dispatched to event bus
+4. **Event Handling**: Registered event handlers process the event
+5. **Side Effects**: Handlers perform necessary side effects
+6. **Cross-Module Communication**: Modules react to events from other modules
+description:
+globs:
+alwaysApply: false
+---
