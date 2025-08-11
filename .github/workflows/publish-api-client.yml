@@ -8,26 +8,28 @@ on:
 jobs:
   publish-api-client:
     runs-on: ubuntu-latest
-    
+    env:
+      CI: true
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@jobio'
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Generate API client
         run: |
           npm run api-client:clean
           npm run api-client:generate
-        
+
       - name: Publish to GitHub Packages
         run: |
           cd packages/api-client
