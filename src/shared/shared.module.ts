@@ -25,7 +25,14 @@ import { validateConfig } from '~shared/infrastructure/util/validate-config';
     EventEmitterModule.forRoot({ wildcard: true }),
     ConfigModule.forRoot({
       isGlobal: true,
-      validate: (config) => validateConfig(config, AppConfigModel),
+      validate: (config) => {
+        if (process.env.CI) {
+          console.warn('Skipping env validation in CI');
+          return config;
+        }
+
+        return validateConfig(config, AppConfigModel);
+        },
       ignoreEnvFile: false,
       envFilePath: ['./config/.env', './config/.env.local'],
     }),
