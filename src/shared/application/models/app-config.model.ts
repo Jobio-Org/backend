@@ -1,14 +1,26 @@
-import { IsInt, IsPositive, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class AppConfigModel {
   @IsString()
   DB_URL: string;
 
   @IsString()
+  @IsOptional()
+  DB_URL_TEST: string;
+
+  @IsString()
   SUPABASE_URL: string;
 
   @IsString()
+  @IsOptional()
+  SUPABASE_URL_TEST: string;
+
+  @IsString()
   SUPABASE_SECRET_KEY: string;
+
+  @IsString()
+  @IsOptional()
+  SUPABASE_SECRET_KEY_TEST: string;
 
   @IsString()
   GOOGLE_OAUTH_CLIENT_ID: string;
