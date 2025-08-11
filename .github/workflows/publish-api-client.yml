@@ -8,8 +8,6 @@ on:
 jobs:
   publish-api-client:
     runs-on: ubuntu-latest
-    env:
-      CI: true
 
     steps:
       - name: Checkout code
@@ -21,6 +19,17 @@ jobs:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@jobio'
+
+      - name: Create .env file
+        run: |
+          cat <<EOF > config/.env
+          DB_URL=${{ secrets.DB_URL }}
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY=${{ secrets.SUPABASE_SECRET_KEY }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          SNAPLET_SOURCE_DATABASE_URL=${{ secrets.SNAPLET_SOURCE_DATABASE_URL }}
+          SNAPLET_TARGET_DATABASE_URL=${{ secrets.SNAPLET_TARGET_DATABASE_URL }}
+          EOF
 
       - name: Install dependencies
         run: npm ci
