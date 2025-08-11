@@ -38,7 +38,6 @@ jobs:
 
       - name: Generate API client
         run: |
-          npm run api-client:clean
           npm run api-client:generate
 
       - name: Publish to GitHub Packages
