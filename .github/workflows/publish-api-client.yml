@@ -40,6 +40,11 @@ jobs:
         run: |
           npm run api-client:generate
 
+      - name: Bump version (patch)
+        run: |
+          cd packages/api-client
+          npm version patch --no-git-tag-version
+
       - name: Publish to GitHub Packages
         run: |
           cd packages/api-client
