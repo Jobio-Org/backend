@@ -40,10 +40,19 @@ jobs:
         run: |
           npm run api-client:generate
 
-      - name: Bump version (patch)
+      - name: Determine version bump type
+        id: vars
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "version_bump=major" >> $GITHUB_OUTPUT
+          else
+            echo "version_bump=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump version
         run: |
           cd packages/api-client
-          npm version patch --no-git-tag-version
+          npm version ${{ steps.vars.outputs.version_bump }} --no-git-tag-version
 
       - name: Publish to GitHub Packages
         run: |
