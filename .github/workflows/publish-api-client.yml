@@ -27,6 +27,7 @@ jobs:
           DB_URL=${{ secrets.DB_URL }}
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY=${{ secrets.SUPABASE_SECRET_KEY }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
           REDIS_URL=${{ secrets.REDIS_URL }}
           SNAPLET_SOURCE_DATABASE_URL=${{ secrets.SNAPLET_SOURCE_DATABASE_URL }}
           SNAPLET_TARGET_DATABASE_URL=${{ secrets.SNAPLET_TARGET_DATABASE_URL }}
