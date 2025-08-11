@@ -5,7 +5,7 @@ Generated TypeScript API client for Jobio Backend.
 ## Installation
 
 ```bash
-npm install @jobio/api-client
+npm install @jobio-org/api-client
 ```
 
 ## Configuration

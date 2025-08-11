@@ -1,5 +1,5 @@
 {
-  "name": "@jobio/api-client",
+  "name": "@jobio-org/api-client",
   "version": "0.0.1",
   "description": "Generated TypeScript API client for Jobio Backend",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jobio/jobio-backend.git"
+    "url": "git+https://github.com/jobio-org/backend.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
