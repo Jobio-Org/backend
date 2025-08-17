@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 export class GetFileUrlDto {
@@ -9,11 +9,7 @@ export class GetFileUrlDto {
   @IsString()
   fileId: string;
 
-  @ApiProperty({
-    description: 'Expiration time in seconds (optional)',
-    required: false,
-    example: 3600,
-  })
+  @ApiHideProperty()
   @IsOptional()
   expiresIn?: number;
 }
