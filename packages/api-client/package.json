@@ -1,14 +1,13 @@
 {
   "name": "@jobio-org/api-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jobio-org/backend.git"
+  },
   "version": "0.0.1",
   "description": "Generated TypeScript API client for Jobio Backend",
-  "main": "index.ts",
-  "types": "index.d.ts",
-  "files": [
-    "**/*"
-  ],
+  "main": "index.ts",  
   "scripts": {
-    "build": "echo 'No build step needed - files are generated'",
     "clean": "rm -rf *"
   },
   "keywords": [
@@ -19,10 +18,6 @@
   ],
   "author": "Jobio Team",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jobio-org/backend.git"
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   }
