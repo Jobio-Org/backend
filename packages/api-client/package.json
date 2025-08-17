@@ -2,7 +2,7 @@
   "name": "@jobio-org/api-client",
   "version": "0.0.1",
   "description": "Generated TypeScript API client for Jobio Backend",
-  "main": "index.js",
+  "main": "index.ts",
   "types": "index.d.ts",
   "files": [
     "**/*"

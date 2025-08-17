@@ -9,6 +9,8 @@ jobs:
   publish-api-client:
     runs-on: ubuntu-latest
     environment: env
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout code
